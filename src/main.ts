@@ -1,27 +1,72 @@
-import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
+import {
+  App,
+  MarkdownPostProcessor,
+  MarkdownPostProcessorContext,
+  MarkdownPreviewRenderer,
+  Plugin,
+  PluginSettingTab,
+  Setting,
+} from "obsidian";
+import { SVGChessboard } from "./svgchess/SVGChessboard";
 
-export default class MyPlugin extends Plugin {
+export default class ObsidianChess extends Plugin {
   // This field stores your plugin settings.
-  setting: MyPluginSettings;
+  //setting: MyPluginSettings;
 
   onInit() {}
 
   async onload() {
     console.log("Plugin is Loading...");
+    MarkdownPreviewRenderer.registerPostProcessor(ObsidianChess.postprocessor);
 
     // This snippet of code is used to load pluging settings from disk (if any)
     // and then add the setting tab in the Obsidian Settings panel.
     // If your plugin does not use settings, you can delete these two lines.
-    this.setting = (await this.loadData()) || {
-      someConfigData: 1,
-      anotherConfigData: "defaultValue",
-    };
-    this.addSettingTab(new MyPluginSettingsTab(this.app, this));
+    // this.setting = (await this.loadData()) || {
+    //   someConfigData: 1,
+    //   anotherConfigData: "defaultValue",
+    // };
+    //this.addSettingTab(new MyPluginSettingsTab(this.app, this));
   }
 
   onunload() {
     console.log("Plugin is Unloading...");
+    MarkdownPreviewRenderer.unregisterPostProcessor(
+      ObsidianChess.postprocessor
+    );
   }
+
+  static postprocessor: MarkdownPostProcessor = (
+    el: HTMLElement,
+    ctx: MarkdownPostProcessorContext
+  ) => {
+    // Assumption: One section always contains only the code block
+
+    const blockToReplace = el.querySelector("pre");
+    console.log(blockToReplace);
+    if (!blockToReplace) return;
+
+    const chessBlock = blockToReplace.querySelector("code.language-chessboard");
+    console.log(chessBlock);
+    if (!chessBlock) return;
+
+    const source = chessBlock.textContent;
+    const destination = document.createElement("div");
+
+    const chessboard = SVGChessboard.fromFEN(source);
+
+    const xmlns = "http://www.w3.org/2000/svg";
+    var boxWidth = 500;
+    var boxHeight = 500;
+    var block = document.createElementNS(xmlns, "svg");
+    block.setAttributeNS(null, "viewBox", "0 0 " + boxWidth + " " + boxHeight);
+    block.setAttributeNS(null, "width", String(boxWidth));
+    block.setAttributeNS(null, "height", String(boxHeight));
+    block.appendChild(chessboard.draw());
+    block.style.display = "block";
+
+    el.replaceChild(block, blockToReplace);
+  };
 }
 
 /**
@@ -33,28 +78,28 @@ interface MyPluginSettings {
   anotherConfigData: string;
 }
 
-class MyPluginSettingsTab extends PluginSettingTab {
-  plugin: MyPlugin;
+// class MyPluginSettingsTab extends PluginSettingTab {
+//   plugin: MyPlugin;
 
-  constructor(app: App, plugin: MyPlugin) {
-    super(app, plugin);
-    this.plugin = plugin;
-  }
+//   constructor(app: App, plugin: MyPlugin) {
+//     super(app, plugin);
+//     this.plugin = plugin;
+//   }
 
-  display(): void {
-    const { containerEl } = this;
-    const settings = this.plugin.setting;
-    // This is just an example of a setting controll.
-    new Setting(containerEl)
-      .setName("Setting Name")
-      .setDesc("Setting description")
-      .addText((text) =>
-        text.setValue(String(settings.someConfigData)).onChange((value) => {
-          if (!isNaN(Number(value))) {
-            settings.someConfigData = Number(value);
-            this.plugin.saveData(settings);
-          }
-        })
-      );
-  }
-}
+//   display(): void {
+//     const { containerEl } = this;
+//     const settings = this.plugin.setting;
+//     // This is just an example of a setting controll.
+//     new Setting(containerEl)
+//       .setName("Setting Name")
+//       .setDesc("Setting description")
+//       .addText((text) =>
+//         text.setValue(String(settings.someConfigData)).onChange((value) => {
+//           if (!isNaN(Number(value))) {
+//             settings.someConfigData = Number(value);
+//             this.plugin.saveData(settings);
+//           }
+//         })
+//       );
+//   }
+// }

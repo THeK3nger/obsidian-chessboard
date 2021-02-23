@@ -1,7 +1,6 @@
 {
-  "id": "your-obsidian-plugin",
-  "name": "Obsidian Plugin Template",
-  "description": "A Simple Template for Plugins",
-  "isDesktopOnly": false,
-  "js": "main.js"
+  "id": "obsidian-chess",
+  "name": "Obsidian Chess Plugin",
+  "description": "Render Chessboards on Obsidian",
+  "isDesktopOnly": false
 }
