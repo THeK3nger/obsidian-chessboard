@@ -1,16 +1,20 @@
-## Obsidian Plugin Template
+# Obsidian Chess Plugin
 
-This templates includes a barebone directory structure for an Obsidian Plugin. Bundling is based on [Rollup.js](https://rollupjs.org/).
-
-**NOTE:** This is not the official template. You can find [the official sample plugin here](https://github.com/obsidianmd/obsidian-sample-plugin). This is a plugin template I customized with a nicer (for me) directory structure and some additional tool (like featuring automatic releases with Github's Actions).
+This plugin adds the capability to visualize Chess [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) positions on a SVG chessboard directly in preview mode.
 
 ## How to use it
 
-You can click on the "Use this template" button above.
+After you installed the plugin, just write the FEN position representation inside a code block with the `chessboard` language.
 
-### Enable Github's Actions
+### Example
 
-After you created a new repository, remember to rename the `RENAME.github` to `.github` to enable the GitHub's Actions. Then go in `.github/workflows/release.yml` and change `PLUGIN_NAME` on line 10.
+````
+```chessboard
+r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R
+```
+````
+
+![Example](example.png)
 
 ## How to compile the plugin
 
@@ -26,4 +30,13 @@ Then, you can compile the plugin with:
 npm run build
 ```
 
-This will create a `main.js` file in the project root. That is the entry point of your plugin.
+This will create a `main.js` file in the project root. That is the entry point of the plugin.
+
+## Planned Features
+
+- [ ] Chessboard color customization.
+- [ ] Chessboard annotation and highlights.
+
+## Chess Pieces
+
+The SVG pieces were made by jurgenwesterhof (adapted from work of Cburnett), CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Chess_Pieces_Sprite.svg).
