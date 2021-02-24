@@ -1,6 +1,10 @@
 {
   "id": "obsidian-chess",
+  "version": "0.0.1",
   "name": "Obsidian Chess Plugin",
-  "description": "Render Chessboards on Obsidian",
+  "description": "Rendering engine for Chessboards on Obsidian",
+  "author": "Davide Aversa",
+  "authorUrl": "https://www.davideaversa.it",
+  "minAppVersion": "0.9.12",
   "isDesktopOnly": false
 }
