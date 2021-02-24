@@ -16,7 +16,6 @@ export default class ObsidianChess extends Plugin {
   onInit() {}
 
   async onload() {
-    console.log("Plugin is Loading...");
     MarkdownPreviewRenderer.registerPostProcessor(ObsidianChess.postprocessor);
 
     // This snippet of code is used to load pluging settings from disk (if any)
@@ -30,7 +29,6 @@ export default class ObsidianChess extends Plugin {
   }
 
   onunload() {
-    console.log("Plugin is Unloading...");
     MarkdownPreviewRenderer.unregisterPostProcessor(
       ObsidianChess.postprocessor
     );
@@ -40,8 +38,6 @@ export default class ObsidianChess extends Plugin {
     el: HTMLElement,
     ctx: MarkdownPostProcessorContext
   ) => {
-    // Assumption: One section always contains only the code block
-
     const blockToReplace = el.querySelector("pre");
     console.log(blockToReplace);
     if (!blockToReplace) return;
@@ -51,13 +47,12 @@ export default class ObsidianChess extends Plugin {
     if (!chessBlock) return;
 
     const source = chessBlock.textContent;
-    const destination = document.createElement("div");
 
     const chessboard = SVGChessboard.fromFEN(source);
 
     const xmlns = "http://www.w3.org/2000/svg";
-    var boxWidth = 500;
-    var boxHeight = 500;
+    var boxWidth = 320;
+    var boxHeight = 320;
     var block = document.createElementNS(xmlns, "svg");
     block.setAttributeNS(null, "viewBox", "0 0 " + boxWidth + " " + boxHeight);
     block.setAttributeNS(null, "width", String(boxWidth));
@@ -73,10 +68,10 @@ export default class ObsidianChess extends Plugin {
  * This is a data class that contains your plugin configurations. You can edit it
  * as you wish by adding fields and all the data you need.
  */
-interface MyPluginSettings {
-  someConfigData: number;
-  anotherConfigData: string;
-}
+// interface MyPluginSettings {
+//   someConfigData: number;
+//   anotherConfigData: string;
+// }
 
 // class MyPluginSettingsTab extends PluginSettingTab {
 //   plugin: MyPlugin;
