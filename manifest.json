@@ -1,5 +1,5 @@
 {
-  "id": "obsidian-chess",
+  "id": "obsidian-chessboard",
   "version": "0.0.1",
   "name": "Obsidian Chess Plugin",
   "description": "Rendering engine for Chessboards on Obsidian",

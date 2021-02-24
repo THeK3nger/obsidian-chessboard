@@ -1,8 +1,8 @@
 {
-  "name": "your-obsidian-plugin",
-  "author": "Your Name <your@email.com",
+  "name": "obsidian-chessboard",
+  "author": "Davide Aversa <thek3nger@gmail.com>",
   "version": "0.0.1",
-  "description": "Describe your plugin",
+  "description": "Rendering engine for chessboards in Obsidian",
   "main": "main.js",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
