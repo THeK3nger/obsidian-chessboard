@@ -1,8 +1,8 @@
 {
   "id": "obsidian-chessboard",
-  "version": "0.0.1",
-  "name": "Obsidian Chess Plugin",
-  "description": "Rendering engine for Chessboards on Obsidian",
+  "version": "0.1.1",
+  "name": "Chessboard Viewer",
+  "description": "Render chess positions diagrams in note preview.",
   "author": "Davide Aversa",
   "authorUrl": "https://www.davideaversa.it",
   "minAppVersion": "0.9.12",
