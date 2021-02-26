@@ -1,6 +1,6 @@
 {
   "id": "obsidian-chessboard",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "name": "Chessboard Viewer",
   "description": "Render chess positions diagrams in note preview.",
   "author": "Davide Aversa",
