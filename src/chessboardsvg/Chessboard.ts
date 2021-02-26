@@ -1,3 +1,5 @@
+const example = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
 export type ChessPiece =
   | "r"
   | "n"
@@ -35,7 +37,15 @@ export class Chessboard {
     return this.chessboard[r * this.BOARD_SIZE + c];
   }
 
-  setAlgebraic(coord: string) {}
+  setAlgebraic(algebraic: string, value: ChessPiece) {
+    const [c, r] = this.algebraicToCoord(algebraic);
+    this.set(c, r, value);
+  }
+
+  getAlgebraic(algebraic: string): ChessPiece {
+    const [c, r] = this.algebraicToCoord(algebraic);
+    return this.get(c, r);
+  }
 
   algebraicToCoord(algebraic: string): BoardCoordinate {
     if (this.BOARD_SIZE !== 8) {

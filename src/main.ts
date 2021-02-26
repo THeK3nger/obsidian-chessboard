@@ -7,7 +7,7 @@ import {
   PluginSettingTab,
   Setting,
 } from "obsidian";
-import { SVGChessboard } from "./svgchess/SVGChessboard";
+import { SVGChessboard } from "./chessboardsvg/index";
 
 export default class ObsidianChess extends Plugin {
   // This field stores your plugin settings.
@@ -59,7 +59,6 @@ export default class ObsidianChess extends Plugin {
     block.setAttributeNS(null, "height", String(boxHeight));
     block.appendChild(chessboard.draw());
     block.style.display = "block";
-
     el.replaceChild(block, blockToReplace);
   };
 }

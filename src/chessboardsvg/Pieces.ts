@@ -1,3 +1,10 @@
+/**
+ * In this file there are th SVG images for the board pieces. This is a trick to avoid the complications
+ * of having to bundle SVG files into the library.
+ *
+ * The strings comes from assets/Chess_Piece_Sprite.svg file (that I saved there as a reference)
+ */
+
 export const WHITE_KING = `
 <g style="fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"">
         <path
