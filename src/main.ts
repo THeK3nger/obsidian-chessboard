@@ -25,7 +25,7 @@ export default class ObsidianChess extends Plugin {
     el: HTMLElement,
     ctx: MarkdownPostProcessorContext
   ) => {
-    const chessboard = SVGChessboard.fromFEN(source);
+    const chessboard = SVGChessboard.fromFEN(source, { scale: 1 });
 
     const xmlns = "http://www.w3.org/2000/svg";
     var boxWidth = 320;
