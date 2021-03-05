@@ -66,7 +66,10 @@ export default class ObsidianChess extends Plugin {
 
   private static parseCode(input: string): ParsedChessCode {
     const lines = input.split(/\r?\n/);
-    const fen = lines[0];
+    let fen = lines[0];
+    if (fen.startsWith("fen: ")) {
+      fen = fen.replace("fen: ", "");
+    }
     const annotations: Array<Highlight | ArrowAnnotation> = [];
     for (let line of lines.splice(1)) {
       if (line.trim() === "") {
@@ -82,16 +85,16 @@ export default class ObsidianChess extends Plugin {
           continue;
         }
         if (annotation[0] === "A") {
-          let [s, e] = annotation.substr(1).split("-");
+          let [start, end] = annotation.substr(1).split("-");
           annotations.push({
             type: "arrow",
-            start: s,
-            end: e,
+            start,
+            end,
           });
           continue;
         }
       }
     }
-    return { fen: fen, annotations: annotations };
+    return { fen, annotations };
   }
 }
