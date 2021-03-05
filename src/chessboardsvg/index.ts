@@ -1,3 +1,4 @@
+import { Arrow } from "./Arrow";
 import { BoardCoordinate, Chessboard } from "./Chessboard";
 import {
   WHITE_KING,
@@ -16,32 +17,43 @@ import {
 
 export interface SVGChessboardOptions {
   drawCoordinates: boolean;
-  scale: number;
+}
+
+type Annotation = ArrowAnnotation;
+
+export interface ArrowAnnotation {
+  type: "arrow";
+  start: string;
+  end: string;
+  color: string;
 }
 
 export class SVGChessboard {
   private chessboard: Chessboard;
   private squareSize: number;
-  private scale: number;
+  // Half value od the squareSize. To avoid doing a lot of /2.
+  private squareSizeHalf: number;
 
   private options: SVGChessboardOptions;
 
   private readonly xmlns = "http://www.w3.org/2000/svg";
   private readonly whiteColor = "white";
   private readonly blackColor = "gray";
-  private readonly defaultHighlightColor = "green";
+  private readonly defaultHighlightColor = "#b0ffb0";
   private readonly baseSquareSize = 40;
+  private readonly defaultArrowColor = "#ff6060";
 
   private highlights: Array<[BoardCoordinate, string]> = [];
+  private annotations: Annotation[] = [];
 
   private constructor(
     chessboard: Chessboard,
-    { drawCoordinates = true, scale = 1 }: Partial<SVGChessboardOptions>
+    { drawCoordinates = true }: Partial<SVGChessboardOptions> = {}
   ) {
     this.chessboard = chessboard;
-    this.scale = scale;
-    this.squareSize = this.baseSquareSize * scale;
-    this.options = { drawCoordinates, scale };
+    this.squareSize = this.baseSquareSize;
+    this.squareSizeHalf = this.squareSize / 2;
+    this.options = { drawCoordinates };
   }
 
   draw(): SVGElement {
@@ -50,6 +62,7 @@ export class SVGChessboard {
     if (this.options.drawCoordinates) {
       g.appendChild(this.drawCoordinateSystem());
     }
+    g.appendChild(this.drawAnnotations());
     g.appendChild(this.drawPieces());
     return g;
   }
@@ -57,6 +70,15 @@ export class SVGChessboard {
   highlight(cell: string, color = this.defaultHighlightColor) {
     const [c, r] = this.chessboard.algebraicToCoord(cell);
     this.highlightCoord(c, r, color);
+  }
+
+  addArrow(startCell: string, endCell: string, color = this.defaultArrowColor) {
+    this.annotations.push({
+      type: "arrow",
+      start: startCell,
+      end: endCell,
+      color: color,
+    });
   }
 
   highlightCoord(c: number, r: number, color = this.defaultHighlightColor) {
@@ -71,6 +93,32 @@ export class SVGChessboard {
     this.highlights = this.highlights.filter(([coord, _]) => {
       coord !== [c, r];
     });
+  }
+
+  private drawAnnotations(): SVGElement {
+    let g = document.createElementNS(this.xmlns, "g");
+    for (let annotation of this.annotations) {
+      if (annotation.type === "arrow") {
+        let start = annotation.start;
+        let end = annotation.end;
+        let [x0, y0] = this.getBoardSVGCord(
+          this.chessboard.algebraicToCoord(start)
+        );
+        let [x1, y1] = this.getBoardSVGCord(
+          this.chessboard.algebraicToCoord(end)
+        );
+        g.appendChild(
+          Arrow.drawArrow(
+            x0 + this.squareSizeHalf,
+            y0 + this.squareSizeHalf,
+            x1 + this.squareSizeHalf,
+            y1 + this.squareSizeHalf,
+            annotation.color
+          )
+        );
+      }
+    }
+    return g;
   }
 
   private getHighlightedColor(c: number, r: number): string | undefined {
@@ -141,11 +189,7 @@ export class SVGChessboard {
     let [x, y] = this.getBoardSVGCord(coord);
     //const DELTA = 0 * this.scale;
     let g = document.createElementNS(this.xmlns, "g");
-    g.setAttributeNS(
-      null,
-      "transform",
-      `translate(${x},${y}) scale(${0.85 * this.scale})`
-    );
+    g.setAttributeNS(null, "transform", `translate(${x},${y}) scale(${0.85})`);
     g.innerHTML = piece;
     return g;
   }
@@ -197,22 +241,14 @@ export class SVGChessboard {
     let [x, y] = this.getBoardSVGCord([c, r]);
     let txt = document.createElementNS(this.xmlns, "text");
     if (position === "row") {
-      txt.setAttributeNS(null, "x", String(x + this.scale * 1));
-      txt.setAttributeNS(null, "y", String(y + this.scale * 10));
+      txt.setAttributeNS(null, "x", String(x + 1));
+      txt.setAttributeNS(null, "y", String(y + 10));
     } else {
-      txt.setAttributeNS(
-        null,
-        "x",
-        String(x + this.squareSize - this.scale * 7)
-      );
-      txt.setAttributeNS(
-        null,
-        "y",
-        String(y + this.squareSize - this.scale * 2)
-      );
+      txt.setAttributeNS(null, "x", String(x + this.squareSize - 7));
+      txt.setAttributeNS(null, "y", String(y + this.squareSize - 2));
     }
     txt.setAttributeNS(null, "font-family", "sans-serif");
-    txt.setAttributeNS(null, "font-size", String(this.scale * 10));
+    txt.setAttributeNS(null, "font-size", String(10));
     txt.setAttributeNS(
       null,
       "fill",
@@ -230,7 +266,7 @@ export class SVGChessboard {
     return [c * this.squareSize, r * this.squareSize];
   }
 
-  static fromFEN(fenString: string, options: Partial<SVGChessboardOptions>) {
+  static fromFEN(fenString: string, options?: Partial<SVGChessboardOptions>) {
     return new SVGChessboard(Chessboard.fromFEN(fenString), options);
   }
 }
