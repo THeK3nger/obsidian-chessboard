@@ -75,26 +75,29 @@ export default class ObsidianChess extends Plugin {
       if (line.trim() === "") {
         continue;
       }
-      let partial_annotations = line.split(" ");
-      for (let annotation of partial_annotations) {
-        if (annotation[0] === "H") {
-          annotations.push({
-            type: "highlight",
-            square: annotation.substr(1),
-          });
-          continue;
-        }
-        if (annotation[0] === "A") {
-          let [start, end] = annotation.substr(1).split("-");
-          annotations.push({
-            type: "arrow",
-            start,
-            end,
-          });
-          continue;
+      if (line.startsWith("annotations: ")) {
+        line = line.replace("annotations: ", "");
+        let partial_annotations = line.split(" ");
+        for (let annotation of partial_annotations) {
+          if (annotation[0] === "H") {
+            annotations.push({
+              type: "highlight",
+              square: annotation.substr(1),
+            });
+            continue;
+          }
+          if (annotation[0] === "A") {
+            let [start, end] = annotation.substr(1).split("-");
+            annotations.push({
+              type: "arrow",
+              start,
+              end,
+            });
+            continue;
+          }
         }
       }
+      return { fen, annotations };
     }
-    return { fen, annotations };
   }
 }
