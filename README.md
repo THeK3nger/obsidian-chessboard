@@ -2,6 +2,10 @@
 
 This plugin adds the capability to visualize Chess [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) positions on a SVG chessboard directly in preview mode.
 
+By design, this plugin is for visualization only. Do not expect interactivity or the possibility to handle entire games in PGN format. This plugin want to render just a SVG image and it is optimized for visualization and HTML/PDF exports.
+
+If you want a more interactive plugin, I recommend [Chesser](https://github.com/SilentVoid13/Chesser).
+
 ## How to use it
 
 After you installed the plugin, just write the FEN position representation inside a code block with the `chessboard` language.
@@ -10,11 +14,29 @@ After you installed the plugin, just write the FEN position representation insid
 
 ````
 ```chessboard
-r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R
+fen: r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R
 ```
 ````
 
 ![Example](example.png)
+
+## Annotations (Beta)
+
+You can annotate your schema with arrows and highlights.
+
+````
+```chessboard
+fen: r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R
+annotations: Af8-b4 Hf8
+```
+````
+
+![Example Annotations](example2.png)
+
+### Syntax
+
+- `A<square>-<square>`, draws an arrow from the first square to the second square. E.g., `Af8-b4`.
+- `H<square>`, highlight a specific square. E.g., `Hf8`.
 
 ## How to compile the plugin
 
@@ -35,7 +57,7 @@ This will create a `main.js` file in the project root. That is the entry point o
 ## Planned Features
 
 - [ ] Chessboard color customization.
-- [ ] Chessboard annotation and highlights.
+- [x] Chessboard annotation and highlights.
 
 ## Chess Pieces
 
