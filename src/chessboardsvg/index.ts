@@ -97,6 +97,12 @@ export class SVGChessboard {
 
   private drawAnnotations(): SVGElement {
     let g = document.createElementNS(this.xmlns, "g");
+    for (let [coord, highlightColor] of this.highlights) {
+      const square = this.drawSquare(coord);
+      square.setAttributeNS(null, "fill", highlightColor);
+      square.style.opacity = "0.8";
+      g.appendChild(square);
+    }
     for (let annotation of this.annotations) {
       if (annotation.type === "arrow") {
         let start = annotation.start;
@@ -194,25 +200,18 @@ export class SVGChessboard {
     return g;
   }
 
-  private drawSquare(coord: BoardCoordinate, text?: string): SVGRectElement {
+  private drawSquare(coord: BoardCoordinate): SVGRectElement {
     let [x, y] = this.getBoardSVGCord(coord);
     let rect = document.createElementNS(this.xmlns, "rect");
     rect.setAttributeNS(null, "x", String(x));
     rect.setAttributeNS(null, "y", String(y));
     rect.setAttributeNS(null, "width", String(this.squareSize));
     rect.setAttributeNS(null, "height", String(this.squareSize));
-    const highlightColor = this.getHighlightedColor(...coord);
-    if (highlightColor) {
-      rect.setAttributeNS(null, "fill", highlightColor);
-    } else {
-      rect.setAttributeNS(
-        null,
-        "fill",
-        (coord[1] + coord[0]) % 2 === 0 ? this.whiteColor : this.blackColor
-      );
-    }
-    if (text) {
-    }
+    rect.setAttributeNS(
+      null,
+      "fill",
+      (coord[1] + coord[0]) % 2 === 0 ? this.whiteColor : this.blackColor
+    );
     return rect;
   }
 
