@@ -17,6 +17,10 @@ import {
 
 export interface SVGChessboardOptions {
   drawCoordinates: boolean;
+  blackSquareColor: string;
+  whiteSquareColor: string;
+  defaultHighlightColor: string;
+  defaultArrowColor: string;
 }
 
 type Annotation = ArrowAnnotation;
@@ -37,23 +41,41 @@ export class SVGChessboard {
   private options: SVGChessboardOptions;
 
   private readonly xmlns = "http://www.w3.org/2000/svg";
-  private readonly whiteColor = "white";
-  private readonly blackColor = "gray";
-  private readonly defaultHighlightColor = "#b0ffb0";
   private readonly baseSquareSize = 40;
-  private readonly defaultArrowColor = "#ff6060";
+
+  private whiteColor = "white";
+  private blackColor = "gray";
+  private defaultHighlightColor = "#b0ffb0";
+  private defaultArrowColor = "#ff6060";
 
   private highlights: Array<[BoardCoordinate, string]> = [];
   private annotations: Annotation[] = [];
 
   private constructor(
     chessboard: Chessboard,
-    { drawCoordinates = true }: Partial<SVGChessboardOptions> = {}
+    {
+      drawCoordinates = true,
+      whiteSquareColor = "white",
+      blackSquareColor = "gray",
+      defaultHighlightColor = "#b0ffb0",
+      defaultArrowColor = "#ff6060",
+    }: Partial<SVGChessboardOptions> = {}
   ) {
     this.chessboard = chessboard;
     this.squareSize = this.baseSquareSize;
     this.squareSizeHalf = this.squareSize / 2;
-    this.options = { drawCoordinates };
+    this.whiteColor = whiteSquareColor;
+    this.blackColor = blackSquareColor;
+    this.defaultHighlightColor = defaultHighlightColor;
+    this.defaultArrowColor = defaultArrowColor;
+
+    this.options = {
+      drawCoordinates,
+      whiteSquareColor,
+      blackSquareColor,
+      defaultHighlightColor,
+      defaultArrowColor,
+    };
   }
 
   draw(): SVGElement {
@@ -265,7 +287,10 @@ export class SVGChessboard {
     return [c * this.squareSize, r * this.squareSize];
   }
 
-  static fromFEN(fenString: string, options?: Partial<SVGChessboardOptions>) {
+  static fromFEN(
+    fenString: string,
+    options: Partial<SVGChessboardOptions> = {}
+  ) {
     return new SVGChessboard(Chessboard.fromFEN(fenString), options);
   }
 }
