@@ -6,21 +6,21 @@
   "main": "main.js",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
-    "build": "rollup --config rollup.config.js"
+    "build": "rollup --config rollup.config.js --environment BUILD:production"
   },
   "keywords": [
     "obsidian-md"
   ],
   "license": "MIT",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-legacy": "^2.1.0",
-    "@rollup/plugin-node-resolve": "^11.1.1",
-    "@rollup/plugin-typescript": "^8.1.1",
-    "@types/node": "^14.14.25",
-    "obsidian": "https://github.com/obsidianmd/obsidian-api/tarball/master",
-    "rollup": "^2.38.5",
-    "tslib": "^2.1.0",
-    "typescript": "^4.1.3"
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@rollup/plugin-typescript": "^8.2.1",
+    "@types/node": "^15.0.2",
+    "obsidian": "^0.12.2",
+    "rollup": "^2.47.0",
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.4"
   }
 }
