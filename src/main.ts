@@ -115,8 +115,8 @@ export default class ObsidianChess extends Plugin {
           }
         }
       }
-      return { fen, annotations };
     }
+    return { fen, annotations };
   }
 }
 
