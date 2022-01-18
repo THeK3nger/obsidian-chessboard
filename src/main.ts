@@ -10,6 +10,7 @@ import { SVGChessboard, SVGChessboardOptions } from "./chessboardsvg/index";
 interface ParsedChessCode {
   fen: string;
   annotations: Array<Highlight | ArrowAnnotation>;
+  orientation: "white" | "black";
 }
 
 interface Highlight {
@@ -55,6 +56,7 @@ export default class ObsidianChess extends Plugin {
       ctx: MarkdownPostProcessorContext
     ) => {
       const parsedCode = ObsidianChess.parseCode(source);
+      this.setting.orientation = parsedCode.orientation;
       const chessboard = SVGChessboard.fromFEN(parsedCode.fen, this.setting);
       for (let annotation of parsedCode.annotations) {
         if (annotation.type === "arrow") {
@@ -89,9 +91,18 @@ export default class ObsidianChess extends Plugin {
       fen = fen.replace("fen: ", "");
     }
     const annotations: Array<Highlight | ArrowAnnotation> = [];
+    let orientation: "white" | "black" = "white";
     for (let line of lines.splice(1)) {
       if (line.trim() === "") {
         continue;
+      }
+      if (line.startsWith("orientation: ")) {
+        line = line.replace("orientation: ", "");
+        line.trim();
+        if (line !== "white" && line !== "black") {
+          throw Error(`Unknown orientation ${orientation}`);
+        }
+        orientation = line;
       }
       if (line.startsWith("annotations: ")) {
         line = line.replace("annotations: ", "");
@@ -116,7 +127,7 @@ export default class ObsidianChess extends Plugin {
         }
       }
     }
-    return { fen, annotations };
+    return { fen, annotations, orientation };
   }
 }
 
