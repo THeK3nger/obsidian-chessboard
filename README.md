@@ -20,6 +20,17 @@ fen: r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R
 
 ![Example](example.png)
 
+### Change Board Orientation
+
+Use the `orientation` command. It can be `white` (default) or `black`.
+
+````
+```chessboard
+fen: r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R
+orientation: black
+```
+````
+
 ## Annotations (Beta)
 
 You can annotate your schema with arrows and highlights.
