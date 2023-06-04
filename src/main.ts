@@ -68,14 +68,10 @@ export default class ObsidianChess extends Plugin {
       }
 
       const xmlns = "http://www.w3.org/2000/svg";
-      var boxWidth = 320;
-      var boxHeight = 320;
-      var block = document.createElementNS(xmlns, "svg");
-      block.setAttributeNS(
-        null,
-        "viewBox",
-        "0 0 " + boxWidth + " " + boxHeight
-      );
+      const boxWidth = 320;
+      const boxHeight = 320;
+      const block = document.createElementNS(xmlns, "svg");
+      block.setAttributeNS(null, "viewBox", `0 0 ${boxWidth} ${boxHeight}`);
       block.setAttributeNS(null, "width", String(boxWidth));
       block.setAttributeNS(null, "height", String(boxHeight));
       block.appendChild(chessboard.draw());
@@ -98,7 +94,7 @@ export default class ObsidianChess extends Plugin {
       }
       if (line.startsWith("orientation: ")) {
         line = line.replace("orientation: ", "");
-        line.trim();
+        line = line.trim();
         if (line !== "white" && line !== "black") {
           throw Error(`Unknown orientation ${orientation}`);
         }
@@ -108,15 +104,15 @@ export default class ObsidianChess extends Plugin {
         line = line.replace("annotations: ", "");
         let partial_annotations = line.split(" ");
         for (let annotation of partial_annotations) {
-          if (annotation[0] === "H") {
+          if (annotation.startsWith("H")) {
             annotations.push({
               type: "highlight",
-              square: annotation.substr(1),
+              square: annotation.substring(1),
             });
             continue;
           }
-          if (annotation[0] === "A") {
-            let [start, end] = annotation.substr(1).split("-");
+          if (annotation.startsWith("A")) {
+            let [start, end] = annotation.substring(1).split("-");
             annotations.push({
               type: "arrow",
               start,
