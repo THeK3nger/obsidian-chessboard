@@ -115,9 +115,9 @@ export class SVGChessboard {
   }
 
   removeHighlightCoord(c: number, r: number) {
-    this.highlights = this.highlights.filter(([coord, _]) => {
-      coord !== [c, r];
-    });
+    this.highlights = this.highlights.filter(
+      ([coord, _]) => coord[0] !== c || coord[1] !== r
+    );
   }
 
   setOrientation(orientation: "white" | "black") {
