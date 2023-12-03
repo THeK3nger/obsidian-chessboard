@@ -16,12 +16,14 @@ interface ParsedChessCode {
 interface Highlight {
   type: "highlight";
   square: string;
+  color: string;
 }
 
 interface ArrowAnnotation {
   type: "arrow";
   start: string;
   end: string;
+  color: string;
 }
 
 export default class ObsidianChess extends Plugin {
@@ -60,10 +62,10 @@ export default class ObsidianChess extends Plugin {
       const chessboard = SVGChessboard.fromFEN(parsedCode.fen, this.setting);
       for (let annotation of parsedCode.annotations) {
         if (annotation.type === "arrow") {
-          chessboard.addArrow(annotation.start, annotation.end);
+          chessboard.addArrow(annotation.start, annotation.end, annotation.color);
         }
         if (annotation.type === "highlight") {
-          chessboard.highlight(annotation.square);
+          chessboard.highlight(annotation.square, annotation.color);
         }
       }
 
@@ -105,18 +107,36 @@ export default class ObsidianChess extends Plugin {
         let partial_annotations = line.split(" ");
         for (let annotation of partial_annotations) {
           if (annotation.startsWith("H")) {
+            let color = "#e67768"  // default yellow
+            if (annotation.endsWith("/y")) {
+              color = "#f1ad24"
+            } else if (annotation.endsWith("/g")) {
+              color = "#b3ce6e"
+            } else if (annotation.endsWith("/b")) {
+              color = "#6ab5d6"
+            }
             annotations.push({
               type: "highlight",
               square: annotation.substring(1),
+              color: color
             });
             continue;
           }
           if (annotation.startsWith("A")) {
-            let [start, end] = annotation.substring(1).split("-");
+            let color = "#f1ad24"  // default yellow
+            if (annotation.endsWith("/r")) {
+              color = "#e67768"
+            } else if (annotation.endsWith("/g")) {
+              color = "#b3ce6e"
+            } else if (annotation.endsWith("/b")) {
+              color = "#6ab5d6"
+            }
+            let [start, end] = annotation.substring(1, 6).split("-");
             annotations.push({
               type: "arrow",
               start,
               end,
+              color: color
             });
             continue;
           }

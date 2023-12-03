@@ -21,6 +21,9 @@
     "obsidian": "^1.2.8",
     "rollup": "^2.64.0",
     "tslib": "^2.5.3",
-    "typescript": "^5.1.3"
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "codemirror": "^6.0.1"
   }
 }
