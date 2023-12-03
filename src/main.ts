@@ -36,6 +36,7 @@ export default class ObsidianChess extends Plugin {
     this.setting = (await this.loadData()) || {
       whiteSquareColor: "#f0d9b5",
       blackSquareColor: "#b58862",
+      boardWidthPx: 320,
     };
     this.addSettingTab(new ObsidianChessSettingsTab(this.app, this));
     this.registerMarkdownCodeBlockProcessor(
@@ -70,12 +71,15 @@ export default class ObsidianChess extends Plugin {
       }
 
       const xmlns = "http://www.w3.org/2000/svg";
-      const boxWidth = 320;
-      const boxHeight = 320;
+      const boardWidthPx = this.setting.boardWidthPx;
       const block = document.createElementNS(xmlns, "svg");
-      block.setAttributeNS(null, "viewBox", `0 0 ${boxWidth} ${boxHeight}`);
-      block.setAttributeNS(null, "width", String(boxWidth));
-      block.setAttributeNS(null, "height", String(boxHeight));
+      block.setAttributeNS(
+        null,
+        "viewBox",
+        `0 0 ${boardWidthPx} ${boardWidthPx}`
+      );
+      block.setAttributeNS(null, "width", String(boardWidthPx));
+      block.setAttributeNS(null, "height", String(boardWidthPx));
       block.appendChild(chessboard.draw());
       block.style.display = "block";
       el.appendChild(block);
@@ -154,6 +158,7 @@ export default class ObsidianChess extends Plugin {
 interface ObsidianChessSettings extends SVGChessboardOptions {
   whiteSquareColor: string;
   blackSquareColor: string;
+  boardWidthPx: number;
 }
 
 class ObsidianChessSettingsTab extends PluginSettingTab {
@@ -189,6 +194,17 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
       .addText((text) =>
         text.setValue(String(settings.blackSquareColor)).onChange((value) => {
           settings.blackSquareColor = value;
+          this.plugin.refreshMarkdownCodeBlockProcessor();
+          this.plugin.saveData(settings);
+        })
+      );
+
+    new Setting(containerEl)
+      .setName("Chess board size (px)")
+      .setDesc("Sets the side of the chess board in pixels.")
+      .addText((text) =>
+        text.setValue(String(settings.boardWidthPx)).onChange((value) => {
+          settings.boardWidthPx = Number(value);
           this.plugin.refreshMarkdownCodeBlockProcessor();
           this.plugin.saveData(settings);
         })
