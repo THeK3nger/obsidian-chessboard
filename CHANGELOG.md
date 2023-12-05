@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.6.0
+
+### New
+
+- Added the possibility to set annotation color (thanks to [@DekuD2](https://github.com/DekuD2))
+- Added a setting to set the board size in pixels (thanks to [@advait](https://github.com/advait))
+
 ## v0.3.0
 
 ### New
