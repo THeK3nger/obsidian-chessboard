@@ -38,6 +38,10 @@ export default class ObsidianChess extends Plugin {
       blackSquareColor: "#b58862",
       boardWidthPx: 320,
     };
+    // In case the settting exists but is missing a field due to an update
+    if (this.setting.boardWidthPx === undefined) {
+      this.setting.boardWidthPx = 320;
+    }
     this.addSettingTab(new ObsidianChessSettingsTab(this.app, this));
     this.registerMarkdownCodeBlockProcessor(
       "chessboard",
@@ -46,10 +50,7 @@ export default class ObsidianChess extends Plugin {
   }
 
   refreshMarkdownCodeBlockProcessor() {
-    this.registerMarkdownCodeBlockProcessor(
-      "chessboard",
-      this.draw_chessboard()
-    );
+    this.draw_chessboard();
   }
 
   private draw_chessboard() {
@@ -63,7 +64,11 @@ export default class ObsidianChess extends Plugin {
       const chessboard = SVGChessboard.fromFEN(parsedCode.fen, this.setting);
       for (let annotation of parsedCode.annotations) {
         if (annotation.type === "arrow") {
-          chessboard.addArrow(annotation.start, annotation.end, annotation.color);
+          chessboard.addArrow(
+            annotation.start,
+            annotation.end,
+            annotation.color
+          );
         }
         if (annotation.type === "highlight") {
           chessboard.highlight(annotation.square, annotation.color);
@@ -73,11 +78,7 @@ export default class ObsidianChess extends Plugin {
       const xmlns = "http://www.w3.org/2000/svg";
       const boardWidthPx = this.setting.boardWidthPx;
       const block = document.createElementNS(xmlns, "svg");
-      block.setAttributeNS(
-        null,
-        "viewBox",
-        `0 0 ${boardWidthPx} ${boardWidthPx}`
-      );
+      block.setAttributeNS(null, "viewBox", `0 0 320 320`);
       block.setAttributeNS(null, "width", String(boardWidthPx));
       block.setAttributeNS(null, "height", String(boardWidthPx));
       block.appendChild(chessboard.draw());
@@ -111,36 +112,36 @@ export default class ObsidianChess extends Plugin {
         let partial_annotations = line.split(" ");
         for (let annotation of partial_annotations) {
           if (annotation.startsWith("H")) {
-            let color = "#e67768"  // default yellow
+            let color = "#e67768"; // default yellow
             if (annotation.endsWith("/y")) {
-              color = "#f1ad24"
+              color = "#f1ad24";
             } else if (annotation.endsWith("/g")) {
-              color = "#b3ce6e"
+              color = "#b3ce6e";
             } else if (annotation.endsWith("/b")) {
-              color = "#6ab5d6"
+              color = "#6ab5d6";
             }
             annotations.push({
               type: "highlight",
               square: annotation.substring(1),
-              color: color
+              color: color,
             });
             continue;
           }
           if (annotation.startsWith("A")) {
-            let color = "#f1ad24"  // default yellow
+            let color = "#f1ad24"; // default yellow
             if (annotation.endsWith("/r")) {
-              color = "#e67768"
+              color = "#e67768";
             } else if (annotation.endsWith("/g")) {
-              color = "#b3ce6e"
+              color = "#b3ce6e";
             } else if (annotation.endsWith("/b")) {
-              color = "#6ab5d6"
+              color = "#6ab5d6";
             }
             let [start, end] = annotation.substring(1, 6).split("-");
             annotations.push({
               type: "arrow",
               start,
               end,
-              color: color
+              color: color,
             });
             continue;
           }
