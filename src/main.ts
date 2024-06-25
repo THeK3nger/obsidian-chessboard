@@ -122,7 +122,7 @@ export default class ObsidianChess extends Plugin {
             }
             annotations.push({
               type: "highlight",
-              square: annotation.substring(1),
+              square: annotation.substring(1,3),
               color: color,
             });
             continue;
