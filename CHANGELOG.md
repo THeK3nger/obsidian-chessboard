@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.6.1
+
+### Fixed
+
+- Fix the parsing of colors in annotations (thanks to [@SimoneRota83](https://github.com/SimoneRota83))
+
 ## v0.6.0
 
 ### New
