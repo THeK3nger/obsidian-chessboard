@@ -36,6 +36,8 @@ export default class ObsidianChess extends Plugin {
     this.setting = (await this.loadData()) || {
       whiteSquareColor: "#f0d9b5",
       blackSquareColor: "#b58862",
+      whitePieceColor: "#ffffff",
+      blackPieceColor: "#000000",
       boardWidthPx: 320,
     };
     // In case the settting exists but is missing a field due to an update
@@ -122,7 +124,7 @@ export default class ObsidianChess extends Plugin {
             }
             annotations.push({
               type: "highlight",
-              square: annotation.substring(1,3),
+              square: annotation.substring(1, 3),
               color: color,
             });
             continue;
@@ -159,6 +161,8 @@ export default class ObsidianChess extends Plugin {
 interface ObsidianChessSettings extends SVGChessboardOptions {
   whiteSquareColor: string;
   blackSquareColor: string;
+  whitePieceColor: string;
+  blackPieceColor: string;
   boardWidthPx: number;
 }
 
@@ -195,6 +199,28 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
       .addText((text) =>
         text.setValue(String(settings.blackSquareColor)).onChange((value) => {
           settings.blackSquareColor = value;
+          this.plugin.refreshMarkdownCodeBlockProcessor();
+          this.plugin.saveData(settings);
+        })
+      );
+
+    new Setting(containerEl)
+      .setName("White Pieces Color")
+      .setDesc('Set the color of the "white" pieces.')
+      .addText((text) =>
+        text.setValue(String(settings.whitePieceColor)).onChange((value) => {
+          settings.whitePieceColor = value;
+          this.plugin.refreshMarkdownCodeBlockProcessor();
+          this.plugin.saveData(settings);
+        })
+      );
+
+    new Setting(containerEl)
+      .setName("Black Pieces Color")
+      .setDesc('Set the color of the "black" pieces.')
+      .addText((text) =>
+        text.setValue(String(settings.blackPieceColor)).onChange((value) => {
+          settings.blackPieceColor = value;
           this.plugin.refreshMarkdownCodeBlockProcessor();
           this.plugin.saveData(settings);
         })

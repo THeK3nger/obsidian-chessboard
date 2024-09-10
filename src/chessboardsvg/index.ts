@@ -13,6 +13,8 @@ import {
   BLACK_ROOK,
   BLACK_BISHOP,
   BLACK_PAWN,
+  recolorWhite,
+  recolorBlack,
 } from "./Pieces";
 
 export interface SVGChessboardOptions {
@@ -20,6 +22,8 @@ export interface SVGChessboardOptions {
   drawCoordinates: boolean;
   blackSquareColor: string;
   whiteSquareColor: string;
+  whitePieceColor: string;
+  blackPieceColor: string;
   defaultHighlightColor: string;
   defaultArrowColor: string;
 }
@@ -46,11 +50,18 @@ export class SVGChessboard {
 
   private whiteColor = "#f0d9b5";
   private blackColor = "#b58862";
+  private whitePieceColor = "#ffffff";
+  private blackPieceColor = "#000000";
+  private whitePieceLineColor = "#000000";
+  private blackPieceLineColor = "#ffffff";
   private defaultHighlightColor = "#b0ffb0";
   private defaultArrowColor = "#ff6060";
 
   private highlights: Array<[BoardCoordinate, string]> = [];
   private annotations: Annotation[] = [];
+
+  private COLORED_WHITE_PIECES: Record<string, string>;
+  private COLORED_BLACK_PIECES: Record<string, string>;
 
   private constructor(
     chessboard: Chessboard,
@@ -59,6 +70,8 @@ export class SVGChessboard {
       orientation = "white",
       whiteSquareColor = "#f0d9b5",
       blackSquareColor = "#b58862",
+      whitePieceColor = "#ffffff",
+      blackPieceColor = "#000000",
       defaultHighlightColor = "#b0ffb0",
       defaultArrowColor = "#ff6060",
     }: Partial<SVGChessboardOptions> = {}
@@ -68,14 +81,43 @@ export class SVGChessboard {
     this.squareSizeHalf = this.squareSize / 2;
     this.whiteColor = whiteSquareColor;
     this.blackColor = blackSquareColor;
+    this.whitePieceColor = whitePieceColor;
+    this.blackPieceColor = blackPieceColor;
+    this.whitePieceLineColor = blackPieceColor;
+    this.blackPieceLineColor = whitePieceColor;
     this.defaultHighlightColor = defaultHighlightColor;
     this.defaultArrowColor = defaultArrowColor;
+
+    const whiteRecolor = (piece: string) =>
+      recolorWhite(piece, this.whitePieceColor, this.whitePieceLineColor);
+    const blackRecolor = (piece: string) =>
+      recolorBlack(piece, this.blackPieceColor, this.blackPieceLineColor);
+
+    this.COLORED_WHITE_PIECES = {
+      K: whiteRecolor(WHITE_KING),
+      Q: whiteRecolor(WHITE_QUEEN),
+      N: whiteRecolor(WHITE_KNIGHT),
+      R: whiteRecolor(WHITE_ROOK),
+      B: whiteRecolor(WHITE_BISHOP),
+      P: whiteRecolor(WHITE_PAWN),
+    };
+
+    this.COLORED_BLACK_PIECES = {
+      k: blackRecolor(BLACK_KING),
+      q: blackRecolor(BLACK_QUEEN),
+      n: blackRecolor(BLACK_KNIGHT),
+      r: blackRecolor(BLACK_ROOK),
+      b: blackRecolor(BLACK_BISHOP),
+      p: blackRecolor(BLACK_PAWN),
+    };
 
     this.options = {
       orientation,
       drawCoordinates,
       whiteSquareColor,
       blackSquareColor,
+      whitePieceColor,
+      blackPieceColor,
       defaultHighlightColor,
       defaultArrowColor,
     };
@@ -176,44 +218,21 @@ export class SVGChessboard {
 
   private drawPieces(): SVGElement {
     let g = document.createElementNS(this.xmlns, "g");
+    let whiteSymbols = ["K", "Q", "N", "R", "B", "P"];
+    let blackSymbols = ["k", "q", "n", "r", "b", "p"];
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         const piece = this.chessboard.get(c, r);
-        if (piece === "K") {
-          g.appendChild(this.drawPiece([c, r], WHITE_KING));
-        }
-        if (piece === "Q") {
-          g.appendChild(this.drawPiece([c, r], WHITE_QUEEN));
-        }
-        if (piece === "N") {
-          g.appendChild(this.drawPiece([c, r], WHITE_KNIGHT));
-        }
-        if (piece === "R") {
-          g.appendChild(this.drawPiece([c, r], WHITE_ROOK));
-        }
-        if (piece === "B") {
-          g.appendChild(this.drawPiece([c, r], WHITE_BISHOP));
-        }
-        if (piece === "P") {
-          g.appendChild(this.drawPiece([c, r], WHITE_PAWN));
-        }
-        if (piece === "k") {
-          g.appendChild(this.drawPiece([c, r], BLACK_KING));
-        }
-        if (piece === "q") {
-          g.appendChild(this.drawPiece([c, r], BLACK_QUEEN));
-        }
-        if (piece === "n") {
-          g.appendChild(this.drawPiece([c, r], BLACK_KNIGHT));
-        }
-        if (piece === "r") {
-          g.appendChild(this.drawPiece([c, r], BLACK_ROOK));
-        }
-        if (piece === "b") {
-          g.appendChild(this.drawPiece([c, r], BLACK_BISHOP));
-        }
-        if (piece === "p") {
-          g.appendChild(this.drawPiece([c, r], BLACK_PAWN));
+        if (whiteSymbols.includes(piece)) {
+          g.appendChild(
+            this.drawPiece([c, r], this.COLORED_WHITE_PIECES[piece])
+          );
+        } else if (blackSymbols.includes(piece)) {
+          g.appendChild(
+            this.drawPiece([c, r], this.COLORED_BLACK_PIECES[piece])
+          );
+        } else {
+          continue;
         }
       }
     }

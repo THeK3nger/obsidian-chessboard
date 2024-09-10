@@ -139,7 +139,7 @@ export const BLACK_KING = `<g style="fill:none; fill-opacity:1; fill-rule:evenod
    style="fill:none; stroke:#ffffff;" />
 </g>`;
 
-export const BLACK_QUEEN = `<g style="opacity:1; fill:000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"">
+export const BLACK_QUEEN = `<g style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"">
 <g style="fill:#000000; stroke:none;">
     <circle cx="6"    cy="12" r="2.75" />
     <circle cx="14"   cy="9"  r="2.75" />
@@ -203,7 +203,7 @@ export const BLACK_KNIGHT = `<g style="opacity:1; fill:none; fill-opacity:1; fil
    style="fill:#ffffff; stroke:none;" />
 </g>`;
 
-export const BLACK_ROOK = `<g style="opacity:1; fill:000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"">
+export const BLACK_ROOK = `<g style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"">
 <path
 d="M 9,39 L 36,39 L 36,36 L 9,36 L 9,39 z "
 style="stroke-linecap:butt;" />
@@ -244,3 +244,46 @@ export const BLACK_PAWN = `<g>
 d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 10.5,31.58 10.5,39.5 L 33.5,39.5 C 33.5,31.58 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 z "
 style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:nonzero; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:miter; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;" />
 </g>`;
+
+/**
+ * A disgusting hack to recolor the pieces. I'm sorry.
+ *
+ * @param piece The SVG string of the piece
+ * @param color The color to change the piece to, possibly in hex format
+ * @returns
+ */
+function recolor(piece: string, fromColorRegex: RegExp, color: string): string {
+  return piece.replace(fromColorRegex, color);
+}
+
+export function recolorWhite(
+  piece: string,
+  color: string,
+  lineColor?: string
+): string {
+  // Let's avoid unnecessary recoloring
+  if (color === "#ffffff") {
+    return piece;
+  }
+  const result = recolor(piece, /#ffffff/g, color);
+  if (lineColor && lineColor !== "#000000") {
+    return recolor(result, /#000000/g, lineColor);
+  }
+  return result;
+}
+
+export function recolorBlack(
+  piece: string,
+  color: string,
+  lineColor?: string
+): string {
+  // Let's avoid unnecessary recoloring
+  if (color === "#000000") {
+    return piece;
+  }
+  const result = recolor(piece, /#000000/g, color);
+  if (lineColor && lineColor !== "#ffffff") {
+    return recolor(result, /#ffffff/g, lineColor);
+  }
+  return result;
+}
