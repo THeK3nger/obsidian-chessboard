@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.7.0
+
+### New
+
+- Added the possibility to configure the color for the set pieces.
+- I finally added the actual color picker UI for color picking. No more typing hex codes!
+
 ## v0.6.1
 
 ### Fixed
