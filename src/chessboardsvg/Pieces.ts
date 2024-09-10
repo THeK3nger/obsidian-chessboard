@@ -249,11 +249,35 @@ style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:nonzero; stroke:#00000
  * A disgusting hack to recolor the pieces. I'm sorry.
  *
  * @param piece The SVG string of the piece
- * @param color The color to change the piece to, possibly in hex format
+ * @param oldFillColorRegex The regex to match the old fill color
+ * @param newFillColor The new fill color, in hex format
+ * @param oldLineColorRegex The regex to match the old line color
+ * @param newLinecolor The new line color, in hex format
  * @returns
  */
-function recolor(piece: string, fromColorRegex: RegExp, color: string): string {
-  return piece.replace(fromColorRegex, color);
+function recolor(
+  piece: string,
+  oldFillColorRegex: RegExp,
+  newFillColor: string,
+  oldLineColorRegex?: RegExp,
+  newLinecolor?: string
+): string {
+  // Check if the old color is the same as the new color
+  let result;
+  if (oldFillColorRegex.source === newFillColor) {
+    result = piece;
+  } else {
+    result = piece.replace(oldFillColorRegex, newFillColor);
+  }
+  // After recoloring the fill, we also need to recolor the lines.
+  if (oldLineColorRegex && newLinecolor) {
+    if (oldLineColorRegex.source === newLinecolor) {
+      return result;
+    } else {
+      return result.replace(oldLineColorRegex, newLinecolor);
+    }
+  }
+  return result;
 }
 
 export function recolorWhite(
@@ -261,15 +285,12 @@ export function recolorWhite(
   color: string,
   lineColor?: string
 ): string {
-  // Let's avoid unnecessary recoloring
-  if (color === "#ffffff") {
-    return piece;
+  if (color === "#000000") {
+    // If you want to color your white pieces black, I am not going to stop you.
+    // But I will not use "full black" otherwise it will mess up the line recoloring.
+    color = "#000001";
   }
-  const result = recolor(piece, /#ffffff/g, color);
-  if (lineColor && lineColor !== "#000000") {
-    return recolor(result, /#000000/g, lineColor);
-  }
-  return result;
+  return recolor(piece, /#ffffff/g, color, /#000000/g, lineColor);
 }
 
 export function recolorBlack(
@@ -277,13 +298,10 @@ export function recolorBlack(
   color: string,
   lineColor?: string
 ): string {
-  // Let's avoid unnecessary recoloring
-  if (color === "#000000") {
-    return piece;
+  if (color === "#ffffff") {
+    // If you want to color your black pieces white, I am not going to stop you.
+    // But I will not use "full white" otherwise it will mess up the line recoloring.
+    color = "#ffffffe";
   }
-  const result = recolor(piece, /#000000/g, color);
-  if (lineColor && lineColor !== "#ffffff") {
-    return recolor(result, /#ffffff/g, lineColor);
-  }
-  return result;
+  return recolor(piece, /#000000/g, color, /#ffffff/g, lineColor);
 }
