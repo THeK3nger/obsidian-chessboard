@@ -185,8 +185,8 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("White Square Color")
       .setDesc('Set the color of the "white" squares.')
-      .addText((text) =>
-        text.setValue(String(settings.whiteSquareColor)).onChange((value) => {
+      .addColorPicker((color) =>
+        color.setValue(String(settings.whiteSquareColor)).onChange((value) => {
           settings.whiteSquareColor = value;
           this.plugin.refreshMarkdownCodeBlockProcessor();
           this.plugin.saveData(settings);
@@ -196,8 +196,8 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Black Square Color")
       .setDesc('Set the color of the "black" squares.')
-      .addText((text) =>
-        text.setValue(String(settings.blackSquareColor)).onChange((value) => {
+      .addColorPicker((color) =>
+        color.setValue(String(settings.blackSquareColor)).onChange((value) => {
           settings.blackSquareColor = value;
           this.plugin.refreshMarkdownCodeBlockProcessor();
           this.plugin.saveData(settings);
@@ -207,8 +207,8 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("White Pieces Color")
       .setDesc('Set the color of the "white" pieces.')
-      .addText((text) =>
-        text.setValue(String(settings.whitePieceColor)).onChange((value) => {
+      .addColorPicker((color) =>
+        color.setValue(settings.whitePieceColor).onChange((value) => {
           settings.whitePieceColor = value;
           this.plugin.refreshMarkdownCodeBlockProcessor();
           this.plugin.saveData(settings);
@@ -218,8 +218,8 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Black Pieces Color")
       .setDesc('Set the color of the "black" pieces.')
-      .addText((text) =>
-        text.setValue(String(settings.blackPieceColor)).onChange((value) => {
+      .addColorPicker((color) =>
+        color.setValue(String(settings.blackPieceColor)).onChange((value) => {
           settings.blackPieceColor = value;
           this.plugin.refreshMarkdownCodeBlockProcessor();
           this.plugin.saveData(settings);
