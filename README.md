@@ -67,8 +67,10 @@ This will create a `main.js` file in the project root. That is the entry point o
 
 ## Planned Features
 
-- [ ] Chessboard color customization.
+- [x] Chessboard color customization.
+- [x] Pieces color customization.
 - [x] Chessboard annotation and highlights.
+- [ ] Custom annotation shapes.
 
 ## Chess Pieces
 
