@@ -13,12 +13,22 @@ interface ParsedChessCode {
   orientation: "white" | "black";
 }
 
+/**
+ * Represents a highlight annotation on the board.
+ *
+ * It is defined by the square to highlight (in algebraic notation) and the color to use.
+ */
 interface Highlight {
   type: "highlight";
   square: string;
   color: string;
 }
 
+/**
+ * Represents an arrow annotation on the board.
+ *
+ * It is defined by the start and end squares of the arrow (in algebraic notation) and the color to use.
+ */
 interface ArrowAnnotation {
   type: "arrow";
   start: string;
@@ -180,7 +190,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Obsidian Chessboard Settings" });
+    new Setting(containerEl).setName("Chessboard Customization").setHeading();
 
     new Setting(containerEl)
       .setName("White Square Color")
@@ -227,7 +237,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Chess board size (px)")
+      .setName("Chessboard Size (px)")
       .setDesc("Sets the side of the chess board in pixels.")
       .addText((text) =>
         text.setValue(String(settings.boardWidthPx)).onChange((value) => {
