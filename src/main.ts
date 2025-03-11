@@ -1,6 +1,7 @@
 import {
   App,
   MarkdownPostProcessorContext,
+  Notice,
   Plugin,
   PluginSettingTab,
   Setting,
@@ -72,30 +73,40 @@ export default class ObsidianChess extends Plugin {
       ctx: MarkdownPostProcessorContext
     ) => {
       const parsedCode = ObsidianChess.parseCode(source);
-      this.setting.orientation = parsedCode.orientation;
-      const chessboard = SVGChessboard.fromFEN(parsedCode.fen, this.setting);
-      for (let annotation of parsedCode.annotations) {
-        if (annotation.type === "arrow") {
-          chessboard.addArrow(
-            annotation.start,
-            annotation.end,
-            annotation.color
-          );
+      try {
+        this.setting.orientation = parsedCode.orientation;
+        const chessboard = SVGChessboard.fromFEN(parsedCode.fen, this.setting);
+        for (let annotation of parsedCode.annotations) {
+          if (annotation.type === "arrow") {
+            chessboard.addArrow(
+              annotation.start,
+              annotation.end,
+              annotation.color
+            );
+          }
+          if (annotation.type === "highlight") {
+            chessboard.highlight(annotation.square, annotation.color);
+          }
         }
-        if (annotation.type === "highlight") {
-          chessboard.highlight(annotation.square, annotation.color);
-        }
-      }
 
-      const xmlns = "http://www.w3.org/2000/svg";
-      const boardWidthPx = this.setting.boardWidthPx;
-      const block = document.createElementNS(xmlns, "svg");
-      block.setAttributeNS(null, "viewBox", `0 0 320 320`);
-      block.setAttributeNS(null, "width", String(boardWidthPx));
-      block.setAttributeNS(null, "height", String(boardWidthPx));
-      block.appendChild(chessboard.draw());
-      block.style.display = "block";
-      el.appendChild(block);
+        const xmlns = "http://www.w3.org/2000/svg";
+        const boardWidthPx = this.setting.boardWidthPx;
+        const block = document.createElementNS(xmlns, "svg");
+        block.setAttributeNS(null, "viewBox", `0 0 320 320`);
+        block.setAttributeNS(null, "width", String(boardWidthPx));
+        block.setAttributeNS(null, "height", String(boardWidthPx));
+        block.appendChild(chessboard.draw());
+        block.style.display = "block";
+        el.appendChild(block);
+      } catch (e) {
+        console.error(e);
+        // Append the error message to the block with red color
+        const errorMessage = document.createTextNode(e.message);
+        const errorEl = document.createElement("div");
+        errorEl.style.color = "red";
+        errorEl.appendChild(errorMessage);
+        el.appendChild(errorEl);
+      }
     };
   }
 
@@ -241,9 +252,16 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
       .setDesc("Sets the side of the chess board in pixels.")
       .addText((text) =>
         text.setValue(String(settings.boardWidthPx)).onChange((value) => {
-          settings.boardWidthPx = Number(value);
-          this.plugin.refreshMarkdownCodeBlockProcessor();
-          this.plugin.saveData(settings);
+          const numericValue = Number(value);
+          if (!isNaN(numericValue) && numericValue > 0) {
+            settings.boardWidthPx = numericValue;
+            this.plugin.refreshMarkdownCodeBlockProcessor();
+            this.plugin.saveData(settings);
+          } else {
+            new Notice(
+              "Please enter a valid positive number for the board size."
+            );
+          }
         })
       );
   }

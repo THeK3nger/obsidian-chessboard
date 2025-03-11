@@ -37,6 +37,81 @@ export interface ArrowAnnotation {
   color: string;
 }
 
+function validateFEN(fenString: string): void {
+  const fenParts = fenString.trim().split(/\s+/);
+  if (fenParts.length < 1) {
+    throw new Error(
+      "Invalid FEN string: must contain at least the piece placement."
+    );
+  }
+
+  const [
+    piecePlacement,
+    activeColor,
+    castlingAvailability,
+    enPassantTarget,
+    halfmoveClock,
+    fullmoveNumber,
+  ] = fenParts;
+
+  // Validate piece placement
+  const rows = piecePlacement.split("/");
+  if (rows.length !== 8) {
+    throw new Error("Invalid FEN string: piece placement must contain 8 rows.");
+  }
+  for (const row of rows) {
+    let count = 0;
+    for (const char of row) {
+      if (/[1-8]/.test(char)) {
+        count += parseInt(char, 10);
+      } else if (/[prnbqkPRNBQK]/.test(char)) {
+        count += 1;
+      } else {
+        throw new Error(
+          `Invalid FEN string: invalid character '${char}' in piece placement.`
+        );
+      }
+    }
+    if (count !== 8) {
+      throw new Error(
+        "Invalid FEN string: each row in piece placement must contain exactly 8 squares."
+      );
+    }
+  }
+
+  // Validate active color
+  if (activeColor && !/^[wb]$/.test(activeColor)) {
+    throw new Error("Invalid FEN string: active color must be 'w' or 'b'.");
+  }
+
+  // Validate castling availability
+  if (
+    castlingAvailability &&
+    !/^[KQkqA-Ha-h1-8-]*$/.test(castlingAvailability)
+  ) {
+    throw new Error("Invalid FEN string: invalid castling availability.");
+  }
+
+  // Validate en passant target square
+  if (enPassantTarget && !/^(-|[a-h][36])$/.test(enPassantTarget)) {
+    throw new Error("Invalid FEN string: invalid en passant target square.");
+  }
+
+  // Validate halfmove clock
+  if (halfmoveClock && !/^\d+$/.test(halfmoveClock)) {
+    throw new Error(
+      "Invalid FEN string: halfmove clock must be a non-negative integer."
+    );
+  }
+
+  // Validate fullmove number
+  if (fullmoveNumber && !/^\d+$/.test(fullmoveNumber)) {
+    throw new Error(
+      "Invalid FEN string: fullmove number must be a positive integer."
+    );
+  }
+}
+
 export class SVGChessboard {
   private chessboard: Chessboard;
   private squareSize: number;
@@ -326,6 +401,7 @@ export class SVGChessboard {
     fenString: string,
     options: Partial<SVGChessboardOptions> = {}
   ) {
+    validateFEN(fenString);
     return new SVGChessboard(Chessboard.fromFEN(fenString), options);
   }
 }

@@ -57,34 +57,22 @@ export class Chessboard {
     if (algebraic.length !== 2) {
       throw Error("Input does not look algebraic notation.");
     }
-    let columnMap: { [x: string]: number } = {
-      a: 0,
-      b: 1,
-      c: 2,
-      d: 3,
-      e: 4,
-      f: 5,
-      g: 6,
-      h: 7,
-      i: 8,
-    };
-    let columnA = algebraic[0];
-    let rowA = algebraic[1];
-    return [columnMap[columnA], 8 - parseInt(rowA)];
+    const column = algebraic.charCodeAt(0) - "a".charCodeAt(0);
+    const row = 8 - parseInt(algebraic[1]);
+    return [column, row];
   }
 
   print() {
-    let chessString = "";
-    this.chessboard.forEach((p, i) => {
-      if (p === "_") {
-        chessString += ".";
-      } else {
-        chessString += p;
+    let chessString = "  a b c d e f g h\n";
+    for (let r = 0; r < this.BOARD_SIZE; r++) {
+      chessString += 8 - r + " ";
+      for (let c = 0; c < this.BOARD_SIZE; c++) {
+        const piece = this.get(c, r);
+        chessString += (piece === "_" ? "." : piece) + " ";
       }
-      if ((i + 1) % this.BOARD_SIZE === 0) {
-        chessString += "\n";
-      }
-    });
+      chessString += 8 - r + "\n";
+    }
+    chessString += "  a b c d e f g h";
     console.log(chessString);
   }
 
