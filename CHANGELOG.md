@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.0
+
+### New
+
+- Now, if you write an invalid FEN string, you'll get a red error message in the preview explaining what's wrong. That's way better than before: the plugin just didn't render anything. Improvements!
+
 ## v0.7.0
 
 ### New
