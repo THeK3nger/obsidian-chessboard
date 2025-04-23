@@ -12,13 +12,19 @@ After you installed the plugin, just write the FEN position representation insid
 
 ### Example
 
+For example, something like this
+
 ````
 ```chessboard
-fen: r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R
+fen: r2qrbk1/1bp2pp1/p2p1n1p/1p6/Pn1PP3/5N1P/1P1N1PP1/RBBQR1K1 b - - 2 17
+annotations: Hf5 He5 Hd5 Ae1-e8/g Ab1-h7/g Ad4-d5
+annotations: Hf6/g
 ```
 ````
 
-![Example](example.png)
+will be rendered as in the following picture:
+
+<img src="https://github.com/user-attachments/assets/642788cd-796a-4298-b85b-d82576254246" width="500px" />
 
 ### Change Board Orientation
 
@@ -38,11 +44,12 @@ You can annotate your schema with arrows and highlights.
 ````
 ```chessboard
 fen: r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R
-annotations: Af8-b4 Hf8
+annotations: Af8-b4 Hf8 Ha7/g
+orientation: white
 ```
 ````
 
-![Example Annotations](example2.png)
+<img src="https://github.com/user-attachments/assets/c8ae4aa4-5347-47d8-92fc-2aedc89a8513" width="500px" />
 
 ### Syntax
 
