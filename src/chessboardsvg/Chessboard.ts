@@ -71,4 +71,10 @@ export class Chessboard {
     return chessboard;
   }
 
+  static fromPGN(pgnString: string): Chessboard {
+    const chessboard = new Chessboard();
+    chessboard.chessboard.loadPgn(pgnString);
+    return chessboard;
+  }
+
 }

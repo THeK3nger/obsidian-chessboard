@@ -331,4 +331,11 @@ export class SVGChessboard {
   ) {
     return new SVGChessboard(Chessboard.fromFEN(fenString), options);
   }
+
+  static fromPGN(
+    pgnString: string,
+    options: Partial<SVGChessboardOptions> = {}
+  ) {
+    return new SVGChessboard(Chessboard.fromPGN(pgnString), options);
+  }
 }
