@@ -1,19 +1,4 @@
-const example = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
-export type ChessPiece =
-  | "r"
-  | "n"
-  | "b"
-  | "q"
-  | "k"
-  | "p"
-  | "R"
-  | "N"
-  | "B"
-  | "Q"
-  | "K"
-  | "P"
-  | "_";
+import { Chess, Square, Piece } from "chess.js";
 
 /**
  * Chessboard coordinate in (column, row) format.
@@ -22,37 +7,41 @@ export type ChessPiece =
  */
 export type BoardCoordinate = [number, number];
 
+/**
+* The Chessboard class is a thin façade around the chess.js library. This is
+* too keep most of the compatibility with the old Chessboard class, but to take
+* advance of a more solid Chessboard library that include built-in FEN
+* validation, PGN support, history and cooler features that we can use in the
+* visualization.
+*/
 export class Chessboard {
-  private chessboard: ChessPiece[];
-  private BOARD_SIZE = 8;
+  private chessboard: Chess;
   private constructor() {
-    this.chessboard = new Array(this.BOARD_SIZE * this.BOARD_SIZE).fill("_");
+    this.chessboard = new Chess();
   }
 
-  set(c: number, r: number, value: ChessPiece) {
-    this.chessboard[r * this.BOARD_SIZE + c] = value;
+  set(c: number, r: number, piece: Piece) {
+    this.chessboard.put(piece, Chessboard.coordToAlgebraic([c, r]));
   }
 
-  get(c: number, r: number): ChessPiece {
-    return this.chessboard[r * this.BOARD_SIZE + c];
+  get(c: number, r: number): Piece {
+    return this.chessboard.get(Chessboard.coordToAlgebraic([c, r]));
   }
 
-  setAlgebraic(algebraic: string, value: ChessPiece) {
-    const [c, r] = this.algebraicToCoord(algebraic);
-    this.set(c, r, value);
+  setAlgebraic(algebraic: Square, piece: Piece): boolean {
+    return this.chessboard.put(piece, algebraic);
   }
 
-  getAlgebraic(algebraic: string): ChessPiece {
-    const [c, r] = this.algebraicToCoord(algebraic);
-    return this.get(c, r);
+  getAlgebraic(algebraic: Square): Piece {
+    return this.chessboard.get(algebraic);
+
   }
 
-  algebraicToCoord(algebraic: string): BoardCoordinate {
-    if (this.BOARD_SIZE !== 8) {
-      throw Error(
-        "Algebraic notation currently supported only for 8x8 chessboards."
-      );
-    }
+  print() {
+    console.log(this.chessboard.ascii());
+  }
+
+  static algebraicToCoord(algebraic: string): BoardCoordinate {
     algebraic = algebraic.toLowerCase();
     if (algebraic.length !== 2) {
       throw Error("Input does not look algebraic notation.");
@@ -62,63 +51,24 @@ export class Chessboard {
     return [column, row];
   }
 
-  print() {
-    let chessString = "  a b c d e f g h\n";
-    for (let r = 0; r < this.BOARD_SIZE; r++) {
-      chessString += 8 - r + " ";
-      for (let c = 0; c < this.BOARD_SIZE; c++) {
-        const piece = this.get(c, r);
-        chessString += (piece === "_" ? "." : piece) + " ";
-      }
-      chessString += 8 - r + "\n";
+  static coordToAlgebraic(coord: BoardCoordinate): Square {
+    const [c, r] = coord;
+    if (c < 0 || c > 7 || r < 0 || r > 7) {
+      throw Error("Input does not look like a chessboard coordinate.");
     }
-    chessString += "  a b c d e f g h";
-    console.log(chessString);
+    return String.fromCharCode(c + "a".charCodeAt(0)) + (8 - r) as Square;
   }
 
   static fromFEN(fenString: string): Chessboard {
-    try {
-      let [
-        board,
-        activePlayer,
-        castling,
-        enPassant,
-        halfMoveClock,
-        fullMoveClock,
-      ] = fenString.split(" ");
+    const chessboard = new Chessboard();
 
-      const chessboard = new Chessboard();
-
-      let r = 0;
-      for (const row of board.split("/")) {
-        const parsed = Chessboard.parseFENBoardLine(row);
-        for (let c = 0; c < chessboard.BOARD_SIZE; c++) {
-          chessboard.set(c, r, parsed[c]);
-        }
-        r += 1;
-      }
-      return chessboard;
-    } catch {
-      throw Error("Invalid FEN String.");
+    // Check if FEN includes at least the moving color. If not, append ' w' to the string.
+    // This is to ensure compatibility with our less-strict format.
+    if (!fenString.trim().includes(" ")) {
+      fenString += " w";
     }
+    chessboard.chessboard.load(fenString);
+    return chessboard;
   }
 
-  private static parseFENBoardLine(line: string): ChessPiece[] {
-    let i = 0;
-    let j = 0;
-    let result = new Array(8).fill("_");
-    while (i < line.length) {
-      const token = line[i];
-      const numToken = parseInt(token, 10);
-      if (!isNaN(numToken)) {
-        j += numToken;
-        i++;
-        continue;
-      }
-      result[j] = token;
-      i++;
-      j++;
-    }
-    return result;
-  }
 }

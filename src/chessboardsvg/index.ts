@@ -37,85 +37,10 @@ export interface ArrowAnnotation {
   color: string;
 }
 
-function validateFEN(fenString: string): void {
-  const fenParts = fenString.trim().split(/\s+/);
-  if (fenParts.length < 1) {
-    throw new Error(
-      "Invalid FEN string: must contain at least the piece placement."
-    );
-  }
-
-  const [
-    piecePlacement,
-    activeColor,
-    castlingAvailability,
-    enPassantTarget,
-    halfmoveClock,
-    fullmoveNumber,
-  ] = fenParts;
-
-  // Validate piece placement
-  const rows = piecePlacement.split("/");
-  if (rows.length !== 8) {
-    throw new Error("Invalid FEN string: piece placement must contain 8 rows.");
-  }
-  for (const row of rows) {
-    let count = 0;
-    for (const char of row) {
-      if (/[1-8]/.test(char)) {
-        count += parseInt(char, 10);
-      } else if (/[prnbqkPRNBQK]/.test(char)) {
-        count += 1;
-      } else {
-        throw new Error(
-          `Invalid FEN string: invalid character '${char}' in piece placement.`
-        );
-      }
-    }
-    if (count !== 8) {
-      throw new Error(
-        "Invalid FEN string: each row in piece placement must contain exactly 8 squares."
-      );
-    }
-  }
-
-  // Validate active color
-  if (activeColor && !/^[wb]$/.test(activeColor)) {
-    throw new Error("Invalid FEN string: active color must be 'w' or 'b'.");
-  }
-
-  // Validate castling availability
-  if (
-    castlingAvailability &&
-    !/^[KQkqA-Ha-h1-8-]*$/.test(castlingAvailability)
-  ) {
-    throw new Error("Invalid FEN string: invalid castling availability.");
-  }
-
-  // Validate en passant target square
-  if (enPassantTarget && !/^(-|[a-h][36])$/.test(enPassantTarget)) {
-    throw new Error("Invalid FEN string: invalid en passant target square.");
-  }
-
-  // Validate halfmove clock
-  if (halfmoveClock && !/^\d+$/.test(halfmoveClock)) {
-    throw new Error(
-      "Invalid FEN string: halfmove clock must be a non-negative integer."
-    );
-  }
-
-  // Validate fullmove number
-  if (fullmoveNumber && !/^\d+$/.test(fullmoveNumber)) {
-    throw new Error(
-      "Invalid FEN string: fullmove number must be a positive integer."
-    );
-  }
-}
-
 export class SVGChessboard {
   private chessboard: Chessboard;
   private squareSize: number;
-  // Half value od the squareSize. To avoid doing a lot of /2.
+  // Half value of the squareSize. To avoid doing a lot of /2.
   private squareSizeHalf: number;
 
   private options: SVGChessboardOptions;
@@ -169,12 +94,12 @@ export class SVGChessboard {
       recolorBlack(piece, this.blackPieceColor, this.blackPieceLineColor);
 
     this.COLORED_WHITE_PIECES = {
-      K: whiteRecolor(WHITE_KING),
-      Q: whiteRecolor(WHITE_QUEEN),
-      N: whiteRecolor(WHITE_KNIGHT),
-      R: whiteRecolor(WHITE_ROOK),
-      B: whiteRecolor(WHITE_BISHOP),
-      P: whiteRecolor(WHITE_PAWN),
+      k: whiteRecolor(WHITE_KING),
+      q: whiteRecolor(WHITE_QUEEN),
+      n: whiteRecolor(WHITE_KNIGHT),
+      r: whiteRecolor(WHITE_ROOK),
+      b: whiteRecolor(WHITE_BISHOP),
+      p: whiteRecolor(WHITE_PAWN),
     };
 
     this.COLORED_BLACK_PIECES = {
@@ -210,7 +135,7 @@ export class SVGChessboard {
   }
 
   highlight(cell: string, color = this.defaultHighlightColor) {
-    const [c, r] = this.chessboard.algebraicToCoord(cell);
+    const [c, r] = Chessboard.algebraicToCoord(cell);
     this.highlightCoord(c, r, color);
   }
 
@@ -228,7 +153,7 @@ export class SVGChessboard {
   }
 
   removeHighlight(cell: string) {
-    this.removeHighlightCoord(...this.chessboard.algebraicToCoord(cell));
+    this.removeHighlightCoord(...Chessboard.algebraicToCoord(cell));
   }
 
   removeHighlightCoord(c: number, r: number) {
@@ -254,10 +179,10 @@ export class SVGChessboard {
         let start = annotation.start;
         let end = annotation.end;
         let [x0, y0] = this.getBoardSVGCord(
-          this.chessboard.algebraicToCoord(start)
+          Chessboard.algebraicToCoord(start)
         );
         let [x1, y1] = this.getBoardSVGCord(
-          this.chessboard.algebraicToCoord(end)
+          Chessboard.algebraicToCoord(end)
         );
         g.appendChild(
           Arrow.drawArrow(
@@ -293,18 +218,21 @@ export class SVGChessboard {
 
   private drawPieces(): SVGElement {
     let g = document.createElementNS(this.xmlns, "g");
-    let whiteSymbols = ["K", "Q", "N", "R", "B", "P"];
-    let blackSymbols = ["k", "q", "n", "r", "b", "p"];
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         const piece = this.chessboard.get(c, r);
-        if (whiteSymbols.includes(piece)) {
+
+        if (!piece) {
+          continue;
+        }
+
+        if (piece.color === 'w') {
           g.appendChild(
-            this.drawPiece([c, r], this.COLORED_WHITE_PIECES[piece])
+            this.drawPiece([c, r], this.COLORED_WHITE_PIECES[piece.type])
           );
-        } else if (blackSymbols.includes(piece)) {
+        } else if (piece.color === 'b') {
           g.appendChild(
-            this.drawPiece([c, r], this.COLORED_BLACK_PIECES[piece])
+            this.drawPiece([c, r], this.COLORED_BLACK_PIECES[piece.type])
           );
         } else {
           continue;
@@ -401,7 +329,6 @@ export class SVGChessboard {
     fenString: string,
     options: Partial<SVGChessboardOptions> = {}
   ) {
-    validateFEN(fenString);
     return new SVGChessboard(Chessboard.fromFEN(fenString), options);
   }
 }
