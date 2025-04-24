@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+## v0.9.0 
+
+### New
+
+- ⭐ I moved most of the chessboard internal representation to the external library `chess.js`. The drawback is that now the plugin is 4 times bigger (from ~60Kb to ~250Kb). However, we now have a much more robust FEN validation and chessboard representation. Moreover, this will make way easier to implement more features in the future. I think it is worth the increased size.
+- ⭐ The first feature enabled by this migration: PGN support. Now you can render positions via the PGN format. The feature is still very **experimental** and has several limitations.
+
+### Fix
+
+- Changing colors in the settings now refresh the rendering in preview mode (not in edit mode, unfortunately).
+
 ## v0.8.0
 
 ### New
