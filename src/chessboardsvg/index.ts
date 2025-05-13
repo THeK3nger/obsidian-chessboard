@@ -1,4 +1,5 @@
 import { Arrow } from "./Arrow";
+import { Icons } from "./Icons";
 import { BoardCoordinate, Chessboard } from "./Chessboard";
 import {
   WHITE_KING,
@@ -16,6 +17,7 @@ import {
   recolorWhite,
   recolorBlack,
 } from "./Pieces";
+import { Annotation } from "src/Annotations";
 
 export interface SVGChessboardOptions {
   orientation: "white" | "black";
@@ -26,15 +28,6 @@ export interface SVGChessboardOptions {
   blackPieceColor: string;
   defaultHighlightColor: string;
   defaultArrowColor: string;
-}
-
-type Annotation = ArrowAnnotation;
-
-export interface ArrowAnnotation {
-  type: "arrow";
-  start: string;
-  end: string;
-  color: string;
 }
 
 export class SVGChessboard {
@@ -148,6 +141,14 @@ export class SVGChessboard {
     });
   }
 
+  addIcon(position: string, icon: string) {
+    this.annotations.push({
+      type: "icon",
+      square: position,
+      icon: icon,
+    });
+  }
+
   highlightCoord(c: number, r: number, color = this.defaultHighlightColor) {
     this.highlights.push([[c, r], color]);
   }
@@ -178,12 +179,8 @@ export class SVGChessboard {
       if (annotation.type === "arrow") {
         let start = annotation.start;
         let end = annotation.end;
-        let [x0, y0] = this.getBoardSVGCord(
-          Chessboard.algebraicToCoord(start)
-        );
-        let [x1, y1] = this.getBoardSVGCord(
-          Chessboard.algebraicToCoord(end)
-        );
+        let [x0, y0] = this.getBoardSVGCord(Chessboard.algebraicToCoord(start));
+        let [x1, y1] = this.getBoardSVGCord(Chessboard.algebraicToCoord(end));
         g.appendChild(
           Arrow.drawArrow(
             x0 + this.squareSizeHalf,
@@ -193,6 +190,31 @@ export class SVGChessboard {
             annotation.color
           )
         );
+      } else if (annotation.type === "icon") {
+        let pos = Chessboard.algebraicToCoord(annotation.square);
+        switch (annotation.icon) {
+          case "best":
+            g.appendChild(this.drawIcon(pos, Icons.best));
+            break;
+          case "blunder":
+            g.appendChild(this.drawIcon(pos, Icons.blunder));
+            break;
+          case "mistake":
+            g.appendChild(this.drawIcon(pos, Icons.mistake));
+            break;
+          case "inaccuracy":
+            g.appendChild(this.drawIcon(pos, Icons.inaccuracy));
+            break;
+          case "incorrect":
+            g.appendChild(this.drawIcon(pos, Icons.incorrect));
+            break;
+          case "good":
+            g.appendChild(this.drawIcon(pos, Icons.good));
+            break;
+          case "brilliant":
+            g.appendChild(this.drawIcon(pos, Icons.brilliant));
+            break;
+        }
       }
     }
     return g;
@@ -226,11 +248,11 @@ export class SVGChessboard {
           continue;
         }
 
-        if (piece.color === 'w') {
+        if (piece.color === "w") {
           g.appendChild(
             this.drawPiece([c, r], this.COLORED_WHITE_PIECES[piece.type])
           );
-        } else if (piece.color === 'b') {
+        } else if (piece.color === "b") {
           g.appendChild(
             this.drawPiece([c, r], this.COLORED_BLACK_PIECES[piece.type])
           );
@@ -239,6 +261,17 @@ export class SVGChessboard {
         }
       }
     }
+    return g;
+  }
+
+  private drawIcon(coord: BoardCoordinate, icon: HTMLElement): SVGElement {
+    let [x, y] = this.getBoardSVGCord(coord);
+    let g = document.createElementNS(this.xmlns, "g");
+
+    g.setAttributeNS(null, "transform", `translate(${x},${y}) scale(${0.85})`);
+    Array.from(icon.childNodes).forEach((node) => {
+      g.appendChild(node.cloneNode(true));
+    });
     return g;
   }
 

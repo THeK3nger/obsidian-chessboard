@@ -1,6 +1,9 @@
 import typescript from "@rollup/plugin-typescript";
+import svg from "rollup-plugin-svg-import";
+
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
+import { stringify } from "node:querystring";
 
 const isProd = process.env.BUILD === "production";
 
@@ -18,10 +21,11 @@ export default {
     sourcemapExcludeSources: isProd,
     format: "cjs",
     exports: "default",
-    banner
+    banner,
   },
   external: ["obsidian"],
   plugins: [
+    svg({ stringify: true }),
     typescript({ allowSyntheticDefaultImports: true }),
     nodeResolve({ browser: true }),
     commonjs({ include: "node_modules/**" }),

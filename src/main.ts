@@ -8,41 +8,13 @@ import {
   Setting,
 } from "obsidian";
 import { SVGChessboard, SVGChessboardOptions } from "./chessboardsvg/index";
-
-interface ParsedChessCode {
-  fen: string;
-  annotations: Array<Highlight | ArrowAnnotation>;
-  orientation: "white" | "black";
-}
-
-/**
- * Represents a highlight annotation on the board.
- *
- * It is defined by the square to highlight (in algebraic notation) and the color to use.
- */
-interface Highlight {
-  type: "highlight";
-  square: string;
-  color: string;
-}
-
-/**
- * Represents an arrow annotation on the board.
- *
- * It is defined by the start and end squares of the arrow (in algebraic notation) and the color to use.
- */
-interface ArrowAnnotation {
-  type: "arrow";
-  start: string;
-  end: string;
-  color: string;
-}
+import { parseCodeBlock } from "./Annotations";
 
 export default class ObsidianChess extends Plugin {
   // This field stores your plugin settings.
   setting: ObsidianChessSettings;
 
-  onInit() { }
+  onInit() {}
 
   async onload() {
     this.setting = (await this.loadData()) || {
@@ -69,12 +41,16 @@ export default class ObsidianChess extends Plugin {
 
   refreshChessboardBlocks() {
     // TODO: This only works in preview mode. I still don't know how to refresh
-    // the ones in edit mode. 
+    // the ones in edit mode.
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     view.previewMode.rerender(true);
   }
 
-  private drawChessboard(chessboard: SVGChessboard, el: HTMLElement, _ctx: MarkdownPostProcessorContext) {
+  private drawChessboard(
+    chessboard: SVGChessboard,
+    el: HTMLElement,
+    _ctx: MarkdownPostProcessorContext
+  ) {
     const xmlns = "http://www.w3.org/2000/svg";
     const boardWidthPx = this.setting.boardWidthPx;
     const block = document.createElementNS(xmlns, "svg");
@@ -103,7 +79,7 @@ export default class ObsidianChess extends Plugin {
       ctx: MarkdownPostProcessorContext
     ) => {
       try {
-        this.setting.orientation = 'white';
+        this.setting.orientation = "white";
         const chessboard = SVGChessboard.fromPGN(source, this.setting);
         // TODO: Add support for annotations in PGN
         // for (let annotation of parsedCode.annotations) {
@@ -119,7 +95,6 @@ export default class ObsidianChess extends Plugin {
         //   }
         // }
         this.drawChessboard(chessboard, el, ctx);
-
       } catch (e) {
         this.drawErrorMessage(e, el);
       }
@@ -132,7 +107,7 @@ export default class ObsidianChess extends Plugin {
       el: HTMLElement,
       ctx: MarkdownPostProcessorContext
     ) => {
-      const parsedCode = ObsidianChess.parseCode(source);
+      const parsedCode = parseCodeBlock(source);
       try {
         this.setting.orientation = parsedCode.orientation;
         const chessboard = SVGChessboard.fromFEN(parsedCode.fen, this.setting);
@@ -147,76 +122,15 @@ export default class ObsidianChess extends Plugin {
           if (annotation.type === "highlight") {
             chessboard.highlight(annotation.square, annotation.color);
           }
+          if (annotation.type === "icon") {
+            chessboard.addIcon(annotation.square, annotation.icon);
+          }
         }
         this.drawChessboard(chessboard, el, ctx);
       } catch (e) {
         this.drawErrorMessage(e, el);
       }
     };
-  }
-
-  private static parseCode(input: string): ParsedChessCode {
-    const lines = input.split(/\r?\n/);
-    let fen = lines[0];
-    if (fen.startsWith("fen: ")) {
-      fen = fen.replace("fen: ", "");
-    }
-    const annotations: Array<Highlight | ArrowAnnotation> = [];
-    let orientation: "white" | "black" = "white";
-    for (let line of lines.splice(1)) {
-      if (line.trim() === "") {
-        continue;
-      }
-      if (line.startsWith("orientation: ")) {
-        line = line.replace("orientation: ", "");
-        line = line.trim();
-        if (line !== "white" && line !== "black") {
-          throw Error(`Unknown orientation ${orientation}`);
-        }
-        orientation = line;
-      }
-      if (line.startsWith("annotations: ")) {
-        line = line.replace("annotations: ", "");
-        let partial_annotations = line.split(" ");
-        for (let annotation of partial_annotations) {
-          if (annotation.startsWith("H")) {
-            let color = "#e67768"; // default yellow
-            if (annotation.endsWith("/y")) {
-              color = "#f1ad24";
-            } else if (annotation.endsWith("/g")) {
-              color = "#b3ce6e";
-            } else if (annotation.endsWith("/b")) {
-              color = "#6ab5d6";
-            }
-            annotations.push({
-              type: "highlight",
-              square: annotation.substring(1, 3),
-              color: color,
-            });
-            continue;
-          }
-          if (annotation.startsWith("A")) {
-            let color = "#f1ad24"; // default yellow
-            if (annotation.endsWith("/r")) {
-              color = "#e67768";
-            } else if (annotation.endsWith("/g")) {
-              color = "#b3ce6e";
-            } else if (annotation.endsWith("/b")) {
-              color = "#6ab5d6";
-            }
-            let [start, end] = annotation.substring(1, 6).split("-");
-            annotations.push({
-              type: "arrow",
-              start,
-              end,
-              color: color,
-            });
-            continue;
-          }
-        }
-      }
-    }
-    return { fen, annotations, orientation };
   }
 }
 
