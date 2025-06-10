@@ -44,12 +44,13 @@ You can annotate your schema with arrows, highlights and icons:
 ````
 ```chessboard
 fen: r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R
-annotations: Af8-b4 Hf8 Ha7/g
+annotations: Af8-b4 Hf8 Ha7/g !!f8 ??a7 ?e4 Fe8 !?d8
 orientation: white
 ```
 ````
 
-<img src="https://github.com/user-attachments/assets/c8ae4aa4-5347-47d8-92fc-2aedc89a8513" width="500px" />
+![CleanShot 2025-06-10 at 11 57 30@2x](https://github.com/user-attachments/assets/2b2c1672-1423-4a34-9826-d5fccc66860f)
+
 
 ### Annotation Syntax
 
