@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## v.0.10.0
+
+## New 
+
+- ⭐ Added support for annotation icons. Now you can specify annotations such as `!!e2` to add a "brilliant move" icon to `e2`. Look at the README for all the supported icons.
+
 ## v0.9.0 
 
 ### New
