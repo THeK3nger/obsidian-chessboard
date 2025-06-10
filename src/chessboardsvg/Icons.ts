@@ -12,6 +12,10 @@ import inaccuracy from "./icons/inaccuracy.svg";
 import incorrect from "./icons/incorrect.svg";
 // @ts-ignore
 import mistake from "./icons/mistake.svg";
+// @ts-ignore
+import excellent from "./icons/excellent.svg";
+// @ts-ignore
+import forced from "./icons/forced.svg";
 
 export class Icons {
   static brilliant = Icons.loadIcon(brilliant);
@@ -21,6 +25,8 @@ export class Icons {
   static inaccuracy = Icons.loadIcon(inaccuracy);
   static incorrect = Icons.loadIcon(incorrect);
   static mistake = Icons.loadIcon(mistake);
+  static excellent = Icons.loadIcon(excellent);
+  static forced = Icons.loadIcon(forced);
 
   private static loadIcon(icon: string): HTMLElement {
     const parser = new DOMParser();

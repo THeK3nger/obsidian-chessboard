@@ -107,10 +107,28 @@ export function parseCodeBlock(input: string): ParsedChessCode {
         }
         const iconMapping: Record<string, string> = {
           "!!": "brilliant",
-          "!": "good",
+          "!?": "good",
           "??": "blunder",
           "?": "mistake",
+          "!": "excellent",
+          "F": "forced"
         };
+        if (annotation.startsWith("F")) {
+          annotations.push({
+            type: "icon",
+            square: annotation.substring(1, 3),
+            icon: iconMapping["F"],
+          });
+          continue;
+        }
+        if (annotation.startsWith("!?")) {
+          annotations.push({
+            type: "icon",
+            square: annotation.substring(2, 4),
+            icon: iconMapping["!?"],
+          });
+          continue;
+        }
         if (annotation.startsWith("!!")) {
           annotations.push({
             type: "icon",

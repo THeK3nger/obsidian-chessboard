@@ -118,12 +118,14 @@ export class SVGChessboard {
 
   draw(): SVGElement {
     let g = document.createElementNS(this.xmlns, "g");
+    let [annotations, annotations_foreground] = this.drawAnnotations();
     g.appendChild(this.drawBoard());
     if (this.options.drawCoordinates) {
       g.appendChild(this.drawCoordinateSystem());
     }
-    g.appendChild(this.drawAnnotations());
+    g.appendChild(annotations);
     g.appendChild(this.drawPieces());
+    g.appendChild(annotations_foreground);
     return g;
   }
 
@@ -167,7 +169,14 @@ export class SVGChessboard {
     this.options.orientation = orientation;
   }
 
-  private drawAnnotations(): SVGElement {
+  /**
+   * Creates SVG group containing the chessboard annotations.
+   *
+   * This returns 2 groups: a background and a foreground one. We need this
+   * because some annotations need to be drawn below the pieces while others
+   * need to be rendered above the pieces (e.g., the icons).
+   */
+  private drawAnnotations(): [SVGElement, SVGElement] {
     let g = document.createElementNS(this.xmlns, "g");
     for (let [coord, highlightColor] of this.highlights) {
       const square = this.drawSquare(coord);
@@ -175,6 +184,7 @@ export class SVGChessboard {
       square.style.opacity = "0.8";
       g.appendChild(square);
     }
+    let g_foreground = document.createElementNS(this.xmlns, "g");
     for (let annotation of this.annotations) {
       if (annotation.type === "arrow") {
         let start = annotation.start;
@@ -194,30 +204,36 @@ export class SVGChessboard {
         let pos = Chessboard.algebraicToCoord(annotation.square);
         switch (annotation.icon) {
           case "best":
-            g.appendChild(this.drawIcon(pos, Icons.best));
+            g_foreground.appendChild(this.drawIcon(pos, Icons.best));
             break;
           case "blunder":
-            g.appendChild(this.drawIcon(pos, Icons.blunder));
+            g_foreground.appendChild(this.drawIcon(pos, Icons.blunder));
             break;
           case "mistake":
-            g.appendChild(this.drawIcon(pos, Icons.mistake));
+            g_foreground.appendChild(this.drawIcon(pos, Icons.mistake));
             break;
           case "inaccuracy":
-            g.appendChild(this.drawIcon(pos, Icons.inaccuracy));
+            g_foreground.appendChild(this.drawIcon(pos, Icons.inaccuracy));
             break;
           case "incorrect":
-            g.appendChild(this.drawIcon(pos, Icons.incorrect));
+            g_foreground.appendChild(this.drawIcon(pos, Icons.incorrect));
             break;
           case "good":
-            g.appendChild(this.drawIcon(pos, Icons.good));
+            g_foreground.appendChild(this.drawIcon(pos, Icons.good));
             break;
           case "brilliant":
-            g.appendChild(this.drawIcon(pos, Icons.brilliant));
+            g_foreground.appendChild(this.drawIcon(pos, Icons.brilliant));
+            break;
+          case "excellent":
+            g_foreground.appendChild(this.drawIcon(pos, Icons.excellent));
+            break;
+          case "forced":
+            g_foreground.appendChild(this.drawIcon(pos, Icons.forced));
             break;
         }
       }
     }
-    return g;
+    return [g, g_foreground];
   }
 
   private getHighlightedColor(c: number, r: number): string | undefined {
