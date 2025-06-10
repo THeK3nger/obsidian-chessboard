@@ -39,7 +39,7 @@ orientation: black
 
 ## Annotations (Beta)
 
-You can annotate your schema with arrows and highlights.
+You can annotate your schema with arrows, highlights and icons:
 
 ````
 ```chessboard
@@ -50,6 +50,21 @@ orientation: white
 ````
 
 <img src="https://github.com/user-attachments/assets/c8ae4aa4-5347-47d8-92fc-2aedc89a8513" width="500px" />
+
+### Annotation Syntax
+
+The annotations are written in the `annotations` field, and you can use the following syntax: 
+
+- `A<square>-<square>`, draws an arrow from the first square to the second square. E.g., `Af8-b4`.
+- `H<square>`, highlight a specific square. E.g., `Hf8`. If you add `/g` or `/r` or `/b` you can highlight the square in green, red or blue.
+- `!!<square>`, adds a "brilliant move" icon to the specified square. E.g., `!!e5`.
+- `??<square>`, adds a "blunder" icon to the specified square. E.g., `??e5`.
+- `?<square>`, adds a "questionable move" icon to the specified square. E.g., `?e5`.
+- `!<square>`, adds a "excellent move" icon to the specified square. E.g., `!e5`.
+- `!?<square>`, adds a "okay move" icon to the specified square. E.g., `!?e5`.
+- `F<square>`, adds a "forced move" icon to the specified square. E.g., `Fe5`.
+
+Not that the annotation syntax is is beta and may change in the future. If you have suggestions, don't hesitate to open an issue.
 
 ## Experimental: PGN
 
