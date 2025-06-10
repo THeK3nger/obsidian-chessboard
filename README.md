@@ -49,8 +49,7 @@ orientation: white
 ```
 ````
 
-![CleanShot 2025-06-10 at 11 57 30@2x](https://github.com/user-attachments/assets/2b2c1672-1423-4a34-9826-d5fccc66860f)
-
+<img src="https://github.com/user-attachments/assets/2b2c1672-1423-4a34-9826-d5fccc66860f" width="500px" />
 
 ### Annotation Syntax
 
