@@ -1,4 +1,4 @@
-import { Chess, Square, Piece } from "chess.js";
+import { Chess, Square, Piece, Move } from "chess.js";
 
 /**
  * Chessboard coordinate in (column, row) format.
@@ -8,14 +8,16 @@ import { Chess, Square, Piece } from "chess.js";
 export type BoardCoordinate = [number, number];
 
 /**
-* The Chessboard class is a thin façade around the chess.js library. This is
-* too keep most of the compatibility with the old Chessboard class, but to take
-* advance of a more solid Chessboard library that include built-in FEN
-* validation, PGN support, history and cooler features that we can use in the
-* visualization.
-*/
+ * The Chessboard class is a thin façade around the chess.js library. This is
+ * too keep most of the compatibility with the old Chessboard class, but to take
+ * advance of a more solid Chessboard library that include built-in FEN
+ * validation, PGN support, history and cooler features that we can use in the
+ * visualization.
+ */
 export class Chessboard {
   private chessboard: Chess;
+  private lastMovePlayed?: Move;
+
   private constructor() {
     this.chessboard = new Chess();
   }
@@ -34,11 +36,14 @@ export class Chessboard {
 
   getAlgebraic(algebraic: Square): Piece {
     return this.chessboard.get(algebraic);
-
   }
 
   print() {
     console.log(this.chessboard.ascii());
+  }
+
+  getLastMove(): Move | undefined {
+    return this.lastMovePlayed;
   }
 
   static algebraicToCoord(algebraic: string): BoardCoordinate {
@@ -56,7 +61,7 @@ export class Chessboard {
     if (c < 0 || c > 7 || r < 0 || r > 7) {
       throw Error("Input does not look like a chessboard coordinate.");
     }
-    return String.fromCharCode(c + "a".charCodeAt(0)) + (8 - r) as Square;
+    return (String.fromCharCode(c + "a".charCodeAt(0)) + (8 - r)) as Square;
   }
 
   static fromFEN(fenString: string): Chessboard {
@@ -77,7 +82,8 @@ export class Chessboard {
 
     // If ply is specified, replay moves up to that ply
     if (ply !== undefined) {
-      const history = chessboard.chessboard.history();
+      // Get detailed move history with verbose: true
+      const history = chessboard.chessboard.history({ verbose: true });
       chessboard.chessboard.reset();
 
       // If ply is 0, show starting position (already reset)
@@ -88,11 +94,14 @@ export class Chessboard {
       // Replay moves up to the specified ply (or all moves if ply exceeds history length)
       const movesToReplay = Math.min(ply, history.length);
       for (let i = 0; i < movesToReplay; i++) {
-        chessboard.chessboard.move(history[i]);
+        chessboard.chessboard.move(history[i].san);
+        // Store the last move that was played
+        if (i === movesToReplay - 1) {
+          chessboard.lastMovePlayed = history[i];
+        }
       }
     }
 
     return chessboard;
   }
-
 }

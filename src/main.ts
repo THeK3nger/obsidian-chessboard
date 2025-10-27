@@ -7,7 +7,11 @@ import {
   PluginSettingTab,
   Setting,
 } from "obsidian";
-import { SVGChessboard, SVGChessboardOptions } from "./chessboardsvg/index";
+import {
+  SVGChessboard,
+  SVGChessboardOptions,
+  ShowMoveOption,
+} from "./chessboardsvg/index";
 import { parseCodeBlock } from "./Annotations";
 
 export default class ObsidianChess extends Plugin {
@@ -31,11 +35,11 @@ export default class ObsidianChess extends Plugin {
     this.addSettingTab(new ObsidianChessSettingsTab(this.app, this));
     this.registerMarkdownCodeBlockProcessor(
       "chessboard",
-      this.getDrawChessboardFENFuncion()
+      this.getDrawChessboardFENFuncion(),
     );
     this.registerMarkdownCodeBlockProcessor(
       "chessboard-pgn",
-      this.getDrawChessboardPGNFunction()
+      this.getDrawChessboardPGNFunction(),
     );
   }
 
@@ -49,7 +53,7 @@ export default class ObsidianChess extends Plugin {
   private drawChessboard(
     chessboard: SVGChessboard,
     el: HTMLElement,
-    _ctx: MarkdownPostProcessorContext
+    _ctx: MarkdownPostProcessorContext,
   ) {
     const xmlns = "http://www.w3.org/2000/svg";
     const boardWidthPx = this.setting.boardWidthPx;
@@ -76,28 +80,51 @@ export default class ObsidianChess extends Plugin {
     return (
       source: string,
       el: HTMLElement,
-      ctx: MarkdownPostProcessorContext
+      ctx: MarkdownPostProcessorContext,
     ) => {
       try {
         this.setting.orientation = "white";
 
         // Extract ply parameter if present
         let ply: number | undefined = undefined;
+        let showMove: ShowMoveOption = "none";
         let pgnSource = source;
 
-        const lines = source.split('\n');
-        const plyLine = lines.find(line => line.trim().toLowerCase().startsWith('ply:'));
+        const lines = source.split("\n");
+        const plyLine = lines.find((line) =>
+          line.trim().toLowerCase().startsWith("ply:"),
+        );
+        const showMoveLine = lines.find((line) =>
+          line.trim().toLowerCase().startsWith("show-move:"),
+        );
 
         if (plyLine) {
           const plyMatch = plyLine.match(/ply:\s*(\d+)/i);
           if (plyMatch) {
             ply = parseInt(plyMatch[1], 10);
           }
-          // Remove the ply line from the source
-          pgnSource = lines.filter(line => line !== plyLine).join('\n');
         }
 
-        const chessboard = SVGChessboard.fromPGN(pgnSource, this.setting, ply);
+        if (showMoveLine) {
+          const showMoveMatch = showMoveLine.match(
+            /show-move:\s*(none|squares|arrow)/i,
+          );
+          if (showMoveMatch) {
+            showMove = showMoveMatch[1].toLowerCase() as ShowMoveOption;
+          }
+        }
+
+        // Remove parameter lines from the source
+        pgnSource = lines
+          .filter((line) => line !== plyLine && line !== showMoveLine)
+          .join("\n");
+
+        const chessboard = SVGChessboard.fromPGN(
+          pgnSource,
+          this.setting,
+          ply,
+          showMove,
+        );
         // TODO: Add support for annotations in PGN
         // for (let annotation of parsedCode.annotations) {
         //   if (annotation.type === "arrow") {
@@ -122,7 +149,7 @@ export default class ObsidianChess extends Plugin {
     return (
       source: string,
       el: HTMLElement,
-      ctx: MarkdownPostProcessorContext
+      ctx: MarkdownPostProcessorContext,
     ) => {
       const parsedCode = parseCodeBlock(source);
       try {
@@ -133,7 +160,7 @@ export default class ObsidianChess extends Plugin {
             chessboard.addArrow(
               annotation.start,
               annotation.end,
-              annotation.color
+              annotation.color,
             );
           }
           if (annotation.type === "highlight") {
@@ -187,7 +214,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
           settings.whiteSquareColor = value;
           this.plugin.refreshChessboardBlocks();
           this.plugin.saveData(settings);
-        })
+        }),
       );
 
     new Setting(containerEl)
@@ -198,7 +225,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
           settings.blackSquareColor = value;
           this.plugin.refreshChessboardBlocks();
           this.plugin.saveData(settings);
-        })
+        }),
       );
 
     new Setting(containerEl)
@@ -209,7 +236,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
           settings.whitePieceColor = value;
           this.plugin.refreshChessboardBlocks();
           this.plugin.saveData(settings);
-        })
+        }),
       );
 
     new Setting(containerEl)
@@ -220,7 +247,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
           settings.blackPieceColor = value;
           this.plugin.refreshChessboardBlocks();
           this.plugin.saveData(settings);
-        })
+        }),
       );
 
     new Setting(containerEl)
@@ -235,10 +262,10 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
             this.plugin.saveData(settings);
           } else {
             new Notice(
-              "Please enter a valid positive number for the board size."
+              "Please enter a valid positive number for the board size.",
             );
           }
-        })
+        }),
       );
   }
 }

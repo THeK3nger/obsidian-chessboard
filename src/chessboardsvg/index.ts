@@ -19,6 +19,8 @@ import {
 } from "./Pieces";
 import { Annotation } from "src/Annotations";
 
+export type ShowMoveOption = "none" | "squares" | "arrow";
+
 export interface SVGChessboardOptions {
   orientation: "white" | "black";
   drawCoordinates: boolean;
@@ -67,7 +69,7 @@ export class SVGChessboard {
       blackPieceColor = "#000000",
       defaultHighlightColor = "#b0ffb0",
       defaultArrowColor = "#ff6060",
-    }: Partial<SVGChessboardOptions> = {}
+    }: Partial<SVGChessboardOptions> = {},
   ) {
     this.chessboard = chessboard;
     this.squareSize = this.baseSquareSize;
@@ -161,7 +163,7 @@ export class SVGChessboard {
 
   removeHighlightCoord(c: number, r: number) {
     this.highlights = this.highlights.filter(
-      ([coord, _]) => coord[0] !== c || coord[1] !== r
+      ([coord, _]) => coord[0] !== c || coord[1] !== r,
     );
   }
 
@@ -197,8 +199,8 @@ export class SVGChessboard {
             y0 + this.squareSizeHalf,
             x1 + this.squareSizeHalf,
             y1 + this.squareSizeHalf,
-            annotation.color
-          )
+            annotation.color,
+          ),
         );
       } else if (annotation.type === "icon") {
         let pos = Chessboard.algebraicToCoord(annotation.square);
@@ -266,11 +268,11 @@ export class SVGChessboard {
 
         if (piece.color === "w") {
           g.appendChild(
-            this.drawPiece([c, r], this.COLORED_WHITE_PIECES[piece.type])
+            this.drawPiece([c, r], this.COLORED_WHITE_PIECES[piece.type]),
           );
         } else if (piece.color === "b") {
           g.appendChild(
-            this.drawPiece([c, r], this.COLORED_BLACK_PIECES[piece.type])
+            this.drawPiece([c, r], this.COLORED_BLACK_PIECES[piece.type]),
           );
         } else {
           continue;
@@ -310,7 +312,7 @@ export class SVGChessboard {
     rect.setAttributeNS(
       null,
       "fill",
-      (coord[1] + coord[0]) % 2 === 0 ? this.whiteColor : this.blackColor
+      (coord[1] + coord[0]) % 2 === 0 ? this.whiteColor : this.blackColor,
     );
     return rect;
   }
@@ -330,7 +332,7 @@ export class SVGChessboard {
           (r === 0 && this.options.orientation === "black")
         ) {
           g.appendChild(
-            this.drawText([c, r], String(this.numToLetter(c)), "column")
+            this.drawText([c, r], String(this.numToLetter(c)), "column"),
           );
         }
       }
@@ -341,7 +343,7 @@ export class SVGChessboard {
   private drawText(
     [c, r]: BoardCoordinate,
     text: string,
-    position: "row" | "column"
+    position: "row" | "column",
   ): SVGElement {
     let [x, y] = this.getBoardSVGCord([c, r]);
     let txt = document.createElementNS(this.xmlns, "text");
@@ -357,7 +359,7 @@ export class SVGChessboard {
     txt.setAttributeNS(
       null,
       "fill",
-      (r + c) % 2 === 0 ? this.blackColor : this.whiteColor
+      (r + c) % 2 === 0 ? this.blackColor : this.whiteColor,
     );
     txt.textContent = text;
     return txt;
@@ -376,7 +378,7 @@ export class SVGChessboard {
 
   static fromFEN(
     fenString: string,
-    options: Partial<SVGChessboardOptions> = {}
+    options: Partial<SVGChessboardOptions> = {},
   ) {
     return new SVGChessboard(Chessboard.fromFEN(fenString), options);
   }
@@ -384,8 +386,27 @@ export class SVGChessboard {
   static fromPGN(
     pgnString: string,
     options: Partial<SVGChessboardOptions> = {},
-    ply?: number
+    ply?: number,
+    showMove: ShowMoveOption = "none",
   ) {
-    return new SVGChessboard(Chessboard.fromPGN(pgnString, ply), options);
+    const chessboard = Chessboard.fromPGN(pgnString, ply);
+    const svgChessboard = new SVGChessboard(chessboard, options);
+
+    // Apply move highlighting if requested
+    if (showMove !== "none") {
+      const lastMove = chessboard.getLastMove();
+      if (lastMove) {
+        // Highlight the from and to squares
+        svgChessboard.highlight(lastMove.from);
+        svgChessboard.highlight(lastMove.to);
+
+        // Add arrow if requested
+        if (showMove === "arrow") {
+          svgChessboard.addArrow(lastMove.from, lastMove.to);
+        }
+      }
+    }
+
+    return svgChessboard;
   }
 }
