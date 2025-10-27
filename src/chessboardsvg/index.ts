@@ -383,8 +383,9 @@ export class SVGChessboard {
 
   static fromPGN(
     pgnString: string,
-    options: Partial<SVGChessboardOptions> = {}
+    options: Partial<SVGChessboardOptions> = {},
+    ply?: number
   ) {
-    return new SVGChessboard(Chessboard.fromPGN(pgnString), options);
+    return new SVGChessboard(Chessboard.fromPGN(pgnString, ply), options);
   }
 }

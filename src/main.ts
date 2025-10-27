@@ -80,7 +80,24 @@ export default class ObsidianChess extends Plugin {
     ) => {
       try {
         this.setting.orientation = "white";
-        const chessboard = SVGChessboard.fromPGN(source, this.setting);
+
+        // Extract ply parameter if present
+        let ply: number | undefined = undefined;
+        let pgnSource = source;
+
+        const lines = source.split('\n');
+        const plyLine = lines.find(line => line.trim().toLowerCase().startsWith('ply:'));
+
+        if (plyLine) {
+          const plyMatch = plyLine.match(/ply:\s*(\d+)/i);
+          if (plyMatch) {
+            ply = parseInt(plyMatch[1], 10);
+          }
+          // Remove the ply line from the source
+          pgnSource = lines.filter(line => line !== plyLine).join('\n');
+        }
+
+        const chessboard = SVGChessboard.fromPGN(pgnSource, this.setting, ply);
         // TODO: Add support for annotations in PGN
         // for (let annotation of parsedCode.annotations) {
         //   if (annotation.type === "arrow") {

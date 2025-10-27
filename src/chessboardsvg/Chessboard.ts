@@ -71,9 +71,27 @@ export class Chessboard {
     return chessboard;
   }
 
-  static fromPGN(pgnString: string): Chessboard {
+  static fromPGN(pgnString: string, ply?: number): Chessboard {
     const chessboard = new Chessboard();
     chessboard.chessboard.loadPgn(pgnString);
+
+    // If ply is specified, replay moves up to that ply
+    if (ply !== undefined) {
+      const history = chessboard.chessboard.history();
+      chessboard.chessboard.reset();
+
+      // If ply is 0, show starting position (already reset)
+      if (ply === 0) {
+        return chessboard;
+      }
+
+      // Replay moves up to the specified ply (or all moves if ply exceeds history length)
+      const movesToReplay = Math.min(ply, history.length);
+      for (let i = 0; i < movesToReplay; i++) {
+        chessboard.chessboard.move(history[i]);
+      }
+    }
+
     return chessboard;
   }
 
