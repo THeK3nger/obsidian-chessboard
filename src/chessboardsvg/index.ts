@@ -193,7 +193,7 @@ export class SVGChessboard {
         let end = annotation.end;
         let [x0, y0] = this.getBoardSVGCord(Chessboard.algebraicToCoord(start));
         let [x1, y1] = this.getBoardSVGCord(Chessboard.algebraicToCoord(end));
-        g.appendChild(
+        g_foreground.appendChild(
           Arrow.drawArrow(
             x0 + this.squareSizeHalf,
             y0 + this.squareSizeHalf,
