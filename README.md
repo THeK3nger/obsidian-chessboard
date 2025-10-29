@@ -93,12 +93,50 @@ Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8
 ```
 ````
 
+### Select Game Position 
+
+It is also possible to specify which *ply* (*half-move*) to render in the diagram. You can do that by using the `ply` property. In the following example, we will render the 10th ply (that is, after black moves `Ba5` on move 5).
+
+````
+```chessboard-pgn
+ply: 10
+show-move: squares
+[Event "Casual Game"]
+[Site "Berlin GER"]
+[Date "1852.??.??"]
+[EventDate "?"]
+[Round "?"]
+[Result "1-0"]
+[White "Adolf Anderssen"]
+[Black "Jean Dufresne"]
+[ECO "C52"]
+[WhiteElo "?"]
+[BlackElo "?"]
+[PlyCount "47"]
+
+1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5 6.d4 exd4 7.O-O
+d3 8.Qb3 Qf6 9.e5 Qg6 10.Re1 Nge7 11.Ba3 b5 12.Qxb5 Rb8 13.Qa4
+Bb6 14.Nbd2 Bb7 15.Ne4 Qf5 16.Bxd3 Qh5 17.Nf6+ gxf6 18.exf6
+Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8
+23.Bd7+ Kf8 24.Bxe7# 1-0
+```
+````
+
+It is also possible to highlight the *ply*. By using `show-move` you can select the style:
+
+- `squares`: it highlights green the origin and destination squares of the move.
+- `arrow`: it draws an arrow from the origin to the destination square of the move.
+- `none`: no highlighting (default).
+
+### Current Limitations
+
 This supports the full PGN specification but, for now, the feature is experimental and has limitations:
 
-1. The plugin will render the board as it appears after the last move. There is no way to select the move (for now).
-2. At the moment, this mode do not support annotations.
+1. At the moment, this mode do not support annotations.
 
 I am planning a way to use PGN to navigate the game, showing multiple board positions in a grid, and things like that.
+
+Moreover, the syntax in PGN games is still unstable. I may change it in new versions.
 
 ### Syntax
 
