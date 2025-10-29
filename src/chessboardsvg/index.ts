@@ -295,9 +295,15 @@ export class SVGChessboard {
 
   private drawPiece(coord: BoardCoordinate, piece: string): SVGElement {
     let [x, y] = this.getBoardSVGCord(coord);
-    //const DELTA = 0 * this.scale;
+    const scale = 0.85;
+    // Pieces are designed in a ~45x45 coordinate space
+    // After scaling: 45 * 0.85 = 38.25
+    // Offset to center in 40px square: (40 - 38.25) / 2 = 0.875
+    const pieceCoordSpace = 45;
+    const scaledSize = pieceCoordSpace * scale;
+    const offset = (this.squareSize - scaledSize) / 2;
     let g = document.createElementNS(this.xmlns, "g");
-    g.setAttributeNS(null, "transform", `translate(${x},${y}) scale(${0.85})`);
+    g.setAttributeNS(null, "transform", `translate(${x + offset},${y + offset}) scale(${scale})`);
     g.innerHTML = piece;
     return g;
   }
