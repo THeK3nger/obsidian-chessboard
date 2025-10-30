@@ -2,13 +2,23 @@
 
 ## Unreleased
 
-## v.0.10.0
+## v0.11.0
 
-## New 
+### New
+
+- ⭐ In PGN mode, it is now possible to specify which move to display by adding the `ply` field. You can also specify how to highlight the move with the `show-move` field. See the README for more details.
+
+### Fix
+
+- Now the pieces are properly centered in each square.
+
+## v0.10.0
+
+## New
 
 - ⭐ Added support for annotation icons. Now you can specify annotations such as `!!e2` to add a "brilliant move" icon to `e2`. Look at the README for all the supported icons.
 
-## v0.9.0 
+## v0.9.0
 
 ### New
 
