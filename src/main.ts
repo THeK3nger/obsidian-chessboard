@@ -59,10 +59,11 @@ export default class ObsidianChess extends Plugin {
     const boardWidthPx = this.setting.boardWidthPx;
     const block = document.createElementNS(xmlns, "svg");
     block.setAttributeNS(null, "viewBox", `0 0 320 320`);
-    block.setAttributeNS(null, "width", String(boardWidthPx));
-    block.setAttributeNS(null, "height", String(boardWidthPx));
     block.appendChild(chessboard.draw());
     block.style.display = "block";
+    block.style.width = "100%";
+    block.style.maxWidth = `${boardWidthPx}px`;
+    block.style.height = "auto";
     el.appendChild(block);
   }
 
