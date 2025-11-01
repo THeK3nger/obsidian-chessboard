@@ -252,8 +252,8 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Chessboard Size (px)")
-      .setDesc("Sets the side of the chess board in pixels.")
+      .setName("Chessboard Max Width (px)")
+      .setDesc("Sets the maximum width of the chess board in pixels. On narrow screens, the board will scale down to fit the viewport.")
       .addText((text) =>
         text.setValue(String(settings.boardWidthPx)).onChange((value) => {
           const numericValue = Number(value);
