@@ -59,10 +59,11 @@ export default class ObsidianChess extends Plugin {
     const boardWidthPx = this.setting.boardWidthPx;
     const block = document.createElementNS(xmlns, "svg");
     block.setAttributeNS(null, "viewBox", `0 0 320 320`);
-    block.setAttributeNS(null, "width", String(boardWidthPx));
-    block.setAttributeNS(null, "height", String(boardWidthPx));
     block.appendChild(chessboard.draw());
     block.style.display = "block";
+    block.style.width = "100%";
+    block.style.maxWidth = `${boardWidthPx}px`;
+    block.style.height = "auto";
     el.appendChild(block);
   }
 
@@ -251,8 +252,8 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Chessboard Size (px)")
-      .setDesc("Sets the side of the chess board in pixels.")
+      .setName("Chessboard Max Width (px)")
+      .setDesc("Sets the maximum width of the chess board in pixels. On narrow screens, the board will scale down to fit the viewport.")
       .addText((text) =>
         text.setValue(String(settings.boardWidthPx)).onChange((value) => {
           const numericValue = Number(value);
