@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## v0.11.1
+
+### Fix
+
+- Now the chessboard scales properly on smaller screens, making the plugin more viable on mobile devices. In the settings the "board size" option has been renamed to "maximum board size" to better reflect its purpose.
+
 ## v0.11.0
 
 ### New
