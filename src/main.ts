@@ -15,6 +15,14 @@ import {
 } from "./chessboardsvg/index";
 import { parseCodeBlock } from "./Annotations";
 
+const DEFAULT_CHESS_SETTINGS = {
+  whiteSquareColor: "#f0d9b5",
+  blackSquareColor: "#b58862",
+  whitePieceColor: "#ffffff",
+  blackPieceColor: "#000000",
+  boardWidthPx: 320,
+};
+
 export default class ObsidianChess extends Plugin {
   // This field stores your plugin settings.
   setting: ObsidianChessSettings;
@@ -22,13 +30,7 @@ export default class ObsidianChess extends Plugin {
   onInit() {}
 
   async onload() {
-    this.setting = (await this.loadData()) || {
-      whiteSquareColor: "#f0d9b5",
-      blackSquareColor: "#b58862",
-      whitePieceColor: "#ffffff",
-      blackPieceColor: "#000000",
-      boardWidthPx: 320,
-    };
+    this.setting = (await this.loadData()) || { ...DEFAULT_CHESS_SETTINGS };
     // In case the settting exists but is missing a field due to an update
     if (this.setting.boardWidthPx === undefined) {
       this.setting.boardWidthPx = 320;
@@ -200,6 +202,26 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
     this.plugin = plugin;
   }
 
+  private resetToDefaults(): void {
+    // Update settings object with defaults
+    this.plugin.setting.whiteSquareColor =
+      DEFAULT_CHESS_SETTINGS.whiteSquareColor;
+    this.plugin.setting.blackSquareColor =
+      DEFAULT_CHESS_SETTINGS.blackSquareColor;
+    this.plugin.setting.whitePieceColor =
+      DEFAULT_CHESS_SETTINGS.whitePieceColor;
+    this.plugin.setting.blackPieceColor =
+      DEFAULT_CHESS_SETTINGS.blackPieceColor;
+    this.plugin.setting.boardWidthPx = DEFAULT_CHESS_SETTINGS.boardWidthPx;
+
+    this.plugin.saveData(this.plugin.setting);
+
+    this.plugin.refreshChessboardBlocks();
+    this.display();
+
+    new Notice("Chessboard settings reset to default values");
+  }
+
   display(): void {
     const { containerEl } = this;
     const settings = this.plugin.setting;
@@ -287,6 +309,23 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
               );
             }
           }),
+        );
+    });
+
+    // Add reset button at the bottom
+    customizationGroup.addSetting((setting) => {
+      setting
+        .setName("Reset to Defaults")
+        .setDesc(
+          "Restore all chessboard customization settings to their default values.",
+        )
+        .addButton((button) =>
+          button
+            .setButtonText("Reset")
+            .setWarning()
+            .onClick(() => {
+              this.resetToDefaults();
+            }),
         );
     });
   }
