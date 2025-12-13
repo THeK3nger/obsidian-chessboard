@@ -6,6 +6,7 @@ import {
   Plugin,
   PluginSettingTab,
   Setting,
+  SettingGroup,
 } from "obsidian";
 import {
   SVGChessboard,
@@ -205,68 +206,88 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    new Setting(containerEl).setName("Chessboard Customization").setHeading();
+    const customizationGroup = new SettingGroup(containerEl).setHeading(
+      "Chessboard Customization",
+    );
 
-    new Setting(containerEl)
-      .setName("White Square Color")
-      .setDesc('Set the color of the "white" squares.')
-      .addColorPicker((color) =>
-        color.setValue(String(settings.whiteSquareColor)).onChange((value) => {
-          settings.whiteSquareColor = value;
-          this.plugin.refreshChessboardBlocks();
-          this.plugin.saveData(settings);
-        }),
-      );
+    //new Setting(containerEl).setName("Chessboard Customization").setHeading();
 
-    new Setting(containerEl)
-      .setName("Black Square Color")
-      .setDesc('Set the color of the "black" squares.')
-      .addColorPicker((color) =>
-        color.setValue(String(settings.blackSquareColor)).onChange((value) => {
-          settings.blackSquareColor = value;
-          this.plugin.refreshChessboardBlocks();
-          this.plugin.saveData(settings);
-        }),
-      );
+    customizationGroup.addSetting((setting) => {
+      setting
+        .setName("White Square Color")
+        .setDesc('Set the color of the "white" squares.')
+        .addColorPicker((color) =>
+          color
+            .setValue(String(settings.whiteSquareColor))
+            .onChange((value) => {
+              settings.whiteSquareColor = value;
+              this.plugin.refreshChessboardBlocks();
+              this.plugin.saveData(settings);
+            }),
+        );
+    });
 
-    new Setting(containerEl)
-      .setName("White Pieces Color")
-      .setDesc('Set the color of the "white" pieces.')
-      .addColorPicker((color) =>
-        color.setValue(settings.whitePieceColor).onChange((value) => {
-          settings.whitePieceColor = value;
-          this.plugin.refreshChessboardBlocks();
-          this.plugin.saveData(settings);
-        }),
-      );
+    customizationGroup.addSetting((setting) => {
+      setting
+        .setName("Black Square Color")
+        .setDesc('Set the color of the "black" squares.')
+        .addColorPicker((color) =>
+          color
+            .setValue(String(settings.blackSquareColor))
+            .onChange((value) => {
+              settings.blackSquareColor = value;
+              this.plugin.refreshChessboardBlocks();
+              this.plugin.saveData(settings);
+            }),
+        );
+    });
 
-    new Setting(containerEl)
-      .setName("Black Pieces Color")
-      .setDesc('Set the color of the "black" pieces.')
-      .addColorPicker((color) =>
-        color.setValue(String(settings.blackPieceColor)).onChange((value) => {
-          settings.blackPieceColor = value;
-          this.plugin.refreshChessboardBlocks();
-          this.plugin.saveData(settings);
-        }),
-      );
-
-    new Setting(containerEl)
-      .setName("Chessboard Max Width (px)")
-      .setDesc("Sets the maximum width of the chess board in pixels. On narrow screens, the board will scale down to fit the viewport.")
-      .addText((text) =>
-        text.setValue(String(settings.boardWidthPx)).onChange((value) => {
-          const numericValue = Number(value);
-          if (!isNaN(numericValue) && numericValue > 0) {
-            settings.boardWidthPx = numericValue;
+    customizationGroup.addSetting((setting) => {
+      setting
+        .setName("White Pieces Color")
+        .setDesc('Set the color of the "white" pieces.')
+        .addColorPicker((color) =>
+          color.setValue(settings.whitePieceColor).onChange((value) => {
+            settings.whitePieceColor = value;
             this.plugin.refreshChessboardBlocks();
             this.plugin.saveData(settings);
-          } else {
-            new Notice(
-              "Please enter a valid positive number for the board size.",
-            );
-          }
-        }),
-      );
+          }),
+        );
+    });
+
+    customizationGroup.addSetting((setting) => {
+      setting
+        .setName("Black Pieces Color")
+        .setDesc('Set the color of the "black" pieces.')
+        .addColorPicker((color) =>
+          color.setValue(String(settings.blackPieceColor)).onChange((value) => {
+            settings.blackPieceColor = value;
+            this.plugin.refreshChessboardBlocks();
+            this.plugin.saveData(settings);
+          }),
+        );
+    });
+
+    customizationGroup.addSetting((setting) => {
+      setting
+        .setName("Chessboard Max Width (px)")
+        .setDesc(
+          "Sets the maximum width of the chess board in pixels. On narrow screens, the board will scale down to fit the viewport.",
+        )
+        .addText((text) =>
+          text.setValue(String(settings.boardWidthPx)).onChange((value) => {
+            const numericValue = Number(value);
+            if (!isNaN(numericValue) && numericValue > 0) {
+              settings.boardWidthPx = numericValue;
+              this.plugin.refreshChessboardBlocks();
+              this.plugin.saveData(settings);
+            } else {
+              new Notice(
+                "Please enter a valid positive number for the board size.",
+              );
+            }
+          }),
+        );
+    });
   }
 }
