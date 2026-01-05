@@ -173,6 +173,9 @@ export default class ObsidianChess extends Plugin {
           if (annotation.type === "icon") {
             chessboard.addIcon(annotation.square, annotation.icon);
           }
+          if (annotation.type === "shape") {
+            chessboard.addShape(annotation.square, annotation.shape, annotation.color);
+          }
         }
         this.drawChessboard(chessboard, el, ctx);
       } catch (e) {

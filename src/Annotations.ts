@@ -32,7 +32,20 @@ export interface IconAnnotation {
   icon: string;
 }
 
-export type Annotation = Highlight | ArrowAnnotation | IconAnnotation;
+/**
+ * Represents a shape annotation on the board.
+ *
+ * It is defined by the square to draw the shape (in algebraic notation),
+ * the shape type (circle, square, squircle), and the color to use.
+ */
+export interface ShapeAnnotation {
+  type: "shape";
+  square: string;
+  shape: "circle" | "square" | "squircle";
+  color: string;
+}
+
+export type Annotation = Highlight | ArrowAnnotation | IconAnnotation | ShapeAnnotation;
 
 export interface ParsedChessCode {
   fen: string;
@@ -161,6 +174,41 @@ export function parseCodeBlock(input: string): ParsedChessCode {
             type: "icon",
             square: annotation.substring(1, 3),
             icon: icon,
+          });
+          continue;
+        }
+        if (annotation.startsWith("C") || annotation.startsWith("S") || annotation.startsWith("Q")) {
+          let color = "#f1ad24"; // default yellow
+          let shapeType: "circle" | "square" | "squircle";
+
+          // Determine shape type
+          if (annotation.startsWith("C")) {
+            shapeType = "circle";
+          } else if (annotation.startsWith("S")) {
+            shapeType = "square";
+          } else {
+            shapeType = "squircle";
+          }
+
+          // Parse color modifiers
+          if (annotation.endsWith("/r")) {
+            color = "#e67768";
+          } else if (annotation.endsWith("/g")) {
+            color = "#b3ce6e";
+          } else if (annotation.endsWith("/b")) {
+            color = "#6ab5d6";
+          } else if (annotation.endsWith("/y")) {
+            color = "#f1ad24";
+          }
+
+          // Extract square (1-3 handles the square, accounting for color modifiers)
+          const square = annotation.substring(1, 3);
+
+          annotations.push({
+            type: "shape",
+            square: square,
+            shape: shapeType,
+            color: color,
           });
           continue;
         }

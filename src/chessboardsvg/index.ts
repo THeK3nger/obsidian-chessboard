@@ -1,4 +1,5 @@
 import { Arrow } from "./Arrow";
+import { Shapes } from "./Shapes";
 import { Icons } from "./Icons";
 import { BoardCoordinate, Chessboard } from "./Chessboard";
 import {
@@ -153,6 +154,15 @@ export class SVGChessboard {
     });
   }
 
+  addShape(position: string, shape: "circle" | "square" | "squircle", color = this.defaultArrowColor) {
+    this.annotations.push({
+      type: "shape",
+      square: position,
+      shape: shape,
+      color: color,
+    });
+  }
+
   highlightCoord(c: number, r: number, color = this.defaultHighlightColor) {
     this.highlights.push([[c, r], color]);
   }
@@ -233,6 +243,25 @@ export class SVGChessboard {
             g_foreground.appendChild(this.drawIcon(pos, Icons.forced));
             break;
         }
+      } else if (annotation.type === "shape") {
+        let pos = Chessboard.algebraicToCoord(annotation.square);
+        let [x, y] = this.getBoardSVGCord(pos);
+
+        let shapeElement: SVGElement;
+        switch (annotation.shape) {
+          case "circle":
+            shapeElement = Shapes.drawCircle(x, y, this.squareSize, annotation.color);
+            break;
+          case "square":
+            shapeElement = Shapes.drawSquare(x, y, this.squareSize, annotation.color);
+            break;
+          case "squircle":
+            shapeElement = Shapes.drawSquircle(x, y, this.squareSize, annotation.color);
+            break;
+        }
+
+        // Append to foreground group to render above pieces
+        g_foreground.appendChild(shapeElement);
       }
     }
     return [g, g_foreground];
