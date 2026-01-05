@@ -14,6 +14,7 @@ import {
   ShowMoveOption,
 } from "./chessboardsvg/index";
 import { parseCodeBlock } from "./Annotations";
+import { createInteractivePGNBoard } from "./chessboardsvg/InteractivePGN";
 
 const DEFAULT_CHESS_SETTINGS = {
   whiteSquareColor: "#f0d9b5",
@@ -89,9 +90,10 @@ export default class ObsidianChess extends Plugin {
       try {
         this.setting.orientation = "white";
 
-        // Extract ply parameter if present
+        // Extract parameters if present
         let ply: number | undefined = undefined;
         let showMove: ShowMoveOption = "none";
+        let interactive = false;
         let pgnSource = source;
 
         const lines = source.split("\n");
@@ -100,6 +102,9 @@ export default class ObsidianChess extends Plugin {
         );
         const showMoveLine = lines.find((line) =>
           line.trim().toLowerCase().startsWith("show-move:"),
+        );
+        const interactiveLine = lines.find((line) =>
+          line.trim().toLowerCase().startsWith("interactive:"),
         );
 
         if (plyLine) {
@@ -118,31 +123,58 @@ export default class ObsidianChess extends Plugin {
           }
         }
 
+        if (interactiveLine) {
+          const interactiveMatch = interactiveLine.match(
+            /interactive:\s*(true|false)/i,
+          );
+          if (interactiveMatch) {
+            interactive = interactiveMatch[1].toLowerCase() === "true";
+          }
+        }
+
         // Remove parameter lines from the source
         pgnSource = lines
-          .filter((line) => line !== plyLine && line !== showMoveLine)
+          .filter(
+            (line) =>
+              line !== plyLine &&
+              line !== showMoveLine &&
+              line !== interactiveLine,
+          )
           .join("\n");
 
-        const chessboard = SVGChessboard.fromPGN(
-          pgnSource,
-          this.setting,
-          ply,
-          showMove,
-        );
-        // TODO: Add support for annotations in PGN
-        // for (let annotation of parsedCode.annotations) {
-        //   if (annotation.type === "arrow") {
-        //     chessboard.addArrow(
-        //       annotation.start,
-        //       annotation.end,
-        //       annotation.color
-        //     );
-        //   }
-        //   if (annotation.type === "highlight") {
-        //     chessboard.highlight(annotation.square, annotation.color);
-        //   }
-        // }
-        this.drawChessboard(chessboard, el, ctx);
+        if (interactive) {
+          // Use interactive rendering
+          const interactiveBoard = createInteractivePGNBoard(
+            pgnSource,
+            this.setting,
+            ply,
+            showMove,
+            this.setting.boardWidthPx,
+          );
+          el.appendChild(interactiveBoard);
+        } else {
+          // Use static rendering
+          const chessboard = SVGChessboard.fromPGN(
+            pgnSource,
+            this.setting,
+            ply,
+            showMove,
+          );
+          // TODO: Add support for annotations in PGN
+          // for (let annotation of parsedCode.annotations) {
+          //   if (annotation.type === "arrow") {
+          //     chessboard.addArrow(
+          //       annotation.start,
+          //       annotation.end,
+          //       annotation.color
+          //     );
+          //   }
+          //   if (annotation.type === "highlight") {
+          //     chessboard.highlight(annotation.square, annotation.color);
+          //   }
+          // }
+          this.drawChessboard(chessboard, el, ctx);
+        }
       } catch (e) {
         this.drawErrorMessage(e, el);
       }
