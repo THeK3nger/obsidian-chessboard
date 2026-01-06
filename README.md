@@ -57,6 +57,9 @@ The annotations are written in the `annotations` field, and you can use the foll
 
 - `A<square>-<square>`, draws an arrow from the first square to the second square. E.g., `Af8-b4`.
 - `H<square>`, highlight a specific square. E.g., `Hf8`. If you add `/g` or `/r` or `/b` you can highlight the square in green, red or blue.
+- `S<square>`, draws a box around a square.
+- `C<square>`, draws a circle around a square.
+- `Q<square>`, draws a _squircle_ around a square.
 - `!!<square>`, adds a "brilliant move" icon to the specified square. E.g., `!!e5`.
 - `??<square>`, adds a "blunder" icon to the specified square. E.g., `??e5`.
 - `?<square>`, adds a "questionable move" icon to the specified square. E.g., `?e5`.
@@ -128,13 +131,15 @@ It is also possible to highlight the *ply*. By using `show-move` you can select 
 - `arrow`: it draws an arrow from the origin to the destination square of the move.
 - `none`: no highlighting (default).
 
+### Interactive Mode
+
+It is possible to specify a PGN diagram as interactive by using the `interactive: true` option. If a diagram is interactive, the plugin will show buttons to go to the previous or next move (or the first and the last).
+
 ### Current Limitations
 
 This supports the full PGN specification but, for now, the feature is experimental and has limitations:
 
 1. At the moment, this mode do not support annotations.
-
-I am planning a way to use PGN to navigate the game, showing multiple board positions in a grid, and things like that.
 
 Moreover, the syntax in PGN games is still unstable. I may change it in new versions.
 

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v0.13.0
+
+### New 
+
+- ⭐ Add new Shape annotations. It is now possible to highlight a square with a **square** (e.g., `Se4`), a **circle** (e.g., `Ce4`) and a **squircle** (e.g., `Qe4`). These new annotations support the same color modifiers of other annotations.
+- ⭐ Add optional interactive mode for PGN diagrams. If you specify `interactive: true` in the code block you will now get Next/Previous buttons to navigate the PGN game.
+
 ## v0.12.0
 
 ### New
