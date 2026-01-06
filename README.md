@@ -135,8 +135,7 @@ It is also possible to highlight the *ply*. By using `show-move` you can select 
 
 It is possible to specify a PGN diagram as interactive by using the `interactive: true` option. If a diagram is interactive, the plugin will show buttons to go to the previous or next move (or the first and the last).
 
-<img width="880" height="1008" alt="CleanShot 2026-01-06 at 14 41 50@2x" src="https://github.com/user-attachments/assets/7f5093a9-4392-44a8-824f-141d625472c0" />
-
+<img width="500px" alt="Interactive PGN Mode Example" src="https://github.com/user-attachments/assets/7f5093a9-4392-44a8-824f-141d625472c0" />
 
 ### Current Limitations
 
@@ -177,4 +176,6 @@ This will create a `main.js` file in the project root. That is the entry point o
 ## Chess Pieces
 
 The SVG pieces were made by jurgenwesterhof (adapted from work of Cburnett), CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Chess_Pieces_Sprite.svg).
+
+
 
