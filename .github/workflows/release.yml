@@ -16,12 +16,27 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18.x"
+          node-version: "22.x"
 
       - name: Build plugin
         run: |
-          npm install
+          npm ci
           npm run build
+
+      - name: Validate version
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          manifest_version=$(jq -r '.version' manifest.json)
+          if [ "$tag" != "$manifest_version" ]; then
+            echo "Error: Tag ($tag) doesn't match manifest.json version ($manifest_version)"
+            exit 1
+          fi
+
+      - name: Extract changelog
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          # Extract section for this version from CHANGELOG.md
+          sed -n "/## v${tag}/,/## v/p" CHANGELOG.md | sed '$d' > release_notes.md
 
       - name: Create release
         env:
@@ -31,5 +46,6 @@ jobs:
 
           gh release create "$tag" \
             --title="$tag" \
+            --notes-file release_notes.md \
             --draft \
             main.js manifest.json
