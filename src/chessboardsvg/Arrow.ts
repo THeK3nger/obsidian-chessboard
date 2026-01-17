@@ -3,9 +3,9 @@
  */
 export class Arrow {
   private static readonly xmlns = "http://www.w3.org/2000/svg";
-  private static readonly HALF_SHAFT_WIDTH = 5;
-  private static readonly HEAD_DEPTH = 20;
-  private static readonly HALF_HEAD_HEIGHT = 10;
+  private static readonly HALF_SHAFT_WIDTH = 4;
+  private static readonly HEAD_DEPTH = 15;
+  private static readonly HALF_HEAD_HEIGHT = 8;
 
   /**
    * Draws an arrow from (x0, y0) to (x1, y1) with the specified color.
@@ -25,21 +25,26 @@ export class Arrow {
     color: string,
     opacity: number = 0.8,
   ): SVGElement {
-    const arrow = document.createElementNS(this.xmlns, "polygon");
+    const arrow = document.createElementNS(this.xmlns, "path");
     const length = Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2);
 
     // Arrow shaft ends where the head begins
     const shaftEnd = length - this.HEAD_DEPTH;
 
-    // Define the arrow points pair to pair, starting from x0, y0.
-    const points = `
-      ${x0},${y0 - this.HALF_SHAFT_WIDTH}
-      ${x0 + shaftEnd},${y0 - this.HALF_SHAFT_WIDTH}
-      ${x0 + shaftEnd},${y0 - this.HALF_HEAD_HEIGHT}
-      ${x0 + length},${y0}
-      ${x0 + shaftEnd},${y0 + this.HALF_HEAD_HEIGHT}
-      ${x0 + shaftEnd},${y0 + this.HALF_SHAFT_WIDTH}
-      ${x0},${y0 + this.HALF_SHAFT_WIDTH}
+    // Create a single path with a rounded start using an arc
+    // M: Move to top of shaft
+    // A: Arc around the start (creates the rounded beginning)
+    // L: Line to various points forming the arrow shape
+    // Z: Close the path
+    const pathData = `
+      M ${x0},${y0 - this.HALF_SHAFT_WIDTH}
+      A ${this.HALF_SHAFT_WIDTH},${this.HALF_SHAFT_WIDTH} 0 0 0 ${x0},${y0 + this.HALF_SHAFT_WIDTH}
+      L ${x0 + shaftEnd},${y0 + this.HALF_SHAFT_WIDTH}
+      L ${x0 + shaftEnd},${y0 + this.HALF_HEAD_HEIGHT}
+      L ${x0 + length},${y0}
+      L ${x0 + shaftEnd},${y0 - this.HALF_HEAD_HEIGHT}
+      L ${x0 + shaftEnd},${y0 - this.HALF_SHAFT_WIDTH}
+      Z
     `
       .trim()
       .replace(/\s+/g, " ");
@@ -47,8 +52,7 @@ export class Arrow {
     // Calculate rotation angle to point from (x0, y0) to (x1, y1)
     const angle = Math.atan2(y1 - y0, x1 - x0) * (180 / Math.PI);
 
-    // Set attributes using setAttribute (simpler than setAttributeNS with null namespace)
-    arrow.setAttribute("points", points);
+    arrow.setAttribute("d", pathData);
     arrow.setAttribute("transform", `rotate(${angle},${x0},${y0})`);
     arrow.setAttribute("fill", color);
     arrow.setAttribute("opacity", opacity.toString());
