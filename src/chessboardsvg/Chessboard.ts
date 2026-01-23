@@ -64,7 +64,7 @@ export class Chessboard {
     return (String.fromCharCode(c + "a".charCodeAt(0)) + (8 - r)) as Square;
   }
 
-  static fromFEN(fenString: string): Chessboard {
+  static fromFEN(fenString: string, skipValidation = false): Chessboard {
     const chessboard = new Chessboard();
 
     // Check if FEN includes at least the moving color. If not, append ' w' to the string.
@@ -72,7 +72,32 @@ export class Chessboard {
     if (!fenString.trim().includes(" ")) {
       fenString += " w";
     }
-    chessboard.chessboard.load(fenString);
+
+    if (skipValidation) {
+      // Parse FEN manually without chess.js validation.
+      // This allows non-standard positions (chess variants, puzzles, etc.)
+      chessboard.chessboard.clear();
+      const piecePlacement = fenString.split(" ")[0];
+      let r = 0;
+      for (const row of piecePlacement.split("/")) {
+        let c = 0;
+        for (const char of row) {
+          const numToken = parseInt(char, 10);
+          if (!isNaN(numToken)) {
+            c += numToken;
+            continue;
+          }
+          const color = char === char.toUpperCase() ? "w" : "b";
+          const type = char.toLowerCase() as "k" | "q" | "r" | "b" | "n" | "p";
+          chessboard.chessboard.put({ type, color }, Chessboard.coordToAlgebraic([c, r]));
+          c++;
+        }
+        r++;
+      }
+    } else {
+      chessboard.chessboard.load(fenString);
+    }
+
     return chessboard;
   }
 

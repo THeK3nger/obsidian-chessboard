@@ -51,6 +51,7 @@ export interface ParsedChessCode {
   fen: string;
   annotations: Array<Annotation>;
   orientation: "white" | "black";
+  strict: boolean;
 }
 
 /**
@@ -68,9 +69,14 @@ export function parseCodeBlock(input: string): ParsedChessCode {
   }
   const annotations: Array<Annotation> = [];
   let orientation: "white" | "black" = "white";
+  let strict = true;
   for (let line of lines.splice(1)) {
     if (line.trim() === "") {
       continue;
+    }
+    if (line.startsWith("strict: ")) {
+      const value = line.replace("strict: ", "").trim().toLowerCase();
+      strict = value !== "false";
     }
     if (line.startsWith("orientation: ")) {
       line = line.replace("orientation: ", "");
@@ -215,5 +221,5 @@ export function parseCodeBlock(input: string): ParsedChessCode {
       }
     }
   }
-  return { fen, annotations, orientation };
+  return { fen, annotations, orientation, strict };
 }

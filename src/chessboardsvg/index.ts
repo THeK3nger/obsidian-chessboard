@@ -414,8 +414,9 @@ export class SVGChessboard {
   static fromFEN(
     fenString: string,
     options: Partial<SVGChessboardOptions> = {},
+    skipValidation = false,
   ) {
-    return new SVGChessboard(Chessboard.fromFEN(fenString), options);
+    return new SVGChessboard(Chessboard.fromFEN(fenString, skipValidation), options);
   }
 
   static fromPGN(

@@ -190,7 +190,7 @@ export default class ObsidianChess extends Plugin {
       const parsedCode = parseCodeBlock(source);
       try {
         this.setting.orientation = parsedCode.orientation;
-        const chessboard = SVGChessboard.fromFEN(parsedCode.fen, this.setting);
+        const chessboard = SVGChessboard.fromFEN(parsedCode.fen, this.setting, !parsedCode.strict);
         for (let annotation of parsedCode.annotations) {
           if (annotation.type === "arrow") {
             chessboard.addArrow(
