@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.14.0
+
+### New
+
+- ⭐ Add `strict: false` option for FEN code blocks to disable chess.js validation. This allows rendering non-standard positions for chess variants, puzzles, and other use cases where standard chess rules don't apply.
+
+### Updates
+
+- Improved arrow design with rounded start and refined proportions.
+
 ## v0.13.0
 
 ### New 
