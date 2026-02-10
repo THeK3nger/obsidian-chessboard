@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.15.0
+
+- ⭐ Add support for custom starting positions in PGN diagrams. Thanks to Isabelle Basso (@bellebasso) for this PR. 
+
 ## v0.14.0
 
 ### New
