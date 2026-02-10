@@ -1,7 +1,7 @@
 {
   "name": "obsidian-chessboard",
   "author": "Davide Aversa <thek3nger@gmail.com>",
-  "version": "0.15.0",
+  "version": "0.14.0",
   "description": "Rendering engine for chessboards in Obsidian",
   "main": "main.js",
   "type": "module",
