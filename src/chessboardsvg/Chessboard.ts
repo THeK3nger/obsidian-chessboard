@@ -109,7 +109,12 @@ export class Chessboard {
     if (ply !== undefined) {
       // Get detailed move history with verbose: true
       const history = chessboard.chessboard.history({ verbose: true });
-      chessboard.chessboard.reset();
+      const headers = chessboard.chessboard.header();
+      if (headers.SetUp === "1" && headers.FEN) {
+        chessboard.chessboard.load(headers.FEN);
+      } else {
+        chessboard.chessboard.reset();
+      }
 
       // If ply is 0, show starting position (already reset)
       if (ply === 0) {

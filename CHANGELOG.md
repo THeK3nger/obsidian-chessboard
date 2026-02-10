@@ -4,6 +4,7 @@
 
 ### New
 
+- ⭐ It is now possible to render a PGN from a starting position by using the `FEN` and `SetUp` headers.
 - ⭐ Add `strict: false` option for FEN code blocks to disable chess.js validation. This allows rendering non-standard positions for chess variants, puzzles, and other use cases where standard chess rules don't apply.
 
 ### Updates

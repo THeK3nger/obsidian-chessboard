@@ -29,7 +29,12 @@ class PGNGameState {
   }
 
   private _updatePosition(): void {
-    this.chess.reset();
+    const headers = this.chess.header();
+    if (headers.SetUp === "1" && headers.FEN) {
+      this.chess.load(headers.FEN);
+    } else {
+      this.chess.reset();
+    }
     for (let i = 0; i < this.currentPly; i++) {
       this.chess.move(this.moveHistory[i].san);
     }
