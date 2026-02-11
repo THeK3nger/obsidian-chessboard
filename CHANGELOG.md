@@ -2,7 +2,13 @@
 
 ## v0.15.0
 
+### New
+
 - ⭐ Add support for custom starting positions in PGN diagrams. Thanks to Isabelle Basso (@bellebasso) for this PR. 
+
+### Fixes
+
+- 🚀 Improve the performance of moving back and forward in PGN diagrams.
 
 ## v0.14.0
 
