@@ -109,7 +109,7 @@ export class Chessboard {
     if (ply !== undefined) {
       // Get detailed move history with verbose: true
       const history = chessboard.chessboard.history({ verbose: true });
-      const headers = chessboard.chessboard.header();
+      const headers = chessboard.chessboard.getHeaders();
       if (headers.SetUp === "1" && headers.FEN) {
         chessboard.chessboard.load(headers.FEN);
       } else {

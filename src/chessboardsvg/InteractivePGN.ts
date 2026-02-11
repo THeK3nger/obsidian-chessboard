@@ -1,6 +1,5 @@
 import { Chess, Move } from "chess.js";
 import { SVGChessboard, SVGChessboardOptions, ShowMoveOption } from "./index";
-import { Chessboard } from "./Chessboard";
 
 /**
  * Manages the state of a PGN game for interactive navigation.
@@ -9,64 +8,104 @@ class PGNGameState {
   private chess: Chess;
   private moveHistory: Move[];
   private currentPly: number;
-  private pgnString: string;
   private showMove: ShowMoveOption;
+  private startingFEN: string | undefined;
+  private chessPly: number; // Track where the chess instance currently is
 
-  constructor(pgnString: string, initialPly: number | undefined, showMove: ShowMoveOption = "none") {
-    this.pgnString = pgnString;
+  constructor(
+    pgnString: string,
+    initialPly: number | undefined,
+    showMove: ShowMoveOption = "none",
+  ) {
     this.showMove = showMove;
     this.chess = new Chess();
 
     // Load and parse PGN
     this.chess.loadPgn(pgnString);
+
+    // Capture starting FEN from headers (must do this before any position changes)
+    const headers = this.chess.getHeaders();
+    this.startingFEN =
+      headers.SetUp === "1" && headers.FEN ? headers.FEN : undefined;
+
     this.moveHistory = this.chess.history({ verbose: true });
 
     // Start at initial ply or beginning
-    this.currentPly = initialPly !== undefined ? Math.min(initialPly, this.moveHistory.length) : 0;
+    this.currentPly =
+      initialPly !== undefined
+        ? Math.min(initialPly, this.moveHistory.length)
+        : 0;
 
-    // Reset to starting position and replay moves
-    this._updatePosition();
+    // Reset to starting position and replay moves to initial ply
+    this._resetToStart();
+    this.chessPly = 0;
+    this._ensurePosition(this.currentPly);
   }
 
-  private _updatePosition(): void {
-    const headers = this.chess.header();
-    if (headers.SetUp === "1" && headers.FEN) {
-      this.chess.load(headers.FEN);
+  /**
+   * Resets the chess instance to the starting position.
+   */
+  private _resetToStart(): void {
+    if (this.startingFEN) {
+      this.chess.load(this.startingFEN);
     } else {
       this.chess.reset();
     }
-    for (let i = 0; i < this.currentPly; i++) {
-      this.chess.move(this.moveHistory[i].san);
+  }
+
+  /**
+   * Efficiently moves the chess instance to the target ply.
+   * Uses undo/move to minimize work instead of replaying from scratch.
+   */
+  private _ensurePosition(targetPly: number): void {
+    if (this.chessPly === targetPly) {
+      return; // Already at the right position
+    }
+
+    // If we need to go back
+    if (targetPly < this.chessPly) {
+      const stepsBack = this.chessPly - targetPly;
+      for (let i = 0; i < stepsBack; i++) {
+        this.chess.undo();
+      }
+      this.chessPly = targetPly;
+    }
+    // If we need to go forward
+    else if (targetPly > this.chessPly) {
+      for (let i = this.chessPly; i < targetPly; i++) {
+        this.chess.move(this.moveHistory[i].san);
+      }
+      this.chessPly = targetPly;
     }
   }
 
   goToStart(): void {
     this.currentPly = 0;
-    this._updatePosition();
+    this._ensurePosition(this.currentPly);
   }
 
   goToPrevious(): void {
     if (this.currentPly > 0) {
       this.currentPly--;
-      this._updatePosition();
+      this._ensurePosition(this.currentPly);
     }
   }
 
   goToNext(): void {
     if (this.currentPly < this.moveHistory.length) {
       this.currentPly++;
-      this._updatePosition();
+      this._ensurePosition(this.currentPly);
     }
   }
 
   goToEnd(): void {
     this.currentPly = this.moveHistory.length;
-    this._updatePosition();
+    this._ensurePosition(this.currentPly);
   }
 
   goToPly(ply: number): void {
     this.currentPly = Math.max(0, Math.min(ply, this.moveHistory.length));
-    this._updatePosition();
+    this._ensurePosition(this.currentPly);
   }
 
   getCurrentPly(): number {
@@ -122,7 +161,10 @@ function formatMoveDisplay(move: Move | undefined, ply: number): string {
 /**
  * Updates the move display element.
  */
-function updateMoveDisplay(gameState: PGNGameState, moveInfoElement: HTMLElement): void {
+function updateMoveDisplay(
+  gameState: PGNGameState,
+  moveInfoElement: HTMLElement,
+): void {
   const currentMove = gameState.getCurrentMove();
   const currentPly = gameState.getCurrentPly();
   const totalPlies = gameState.getTotalPlies();
@@ -143,7 +185,7 @@ function updateButtonStates(
     prev: HTMLButtonElement;
     next: HTMLButtonElement;
     last: HTMLButtonElement;
-  }
+  },
 ): void {
   const canGoBack = gameState.canGoBack();
   const canGoForward = gameState.canGoForward();
@@ -182,7 +224,7 @@ function renderBoard(
   gameState: PGNGameState,
   options: Partial<SVGChessboardOptions>,
   svgContainer: HTMLElement,
-  boardWidthPx: number
+  boardWidthPx: number,
 ): void {
   // Clear existing SVG
   svgContainer.innerHTML = "";
@@ -224,7 +266,7 @@ export function createInteractivePGNBoard(
   options: Partial<SVGChessboardOptions>,
   initialPly: number | undefined,
   showMove: ShowMoveOption,
-  boardWidthPx: number
+  boardWidthPx: number,
 ): HTMLElement {
   // Create game state
   const gameState = new PGNGameState(pgnString, initialPly, showMove);
