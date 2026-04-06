@@ -88,13 +88,15 @@ export default class ObsidianChess extends Plugin {
       ctx: MarkdownPostProcessorContext,
     ) => {
       try {
-        this.setting.orientation = "white";
+        (this.setting as any).orientation = "white";
 
         // Extract parameters if present
         let ply: number | undefined = undefined;
         let showMove: ShowMoveOption = "none";
         let interactive = false;
         let pgnSource = source;
+        let isFlippedBoard = (this.setting as any).orientation === "black";
+
 
         const lines = source.split("\n");
         const plyLine = lines.find((line) =>
@@ -106,6 +108,9 @@ export default class ObsidianChess extends Plugin {
         const interactiveLine = lines.find((line) =>
           line.trim().toLowerCase().startsWith("interactive:"),
         );
+        const isFlippedBoardLine = lines.find((line) => {
+          line.trim().toLowerCase().startsWith("flipboard:")
+        })
 
         if (plyLine) {
           const plyMatch = plyLine.match(/ply:\s*(\d+)/i);
@@ -131,6 +136,20 @@ export default class ObsidianChess extends Plugin {
             interactive = interactiveMatch[1].toLowerCase() === "true";
           }
         }
+        if (isFlippedBoardLine) {
+          const isFlippedBoardMatch = isFlippedBoardLine.match(
+            /flipboard:\s*(true|false)/i,
+          );
+          if (isFlippedBoardMatch) {
+            isFlippedBoard = isFlippedBoardMatch[1].toLowerCase() === "true";
+          }
+          if (isFlippedBoard === true) {
+            this.setting.orientation = "black"
+          }
+          if (isFlippedBoard === false) {
+            this.setting.orientation = "white"
+          }
+        }
 
         // Remove parameter lines from the source
         pgnSource = lines
@@ -138,7 +157,8 @@ export default class ObsidianChess extends Plugin {
             (line) =>
               line !== plyLine &&
               line !== showMoveLine &&
-              line !== interactiveLine,
+              line !== interactiveLine &&
+              line !== isFlippedBoardLine,
           )
           .join("\n");
 
