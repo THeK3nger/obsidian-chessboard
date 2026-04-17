@@ -109,7 +109,7 @@ export default class ObsidianChess extends Plugin {
           line.trim().toLowerCase().startsWith("interactive:"),
         );
         const isFlippedBoardLine = lines.find((line) => {
-          line.trim().toLowerCase().startsWith("flipboard:")
+          return line.trim().toLowerCase().startsWith("flipboard:")
         })
 
         if (plyLine) {
