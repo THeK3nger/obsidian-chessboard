@@ -51,6 +51,9 @@ export default class ObsidianChess extends Plugin {
     // TODO: This only works in preview mode. I still don't know how to refresh
     // the ones in edit mode.
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!view) {
+      return;
+    }
     view.previewMode.rerender(true);
   }
 
@@ -202,8 +205,8 @@ export default class ObsidianChess extends Plugin {
       el: HTMLElement,
       ctx: MarkdownPostProcessorContext,
     ) => {
-      const parsedCode = parseCodeBlock(source);
       try {
+        const parsedCode = parseCodeBlock(source);
         const boardOptions = {
           ...this.setting,
           orientation: parsedCode.orientation,
