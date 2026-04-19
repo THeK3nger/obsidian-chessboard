@@ -88,12 +88,11 @@ export default class ObsidianChess extends Plugin {
       ctx: MarkdownPostProcessorContext,
     ) => {
       try {
-        this.setting.orientation = "white";
-
         // Extract parameters if present
         let ply: number | undefined = undefined;
         let showMove: ShowMoveOption = "none";
         let interactive = false;
+        let orientation: "white" | "black" = "white";
         let pgnSource = source;
 
         const lines = source.split("\n");
@@ -139,8 +138,9 @@ export default class ObsidianChess extends Plugin {
             /orientation:\s*(white|black)/i,
           );
           if (orientationMatch) {
-            this.setting.orientation =
-              orientationMatch[1].toLowerCase() as "white" | "black";
+            orientation = orientationMatch[1].toLowerCase() as
+              | "white"
+              | "black";
           }
         }
 
@@ -156,20 +156,22 @@ export default class ObsidianChess extends Plugin {
           .join("\n");
 
         if (interactive) {
+          const boardOptions = { ...this.setting, orientation };
           // Use interactive rendering
           const interactiveBoard = createInteractivePGNBoard(
             pgnSource,
-            this.setting,
+            boardOptions,
             ply,
             showMove,
             this.setting.boardWidthPx,
           );
           el.appendChild(interactiveBoard);
         } else {
+          const boardOptions = { ...this.setting, orientation };
           // Use static rendering
           const chessboard = SVGChessboard.fromPGN(
             pgnSource,
-            this.setting,
+            boardOptions,
             ply,
             showMove,
           );
@@ -202,8 +204,15 @@ export default class ObsidianChess extends Plugin {
     ) => {
       const parsedCode = parseCodeBlock(source);
       try {
-        this.setting.orientation = parsedCode.orientation;
-        const chessboard = SVGChessboard.fromFEN(parsedCode.fen, this.setting, !parsedCode.strict);
+        const boardOptions = {
+          ...this.setting,
+          orientation: parsedCode.orientation,
+        };
+        const chessboard = SVGChessboard.fromFEN(
+          parsedCode.fen,
+          boardOptions,
+          !parsedCode.strict,
+        );
         for (let annotation of parsedCode.annotations) {
           if (annotation.type === "arrow") {
             chessboard.addArrow(
@@ -219,7 +228,11 @@ export default class ObsidianChess extends Plugin {
             chessboard.addIcon(annotation.square, annotation.icon);
           }
           if (annotation.type === "shape") {
-            chessboard.addShape(annotation.square, annotation.shape, annotation.color);
+            chessboard.addShape(
+              annotation.square,
+              annotation.shape,
+              annotation.color,
+            );
           }
         }
         this.drawChessboard(chessboard, el, ctx);
