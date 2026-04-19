@@ -106,6 +106,9 @@ export default class ObsidianChess extends Plugin {
         const interactiveLine = lines.find((line) =>
           line.trim().toLowerCase().startsWith("interactive:"),
         );
+        const orientationLine = lines.find((line) =>
+          line.trim().toLowerCase().startsWith("orientation:"),
+        );
 
         if (plyLine) {
           const plyMatch = plyLine.match(/ply:\s*(\d+)/i);
@@ -131,6 +134,15 @@ export default class ObsidianChess extends Plugin {
             interactive = interactiveMatch[1].toLowerCase() === "true";
           }
         }
+        if (orientationLine) {
+          const orientationMatch = orientationLine.match(
+            /orientation:\s*(white|black)/i,
+          );
+          if (orientationMatch) {
+            this.setting.orientation =
+              orientationMatch[1].toLowerCase() as "white" | "black";
+          }
+        }
 
         // Remove parameter lines from the source
         pgnSource = lines
@@ -138,7 +150,8 @@ export default class ObsidianChess extends Plugin {
             (line) =>
               line !== plyLine &&
               line !== showMoveLine &&
-              line !== interactiveLine,
+              line !== interactiveLine &&
+              line !== orientationLine,
           )
           .join("\n");
 
