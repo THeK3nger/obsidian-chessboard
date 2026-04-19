@@ -88,15 +88,13 @@ export default class ObsidianChess extends Plugin {
       ctx: MarkdownPostProcessorContext,
     ) => {
       try {
-        (this.setting as any).orientation = "white";
+        this.setting.orientation = "white";
 
         // Extract parameters if present
         let ply: number | undefined = undefined;
         let showMove: ShowMoveOption = "none";
         let interactive = false;
         let pgnSource = source;
-        let isFlippedBoard = (this.setting as any).orientation === "black";
-
 
         const lines = source.split("\n");
         const plyLine = lines.find((line) =>
@@ -108,9 +106,9 @@ export default class ObsidianChess extends Plugin {
         const interactiveLine = lines.find((line) =>
           line.trim().toLowerCase().startsWith("interactive:"),
         );
-        const isFlippedBoardLine = lines.find((line) => {
-          return line.trim().toLowerCase().startsWith("flipboard:")
-        })
+        const orientationLine = lines.find((line) =>
+          line.trim().toLowerCase().startsWith("orientation:"),
+        );
 
         if (plyLine) {
           const plyMatch = plyLine.match(/ply:\s*(\d+)/i);
@@ -136,18 +134,13 @@ export default class ObsidianChess extends Plugin {
             interactive = interactiveMatch[1].toLowerCase() === "true";
           }
         }
-        if (isFlippedBoardLine) {
-          const isFlippedBoardMatch = isFlippedBoardLine.match(
-            /flipboard:\s*(true|false)/i,
+        if (orientationLine) {
+          const orientationMatch = orientationLine.match(
+            /orientation:\s*(white|black)/i,
           );
-          if (isFlippedBoardMatch) {
-            isFlippedBoard = isFlippedBoardMatch[1].toLowerCase() === "true";
-          }
-          if (isFlippedBoard === true) {
-            this.setting.orientation = "black"
-          }
-          if (isFlippedBoard === false) {
-            this.setting.orientation = "white"
+          if (orientationMatch) {
+            this.setting.orientation =
+              orientationMatch[1].toLowerCase() as "white" | "black";
           }
         }
 
@@ -158,7 +151,7 @@ export default class ObsidianChess extends Plugin {
               line !== plyLine &&
               line !== showMoveLine &&
               line !== interactiveLine &&
-              line !== isFlippedBoardLine,
+              line !== orientationLine,
           )
           .join("\n");
 
