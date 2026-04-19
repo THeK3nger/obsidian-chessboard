@@ -1,10 +1,10 @@
 # Obsidian Chess Plugin
 
-This plugin adds the capability to visualize Chess [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) positions on a SVG chessboard directly in preview mode.
+This plugin adds the capability to visualize Chess [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) positions on an SVG chessboard directly in preview mode.
 
-By design, this plugin is for visualization only. Do not expect interactivity or the possibility to handle entire games in PGN format. This plugin want to render just a SVG image and it is optimized for visualization and HTML/PDF exports.
+By design, this plugin is focused on visualization. It renders static SVG boards for FEN positions, supports experimental PGN rendering, and can optionally add interactive navigation controls for PGN diagrams. It is optimized for diagrams and HTML/PDF exports rather than full game analysis or editing.
 
-If you want a more interactive plugin, I recommend [Chesser](https://github.com/SilentVoid13/Chesser).
+If you want a more fully featured interactive chess plugin, I recommend [Chesser](https://github.com/SilentVoid13/Chesser).
 
 ## How to use it
 
