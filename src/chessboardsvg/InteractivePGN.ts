@@ -136,6 +136,10 @@ class PGNGameState {
   getShowMove(): ShowMoveOption {
     return this.showMove;
   }
+
+  getMoveHistory(): readonly Move[] {
+    return this.moveHistory;
+  }
 }
 
 /**
@@ -258,6 +262,126 @@ function renderBoard(
   svgContainer.appendChild(block);
 }
 
+const MOVELIST_MIN_WIDTH = 220;
+const MOVELIST_GAP = 12;
+
+const MOVE_CELL_BUTTON_STYLE = `
+  margin: 0;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  color: var(--text-normal);
+`;
+
+function syncMoveListHighlight(panel: HTMLElement, currentPly: number): void {
+  panel.querySelectorAll("button[data-ply]").forEach((node) => {
+    const btn = node as HTMLButtonElement;
+    const cellPly = parseInt(btn.dataset.ply ?? "0", 10);
+    const isCurrent = cellPly === currentPly && currentPly > 0;
+
+    btn.removeAttribute("aria-current");
+
+    if (isCurrent) {
+      btn.style.backgroundColor = "var(--background-modifier-hover)";
+      btn.style.color = "var(--text-accent)";
+      btn.style.fontWeight = "600";
+      btn.setAttribute("aria-current", "true");
+    } else if (cellPly < currentPly) {
+      btn.style.backgroundColor = "transparent";
+      btn.style.color = "var(--text-normal)";
+      btn.style.fontWeight = "400";
+    } else {
+      btn.style.backgroundColor = "transparent";
+      btn.style.color = "var(--text-muted)";
+      btn.style.fontWeight = "400";
+    }
+  });
+}
+
+function createMoveListPanel(
+  gameState: PGNGameState,
+  boardWidthPx: number,
+  onSelectPly: (ply: number) => void,
+): HTMLElement {
+  const root = document.createElement("div");
+  root.setAttribute("role", "navigation");
+  root.setAttribute("aria-label", "Move list");
+  root.style.cssText = `
+    font-family: var(--font-text);
+    font-size: 13px;
+    min-width: 200px;
+    width: min(240px, 100%);
+    flex: 1 1 200px;
+    max-height: ${boardWidthPx}px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px 6px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    color: var(--text-normal);
+  `;
+
+  const history = gameState.getMoveHistory();
+  for (let n = 1; ; n++) {
+    const wi = 2 * (n - 1);
+    if (wi >= history.length) {
+      break;
+    }
+
+    const row = document.createElement("div");
+    row.style.display = "grid";
+    row.style.gridTemplateColumns = "2.2em 1fr 1fr";
+    row.style.columnGap = "6px";
+    row.style.alignItems = "center";
+    row.style.marginBottom = "2px";
+
+    const num = document.createElement("span");
+    num.textContent = `${n}.`;
+    num.style.color = "var(--text-faint)";
+    num.style.textAlign = "right";
+
+    const whitePly = wi + 1;
+    const whiteBtn = document.createElement("button");
+    whiteBtn.type = "button";
+    whiteBtn.textContent = history[wi].san;
+    whiteBtn.dataset.ply = String(whitePly);
+    whiteBtn.style.cssText = MOVE_CELL_BUTTON_STYLE;
+    whiteBtn.addEventListener("click", () => {
+      onSelectPly(whitePly);
+    });
+
+    row.appendChild(num);
+    row.appendChild(whiteBtn);
+
+    const bi = wi + 1;
+    if (bi < history.length) {
+      const blackPly = bi + 1;
+      const blackBtn = document.createElement("button");
+      blackBtn.type = "button";
+      blackBtn.textContent = history[bi].san;
+      blackBtn.dataset.ply = String(blackPly);
+      blackBtn.style.cssText = MOVE_CELL_BUTTON_STYLE;
+      blackBtn.addEventListener("click", () => {
+        onSelectPly(blackPly);
+      });
+      row.appendChild(blackBtn);
+    } else {
+      row.appendChild(document.createElement("span"));
+    }
+
+    root.appendChild(row);
+  }
+
+  syncMoveListHighlight(root, gameState.getCurrentPly());
+  return root;
+}
+
 /**
  * Creates an interactive PGN board with navigation controls.
  */
@@ -267,18 +391,20 @@ export function createInteractivePGNBoard(
   initialPly: number | undefined,
   showMove: ShowMoveOption,
   boardWidthPx: number,
+  showMoveList = false,
 ): HTMLElement {
   // Create game state
   const gameState = new PGNGameState(pgnString, initialPly, showMove);
 
-  // Create container
-  const container = document.createElement("div");
-  container.style.cssText = `
+  // Board column (board + caption + nav); wrapped in an outer row when showMoveList is true
+  const boardColumn = document.createElement("div");
+  boardColumn.style.cssText = `
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
     max-width: ${boardWidthPx}px;
+    width: 100%;
     margin: 0 auto;
   `;
 
@@ -357,6 +483,8 @@ export function createInteractivePGNBoard(
     });
   });
 
+  let moveListPanel: HTMLElement | undefined;
+
   // Update UI function
   const updateUI = () => {
     renderBoard(gameState, options, boardContainer, boardWidthPx);
@@ -367,6 +495,9 @@ export function createInteractivePGNBoard(
       next: nextButton,
       last: lastButton,
     });
+    if (moveListPanel) {
+      syncMoveListHighlight(moveListPanel, gameState.getCurrentPly());
+    }
   };
 
   // Event handlers
@@ -396,13 +527,38 @@ export function createInteractivePGNBoard(
   controls.appendChild(nextButton);
   controls.appendChild(lastButton);
 
-  // Append all to container
-  container.appendChild(boardContainer);
-  container.appendChild(moveInfo);
-  container.appendChild(controls);
+  // Append all to board column
+  boardColumn.appendChild(boardContainer);
+  boardColumn.appendChild(moveInfo);
+  boardColumn.appendChild(controls);
 
-  // Initial render
+  if (showMoveList) {
+    const outer = document.createElement("div");
+    outer.style.cssText = `
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: center;
+      gap: ${MOVELIST_GAP}px;
+      max-width: min(100%, ${boardWidthPx + MOVELIST_GAP + MOVELIST_MIN_WIDTH}px);
+      margin: 0 auto;
+    `;
+    boardColumn.style.margin = "0";
+    moveListPanel = createMoveListPanel(
+      gameState,
+      boardWidthPx,
+      (ply) => {
+        gameState.goToPly(ply);
+        updateUI();
+      },
+    );
+    outer.appendChild(boardColumn);
+    outer.appendChild(moveListPanel);
+    updateUI();
+    return outer;
+  }
+
   updateUI();
-
-  return container;
+  return boardColumn;
 }

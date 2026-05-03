@@ -95,6 +95,7 @@ export default class ObsidianChess extends Plugin {
         let ply: number | undefined = undefined;
         let showMove: ShowMoveOption = "none";
         let interactive = false;
+        let moveList = false;
         let orientation: "white" | "black" = "white";
         let pgnSource = source;
 
@@ -107,6 +108,9 @@ export default class ObsidianChess extends Plugin {
         );
         const interactiveLine = lines.find((line) =>
           line.trim().toLowerCase().startsWith("interactive:"),
+        );
+        const moveListLine = lines.find((line) =>
+          line.trim().toLowerCase().startsWith("move-list:"),
         );
         const orientationLine = lines.find((line) =>
           line.trim().toLowerCase().startsWith("orientation:"),
@@ -136,6 +140,20 @@ export default class ObsidianChess extends Plugin {
             interactive = interactiveMatch[1].toLowerCase() === "true";
           }
         }
+
+        if (moveListLine) {
+          const moveListMatch = moveListLine.match(
+            /move-list:\s*(true|false)/i,
+          );
+          if (moveListMatch) {
+            moveList = moveListMatch[1].toLowerCase() === "true";
+          }
+        }
+
+        if (moveList && !interactive) {
+          interactive = true;
+        }
+
         if (orientationLine) {
           const orientationMatch = orientationLine.match(
             /orientation:\s*(white|black)/i,
@@ -154,6 +172,7 @@ export default class ObsidianChess extends Plugin {
               line !== plyLine &&
               line !== showMoveLine &&
               line !== interactiveLine &&
+              line !== moveListLine &&
               line !== orientationLine,
           )
           .join("\n");
@@ -167,6 +186,7 @@ export default class ObsidianChess extends Plugin {
             ply,
             showMove,
             this.setting.boardWidthPx,
+            moveList,
           );
           el.appendChild(interactiveBoard);
         } else {
