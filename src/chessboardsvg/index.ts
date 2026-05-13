@@ -333,7 +333,14 @@ export class SVGChessboard {
     const offset = (this.squareSize - scaledSize) / 2;
     let g = document.createElementNS(this.xmlns, "g");
     g.setAttributeNS(null, "transform", `translate(${x + offset},${y + offset}) scale(${scale})`);
-    g.innerHTML = piece;
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(
+      `<svg xmlns="http://www.w3.org/2000/svg">${piece}</svg>`,
+      "image/svg+xml",
+    );
+    Array.from(svgDoc.documentElement.childNodes).forEach((node) => {
+      g.appendChild(document.importNode(node, true));
+    });
     return g;
   }
 
