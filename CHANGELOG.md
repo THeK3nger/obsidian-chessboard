@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.17.0
+
+### Fixes
+
+- This version doesn't add anything new but fixes **a lot** of warnings shown in the new [Obsidian Community](https://community.obsidian.md/plugins/obsidian-chessboard) page. The plugin now should follow almost perfectly the official guidelines. 🎉
+
 ## v0.16.0
 
 ### New
