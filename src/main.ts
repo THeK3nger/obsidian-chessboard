@@ -271,7 +271,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
       DEFAULT_CHESS_SETTINGS.blackPieceColor;
     this.plugin.setting.boardWidthPx = DEFAULT_CHESS_SETTINGS.boardWidthPx;
 
-    this.plugin.saveData(this.plugin.setting);
+    void this.plugin.saveData(this.plugin.setting);
 
     this.plugin.refreshChessboardBlocks();
     this.display();
@@ -301,7 +301,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
             .onChange((value) => {
               settings.whiteSquareColor = value;
               this.plugin.refreshChessboardBlocks();
-              this.plugin.saveData(settings);
+              void this.plugin.saveData(settings);
             }),
         );
     });
@@ -316,7 +316,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
             .onChange((value) => {
               settings.blackSquareColor = value;
               this.plugin.refreshChessboardBlocks();
-              this.plugin.saveData(settings);
+              void this.plugin.saveData(settings);
             }),
         );
     });
@@ -329,7 +329,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
           color.setValue(settings.whitePieceColor).onChange((value) => {
             settings.whitePieceColor = value;
             this.plugin.refreshChessboardBlocks();
-            this.plugin.saveData(settings);
+            void this.plugin.saveData(settings);
           }),
         );
     });
@@ -342,7 +342,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
           color.setValue(String(settings.blackPieceColor)).onChange((value) => {
             settings.blackPieceColor = value;
             this.plugin.refreshChessboardBlocks();
-            this.plugin.saveData(settings);
+            void this.plugin.saveData(settings);
           }),
         );
     });
@@ -359,7 +359,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
             if (!isNaN(numericValue) && numericValue > 0) {
               settings.boardWidthPx = numericValue;
               this.plugin.refreshChessboardBlocks();
-              this.plugin.saveData(settings);
+              void this.plugin.saveData(settings);
             } else {
               new Notice(
                 "Please enter a valid positive number for the board size.",
