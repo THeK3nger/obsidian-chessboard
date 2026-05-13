@@ -193,7 +193,7 @@ export class SVGChessboard {
     for (let [coord, highlightColor] of this.highlights) {
       const square = this.drawSquare(coord);
       square.setAttributeNS(null, "fill", highlightColor);
-      square.style.opacity = "0.8";
+      square.setAttributeNS(null, "opacity", "0.8");
       g.appendChild(square);
     }
     let g_foreground = activeDocument.createElementNS(this.xmlns, "g");

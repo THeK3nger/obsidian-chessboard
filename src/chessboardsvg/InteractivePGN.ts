@@ -197,23 +197,11 @@ function updateButtonStates(
 
   // Update visual disabled state
   [buttons.first, buttons.prev].forEach((btn) => {
-    if (!canGoBack) {
-      btn.style.opacity = "0.5";
-      btn.style.cursor = "not-allowed";
-    } else {
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
-    }
+    btn.style.cursor = canGoBack ? "pointer" : "not-allowed";
   });
 
   [buttons.next, buttons.last].forEach((btn) => {
-    if (!canGoForward) {
-      btn.style.opacity = "0.5";
-      btn.style.cursor = "not-allowed";
-    } else {
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
-    }
+    btn.style.cursor = canGoForward ? "pointer" : "not-allowed";
   });
 }
 
@@ -327,21 +315,25 @@ export function createInteractivePGNBoard(
   const firstButton = activeDocument.createElement("button");
   firstButton.textContent = "|<";
   firstButton.style.cssText = buttonStyle;
+  firstButton.addClass("chess-pgn-btn");
   firstButton.setAttribute("aria-label", "First move");
 
   const prevButton = activeDocument.createElement("button");
   prevButton.textContent = "<";
   prevButton.style.cssText = buttonStyle;
+  prevButton.addClass("chess-pgn-btn");
   prevButton.setAttribute("aria-label", "Previous move");
 
   const nextButton = activeDocument.createElement("button");
   nextButton.textContent = ">";
   nextButton.style.cssText = buttonStyle;
+  nextButton.addClass("chess-pgn-btn");
   nextButton.setAttribute("aria-label", "Next move");
 
   const lastButton = activeDocument.createElement("button");
   lastButton.textContent = ">|";
   lastButton.style.cssText = buttonStyle;
+  lastButton.addClass("chess-pgn-btn");
   lastButton.setAttribute("aria-label", "Last move");
 
   // Add hover effects

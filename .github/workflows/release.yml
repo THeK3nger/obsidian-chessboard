@@ -48,4 +48,4 @@ jobs:
             --title="$tag" \
             --notes-file release_notes.md \
             --draft \
-            main.js manifest.json
+            main.js manifest.json styles.css
