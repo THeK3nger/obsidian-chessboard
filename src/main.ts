@@ -63,14 +63,11 @@ export default class ObsidianChess extends Plugin {
     _ctx: MarkdownPostProcessorContext,
   ) {
     const xmlns = "http://www.w3.org/2000/svg";
-    const boardWidthPx = this.setting.boardWidthPx;
     const block = activeDocument.createElementNS(xmlns, "svg");
     block.setAttributeNS(null, "viewBox", `0 0 320 320`);
     block.appendChild(chessboard.draw());
-    block.style.display = "block";
-    block.style.width = "100%";
-    block.style.maxWidth = `${boardWidthPx}px`;
-    block.style.height = "auto";
+    block.addClass("chess-board-svg");
+    block.setCssProps({"--chess-board-max-width": `${this.setting.boardWidthPx}px`});
     el.appendChild(block);
   }
 
@@ -79,7 +76,7 @@ export default class ObsidianChess extends Plugin {
     // Append the error message to the block with red color
     const errorMessage = activeDocument.createTextNode(error.message);
     const errorEl = activeDocument.createElement("div");
-    errorEl.style.color = "red";
+    errorEl.addClass("chess-error");
     errorEl.appendChild(errorMessage);
     el.appendChild(errorEl);
   }
