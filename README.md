@@ -1,4 +1,4 @@
-# Obsidian Chess Plugin
+# Chessboard Viewer
 
 This plugin adds the capability to visualize Chess [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) positions on an SVG chessboard directly in preview mode.
 
@@ -176,6 +176,3 @@ This will create a `main.js` file in the project root. That is the entry point o
 ## Chess Pieces
 
 The SVG pieces were made by jurgenwesterhof (adapted from work of Cburnett), CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Chess_Pieces_Sprite.svg).
-
-
-
