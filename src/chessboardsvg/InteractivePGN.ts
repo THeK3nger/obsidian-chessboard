@@ -241,38 +241,17 @@ export function createInteractivePGNBoard(
   // Create game state
   const gameState = new PGNGameState(pgnString, initialPly, showMove);
 
-  const container = activeDocument.createElement("div");
-  container.addClass("chess-pgn-container");
+  const container = createDiv("chess-pgn-container");
   container.setCssProps({"--chess-board-max-width": `${boardWidthPx}px`});
 
-  const boardContainer = activeDocument.createElement("div");
-  boardContainer.addClass("chess-pgn-board");
+  const boardContainer = createDiv("chess-pgn-board");
+  const moveInfo = createDiv("chess-pgn-move-info");
+  const controls = createDiv("chess-pgn-controls");
 
-  const moveInfo = activeDocument.createElement("div");
-  moveInfo.addClass("chess-pgn-move-info");
-
-  const controls = activeDocument.createElement("div");
-  controls.addClass("chess-pgn-controls");
-
-  const firstButton = activeDocument.createElement("button");
-  firstButton.textContent = "|<";
-  firstButton.addClass("chess-pgn-btn");
-  firstButton.setAttribute("aria-label", "First move");
-
-  const prevButton = activeDocument.createElement("button");
-  prevButton.textContent = "<";
-  prevButton.addClass("chess-pgn-btn");
-  prevButton.setAttribute("aria-label", "Previous move");
-
-  const nextButton = activeDocument.createElement("button");
-  nextButton.textContent = ">";
-  nextButton.addClass("chess-pgn-btn");
-  nextButton.setAttribute("aria-label", "Next move");
-
-  const lastButton = activeDocument.createElement("button");
-  lastButton.textContent = ">|";
-  lastButton.addClass("chess-pgn-btn");
-  lastButton.setAttribute("aria-label", "Last move");
+  const firstButton = createEl("button", { cls: "chess-pgn-btn", text: "|<", attr: { "aria-label": "First move" } });
+  const prevButton = createEl("button", { cls: "chess-pgn-btn", text: "<", attr: { "aria-label": "Previous move" } });
+  const nextButton = createEl("button", { cls: "chess-pgn-btn", text: ">", attr: { "aria-label": "Next move" } });
+  const lastButton = createEl("button", { cls: "chess-pgn-btn", text: ">|", attr: { "aria-label": "Last move" } });
 
   // Update UI function
   const updateUI = () => {

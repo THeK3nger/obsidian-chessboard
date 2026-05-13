@@ -5,7 +5,6 @@ import {
   Notice,
   Plugin,
   PluginSettingTab,
-  Setting,
   SettingGroup,
 } from "obsidian";
 import {
@@ -74,10 +73,7 @@ export default class ObsidianChess extends Plugin {
   private drawErrorMessage(error: Error, el: HTMLElement) {
     console.error(error);
     // Append the error message to the block with red color
-    const errorMessage = activeDocument.createTextNode(error.message);
-    const errorEl = activeDocument.createElement("div");
-    errorEl.addClass("chess-error");
-    errorEl.appendChild(errorMessage);
+    const errorEl = createDiv({ cls: "chess-error", text: error.message });
     el.appendChild(errorEl);
   }
 
