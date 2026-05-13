@@ -247,7 +247,7 @@ function renderBoard(
 
   // Create SVG element (matching drawChessboard from main.ts)
   const xmlns = "http://www.w3.org/2000/svg";
-  const block = document.createElementNS(xmlns, "svg");
+  const block = activeDocument.createElementNS(xmlns, "svg");
   block.setAttributeNS(null, "viewBox", "0 0 320 320");
   block.appendChild(svgBoard.draw());
   block.style.display = "block";
@@ -272,7 +272,7 @@ export function createInteractivePGNBoard(
   const gameState = new PGNGameState(pgnString, initialPly, showMove);
 
   // Create container
-  const container = document.createElement("div");
+  const container = activeDocument.createElement("div");
   container.style.cssText = `
     display: flex;
     flex-direction: column;
@@ -283,13 +283,13 @@ export function createInteractivePGNBoard(
   `;
 
   // Create board container
-  const boardContainer = document.createElement("div");
+  const boardContainer = activeDocument.createElement("div");
   boardContainer.style.cssText = `
     width: 100%;
   `;
 
   // Create move info display
-  const moveInfo = document.createElement("div");
+  const moveInfo = activeDocument.createElement("div");
   moveInfo.style.cssText = `
     font-family: var(--font-text);
     font-size: 14px;
@@ -299,7 +299,7 @@ export function createInteractivePGNBoard(
   `;
 
   // Create controls container
-  const controls = document.createElement("div");
+  const controls = activeDocument.createElement("div");
   controls.style.cssText = `
     display: flex;
     gap: 8px;
@@ -324,22 +324,22 @@ export function createInteractivePGNBoard(
   `;
 
   // Create buttons
-  const firstButton = document.createElement("button");
+  const firstButton = activeDocument.createElement("button");
   firstButton.textContent = "|<";
   firstButton.style.cssText = buttonStyle;
   firstButton.setAttribute("aria-label", "First move");
 
-  const prevButton = document.createElement("button");
+  const prevButton = activeDocument.createElement("button");
   prevButton.textContent = "<";
   prevButton.style.cssText = buttonStyle;
   prevButton.setAttribute("aria-label", "Previous move");
 
-  const nextButton = document.createElement("button");
+  const nextButton = activeDocument.createElement("button");
   nextButton.textContent = ">";
   nextButton.style.cssText = buttonStyle;
   nextButton.setAttribute("aria-label", "Next move");
 
-  const lastButton = document.createElement("button");
+  const lastButton = activeDocument.createElement("button");
   lastButton.textContent = ">|";
   lastButton.style.cssText = buttonStyle;
   lastButton.setAttribute("aria-label", "Last move");

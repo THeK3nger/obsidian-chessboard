@@ -120,7 +120,7 @@ export class SVGChessboard {
   }
 
   draw(): SVGElement {
-    let g = document.createElementNS(this.xmlns, "g");
+    let g = activeDocument.createElementNS(this.xmlns, "g");
     let [annotations, annotations_foreground] = this.drawAnnotations();
     g.appendChild(this.drawBoard());
     if (this.options.drawCoordinates) {
@@ -189,14 +189,14 @@ export class SVGChessboard {
    * need to be rendered above the pieces (e.g., the icons).
    */
   private drawAnnotations(): [SVGElement, SVGElement] {
-    let g = document.createElementNS(this.xmlns, "g");
+    let g = activeDocument.createElementNS(this.xmlns, "g");
     for (let [coord, highlightColor] of this.highlights) {
       const square = this.drawSquare(coord);
       square.setAttributeNS(null, "fill", highlightColor);
       square.style.opacity = "0.8";
       g.appendChild(square);
     }
-    let g_foreground = document.createElementNS(this.xmlns, "g");
+    let g_foreground = activeDocument.createElementNS(this.xmlns, "g");
     for (let annotation of this.annotations) {
       if (annotation.type === "arrow") {
         let start = annotation.start;
@@ -276,7 +276,7 @@ export class SVGChessboard {
   }
 
   private drawBoard(): SVGElement {
-    let g = document.createElementNS(this.xmlns, "g");
+    let g = activeDocument.createElementNS(this.xmlns, "g");
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         g.appendChild(this.drawSquare([c, r]));
@@ -286,7 +286,7 @@ export class SVGChessboard {
   }
 
   private drawPieces(): SVGElement {
-    let g = document.createElementNS(this.xmlns, "g");
+    let g = activeDocument.createElementNS(this.xmlns, "g");
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         const piece = this.chessboard.get(c, r);
@@ -313,7 +313,7 @@ export class SVGChessboard {
 
   private drawIcon(coord: BoardCoordinate, icon: HTMLElement): SVGElement {
     let [x, y] = this.getBoardSVGCord(coord);
-    let g = document.createElementNS(this.xmlns, "g");
+    let g = activeDocument.createElementNS(this.xmlns, "g");
 
     g.setAttributeNS(null, "transform", `translate(${x},${y}) scale(${0.85})`);
     Array.from(icon.childNodes).forEach((node) => {
@@ -331,7 +331,7 @@ export class SVGChessboard {
     const pieceCoordSpace = 45;
     const scaledSize = pieceCoordSpace * scale;
     const offset = (this.squareSize - scaledSize) / 2;
-    let g = document.createElementNS(this.xmlns, "g");
+    let g = activeDocument.createElementNS(this.xmlns, "g");
     g.setAttributeNS(null, "transform", `translate(${x + offset},${y + offset}) scale(${scale})`);
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(
@@ -339,14 +339,14 @@ export class SVGChessboard {
       "image/svg+xml",
     );
     Array.from(svgDoc.documentElement.childNodes).forEach((node) => {
-      g.appendChild(document.importNode(node, true));
+      g.appendChild(activeDocument.importNode(node, true));
     });
     return g;
   }
 
   private drawSquare(coord: BoardCoordinate): SVGRectElement {
     let [x, y] = this.getBoardSVGCord(coord);
-    let rect = document.createElementNS(this.xmlns, "rect");
+    let rect = activeDocument.createElementNS(this.xmlns, "rect");
     rect.setAttributeNS(null, "x", String(x));
     rect.setAttributeNS(null, "y", String(y));
     rect.setAttributeNS(null, "width", String(this.squareSize));
@@ -360,7 +360,7 @@ export class SVGChessboard {
   }
 
   drawCoordinateSystem(): SVGElement {
-    let g = document.createElementNS(this.xmlns, "g");
+    let g = activeDocument.createElementNS(this.xmlns, "g");
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         if (
@@ -388,7 +388,7 @@ export class SVGChessboard {
     position: "row" | "column",
   ): SVGElement {
     let [x, y] = this.getBoardSVGCord([c, r]);
-    let txt = document.createElementNS(this.xmlns, "text");
+    let txt = activeDocument.createElementNS(this.xmlns, "text");
     if (position === "row") {
       txt.setAttributeNS(null, "x", String(x + 1));
       txt.setAttributeNS(null, "y", String(y + 10));
