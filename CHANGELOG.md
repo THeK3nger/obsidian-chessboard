@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.17.1
+
+### Behind the Scene
+
+- Bump TypeScript target to `es2018`
+- Add more artifact checks to improve Obsidian Community score 
+
 ## v0.17.0
 
 ### Fixes
