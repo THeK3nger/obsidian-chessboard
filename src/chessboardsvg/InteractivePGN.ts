@@ -140,6 +140,15 @@ class PGNGameState {
   getMoveHistory(): readonly Move[] {
     return this.moveHistory;
   }
+
+  /** Whether the starting position has Black to move (affects move-list row layout). */
+  blackStartsFirst(): boolean {
+    if (this.startingFEN) {
+      const sideToMove = this.startingFEN.split(/\s+/)[1];
+      return sideToMove === "b";
+    }
+    return this.moveHistory.length > 0 && this.moveHistory[0].color === "b";
+  }
 }
 
 /**
@@ -274,6 +283,22 @@ function syncMoveListHighlight(panel: HTMLElement, currentPly: number): void {
   });
 }
 
+function createMoveCellButton(
+  san: string,
+  ply: number,
+  onSelectPly: (ply: number) => void,
+): HTMLButtonElement {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = san;
+  btn.dataset.ply = String(ply);
+  btn.style.cssText = MOVE_CELL_BUTTON_STYLE;
+  btn.addEventListener("click", () => {
+    onSelectPly(ply);
+  });
+  return btn;
+}
+
 function createMoveListPanel(
   gameState: PGNGameState,
   boardWidthPx: number,
@@ -285,9 +310,9 @@ function createMoveListPanel(
   root.style.cssText = `
     font-family: var(--font-text);
     font-size: 13px;
-    min-width: 200px;
+    min-width: ${MOVELIST_MIN_WIDTH}px;
     width: min(240px, 100%);
-    flex: 1 1 200px;
+    flex: 1 1 ${MOVELIST_MIN_WIDTH}px;
     max-height: ${boardWidthPx}px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -298,11 +323,34 @@ function createMoveListPanel(
   `;
 
   const history = gameState.getMoveHistory();
-  for (let n = 1; ; n++) {
-    const wi = 2 * (n - 1);
-    if (wi >= history.length) {
-      break;
+  const blackStartsFirst = gameState.blackStartsFirst();
+
+  type MoveCell = { move: Move; ply: number };
+  type RowData = { white?: MoveCell; black?: MoveCell };
+  const rows = new Map<number, RowData>();
+
+  // PGN row numbers: Black's nth move is always row n;
+  // White's nth move is row n, except when Black moved first (then row n+1).
+  let whiteCount = 0;
+  let blackCount = 0;
+  history.forEach((move, index) => {
+    const ply = index + 1;
+    if (move.color === "w") {
+      whiteCount++;
+      const rowNum = blackStartsFirst ? whiteCount + 1 : whiteCount;
+      const row = rows.get(rowNum) ?? {};
+      row.white = { move, ply };
+      rows.set(rowNum, row);
+    } else {
+      blackCount++;
+      const row = rows.get(blackCount) ?? {};
+      row.black = { move, ply };
+      rows.set(blackCount, row);
     }
+  });
+
+  for (const rowNum of Array.from(rows.keys()).sort((a, b) => a - b)) {
+    const rowData = rows.get(rowNum)!;
 
     const row = document.createElement("div");
     row.style.display = "grid";
@@ -312,38 +360,21 @@ function createMoveListPanel(
     row.style.marginBottom = "2px";
 
     const num = document.createElement("span");
-    num.textContent = `${n}.`;
+    num.textContent = `${rowNum}.`;
     num.style.color = "var(--text-faint)";
     num.style.textAlign = "right";
 
-    const whitePly = wi + 1;
-    const whiteBtn = document.createElement("button");
-    whiteBtn.type = "button";
-    whiteBtn.textContent = history[wi].san;
-    whiteBtn.dataset.ply = String(whitePly);
-    whiteBtn.style.cssText = MOVE_CELL_BUTTON_STYLE;
-    whiteBtn.addEventListener("click", () => {
-      onSelectPly(whitePly);
-    });
-
     row.appendChild(num);
-    row.appendChild(whiteBtn);
-
-    const bi = wi + 1;
-    if (bi < history.length) {
-      const blackPly = bi + 1;
-      const blackBtn = document.createElement("button");
-      blackBtn.type = "button";
-      blackBtn.textContent = history[bi].san;
-      blackBtn.dataset.ply = String(blackPly);
-      blackBtn.style.cssText = MOVE_CELL_BUTTON_STYLE;
-      blackBtn.addEventListener("click", () => {
-        onSelectPly(blackPly);
-      });
-      row.appendChild(blackBtn);
-    } else {
-      row.appendChild(document.createElement("span"));
-    }
+    row.appendChild(
+      rowData.white
+        ? createMoveCellButton(rowData.white.move.san, rowData.white.ply, onSelectPly)
+        : document.createElement("span"),
+    );
+    row.appendChild(
+      rowData.black
+        ? createMoveCellButton(rowData.black.move.san, rowData.black.ply, onSelectPly)
+        : document.createElement("span"),
+    );
 
     root.appendChild(row);
   }
