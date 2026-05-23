@@ -20,7 +20,7 @@ export class Shapes {
     color: string,
     opacity: number = 0.8,
   ): SVGElement {
-    const circle = document.createElementNS(this.xmlns, "circle");
+    const circle = activeDocument.createElementNS(this.xmlns, "circle");
     const radius = size * 0.35; // Circle takes ~70% of square
     const centerX = x + size / 2;
     const centerY = y + size / 2;
@@ -52,7 +52,7 @@ export class Shapes {
     color: string,
     opacity: number = 0.8,
   ): SVGElement {
-    const rect = document.createElementNS(this.xmlns, "rect");
+    const rect = activeDocument.createElementNS(this.xmlns, "rect");
     const padding = size * 0.15; // 15% padding on each side
     const shapeSize = size * 0.7; // Square takes ~70% of cell
 
@@ -85,7 +85,7 @@ export class Shapes {
     color: string,
     opacity: number = 0.8,
   ): SVGElement {
-    const path = document.createElementNS(this.xmlns, "path");
+    const path = activeDocument.createElementNS(this.xmlns, "path");
     const padding = size * 0.15;
     const shapeSize = size * 0.7;
     const cornerRadius = shapeSize * 0.25; // 25% corner radius for smooth squircle

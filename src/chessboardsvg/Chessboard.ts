@@ -38,10 +38,6 @@ export class Chessboard {
     return this.chessboard.get(algebraic);
   }
 
-  print() {
-    console.log(this.chessboard.ascii());
-  }
-
   getLastMove(): Move | undefined {
     return this.lastMovePlayed;
   }
@@ -89,7 +85,10 @@ export class Chessboard {
           }
           const color = char === char.toUpperCase() ? "w" : "b";
           const type = char.toLowerCase() as "k" | "q" | "r" | "b" | "n" | "p";
-          chessboard.chessboard.put({ type, color }, Chessboard.coordToAlgebraic([c, r]));
+          chessboard.chessboard.put(
+            { type, color },
+            Chessboard.coordToAlgebraic([c, r]),
+          );
           c++;
         }
         r++;

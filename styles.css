@@ -1,0 +1,62 @@
+.chess-board-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: var(--chess-board-max-width, 320px);
+}
+
+.chess-pgn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+  max-width: var(--chess-board-max-width, 320px);
+}
+
+.chess-pgn-board {
+  width: 100%;
+}
+
+.chess-pgn-move-info {
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--text-normal);
+  text-align: center;
+  min-height: 20px;
+}
+
+.chess-pgn-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.chess-pgn-btn {
+  padding: 8px 16px;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 16px;
+  font-family: var(--font-text);
+  background-color: var(--interactive-normal);
+  color: var(--text-normal);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.1s ease;
+}
+
+.chess-pgn-btn:hover:not(:disabled) {
+  background-color: var(--interactive-hover);
+}
+
+.chess-pgn-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chess-error {
+  color: red;
+}

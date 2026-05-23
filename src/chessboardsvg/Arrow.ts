@@ -25,7 +25,7 @@ export class Arrow {
     color: string,
     opacity: number = 0.8,
   ): SVGElement {
-    const arrow = document.createElementNS(this.xmlns, "path");
+    const arrow = activeDocument.createElementNS(this.xmlns, "path");
     const length = Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2);
 
     // Arrow shaft ends where the head begins

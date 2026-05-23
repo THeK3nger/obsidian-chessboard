@@ -6,6 +6,19 @@
 
 - Add optional `move-list: true` for `chessboard-pgn` blocks: shows a scrollable SAN move list beside the board (with wrapping on narrow layouts). Click a move to jump to that position. If `move-list` is enabled without `interactive: true`, interactive navigation is turned on automatically.
 
+## v0.17.1
+
+### Behind the Scene
+
+- Bump TypeScript target to `es2018`
+- Add more artifact checks to improve Obsidian Community score 
+
+## v0.17.0
+
+### Fixes
+
+- This version doesn't add anything new but fixes **a lot** of warnings shown in the new [Obsidian Community](https://community.obsidian.md/plugins/obsidian-chessboard) page. The plugin now should follow almost perfectly the official guidelines. 🎉
+
 ## v0.16.0
 
 ### New

@@ -193,32 +193,10 @@ function updateButtonStates(
 ): void {
   const canGoBack = gameState.canGoBack();
   const canGoForward = gameState.canGoForward();
-
   buttons.first.disabled = !canGoBack;
   buttons.prev.disabled = !canGoBack;
   buttons.next.disabled = !canGoForward;
   buttons.last.disabled = !canGoForward;
-
-  // Update visual disabled state
-  [buttons.first, buttons.prev].forEach((btn) => {
-    if (!canGoBack) {
-      btn.style.opacity = "0.5";
-      btn.style.cursor = "not-allowed";
-    } else {
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
-    }
-  });
-
-  [buttons.next, buttons.last].forEach((btn) => {
-    if (!canGoForward) {
-      btn.style.opacity = "0.5";
-      btn.style.cursor = "not-allowed";
-    } else {
-      btn.style.opacity = "1";
-      btn.style.cursor = "pointer";
-    }
-  });
 }
 
 /**
@@ -228,15 +206,11 @@ function renderBoard(
   gameState: PGNGameState,
   options: Partial<SVGChessboardOptions>,
   svgContainer: HTMLElement,
-  boardWidthPx: number,
 ): void {
-  // Clear existing SVG
   svgContainer.innerHTML = "";
 
-  // Create SVGChessboard from current FEN
   const svgBoard = SVGChessboard.fromFEN(gameState.getCurrentFEN(), options);
 
-  // Apply move highlighting if needed
   const showMove = gameState.getShowMove();
   if (showMove !== "none") {
     const lastMove = gameState.getCurrentMove();
@@ -249,15 +223,11 @@ function renderBoard(
     }
   }
 
-  // Create SVG element (matching drawChessboard from main.ts)
   const xmlns = "http://www.w3.org/2000/svg";
-  const block = document.createElementNS(xmlns, "svg");
+  const block = activeDocument.createElementNS(xmlns, "svg");
   block.setAttributeNS(null, "viewBox", "0 0 320 320");
   block.appendChild(svgBoard.draw());
-  block.style.display = "block";
-  block.style.width = "100%";
-  block.style.maxWidth = `${boardWidthPx}px`;
-  block.style.height = "auto";
+  block.addClass("chess-board-svg");
 
   svgContainer.appendChild(block);
 }
@@ -396,98 +366,23 @@ export function createInteractivePGNBoard(
   // Create game state
   const gameState = new PGNGameState(pgnString, initialPly, showMove);
 
-  // Board column (board + caption + nav); wrapped in an outer row when showMoveList is true
-  const boardColumn = document.createElement("div");
-  boardColumn.style.cssText = `
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    max-width: ${boardWidthPx}px;
-    width: 100%;
-    margin: 0 auto;
-  `;
+  const container = createDiv("chess-pgn-container");
+  container.setCssProps({ "--chess-board-max-width": `${boardWidthPx}px` });
 
-  // Create board container
-  const boardContainer = document.createElement("div");
-  boardContainer.style.cssText = `
-    width: 100%;
-  `;
+  const boardContainer = createDiv("chess-pgn-board");
+  const moveInfo = createDiv("chess-pgn-move-info");
+  const controls = createDiv("chess-pgn-controls");
 
-  // Create move info display
-  const moveInfo = document.createElement("div");
-  moveInfo.style.cssText = `
-    font-family: var(--font-text);
-    font-size: 14px;
-    color: var(--text-normal);
-    text-align: center;
-    min-height: 20px;
-  `;
-
-  // Create controls container
-  const controls = document.createElement("div");
-  controls.style.cssText = `
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-  `;
-
-  // Button styling
-  const buttonStyle = `
-    padding: 8px 16px;
-    min-width: 44px;
-    min-height: 44px;
-    font-size: 16px;
-    font-family: var(--font-text);
-    background-color: var(--interactive-normal);
-    color: var(--text-normal);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
-    cursor: pointer;
-    touch-action: manipulation;
-    transition: background-color 0.1s ease;
-  `;
-
-  // Create buttons
-  const firstButton = document.createElement("button");
-  firstButton.textContent = "|<";
-  firstButton.style.cssText = buttonStyle;
-  firstButton.setAttribute("aria-label", "First move");
-
-  const prevButton = document.createElement("button");
-  prevButton.textContent = "<";
-  prevButton.style.cssText = buttonStyle;
-  prevButton.setAttribute("aria-label", "Previous move");
-
-  const nextButton = document.createElement("button");
-  nextButton.textContent = ">";
-  nextButton.style.cssText = buttonStyle;
-  nextButton.setAttribute("aria-label", "Next move");
-
-  const lastButton = document.createElement("button");
-  lastButton.textContent = ">|";
-  lastButton.style.cssText = buttonStyle;
-  lastButton.setAttribute("aria-label", "Last move");
-
-  // Add hover effects
-  const buttons = [firstButton, prevButton, nextButton, lastButton];
-  buttons.forEach((btn) => {
-    btn.addEventListener("mouseenter", () => {
-      if (!btn.disabled) {
-        btn.style.backgroundColor = "var(--interactive-hover)";
-      }
-    });
-    btn.addEventListener("mouseleave", () => {
-      btn.style.backgroundColor = "var(--interactive-normal)";
-    });
-  });
+  const firstButton = createEl("button", { cls: "chess-pgn-btn", text: "|<", attr: { "aria-label": "First move" } });
+  const prevButton = createEl("button", { cls: "chess-pgn-btn", text: "<", attr: { "aria-label": "Previous move" } });
+  const nextButton = createEl("button", { cls: "chess-pgn-btn", text: ">", attr: { "aria-label": "Next move" } });
+  const lastButton = createEl("button", { cls: "chess-pgn-btn", text: ">|", attr: { "aria-label": "Last move" } });
 
   let moveListPanel: HTMLElement | undefined;
 
   // Update UI function
   const updateUI = () => {
-    renderBoard(gameState, options, boardContainer, boardWidthPx);
+    renderBoard(gameState, options, boardContainer);
     updateMoveDisplay(gameState, moveInfo);
     updateButtonStates(gameState, {
       first: firstButton,
@@ -527,10 +422,9 @@ export function createInteractivePGNBoard(
   controls.appendChild(nextButton);
   controls.appendChild(lastButton);
 
-  // Append all to board column
-  boardColumn.appendChild(boardContainer);
-  boardColumn.appendChild(moveInfo);
-  boardColumn.appendChild(controls);
+  container.appendChild(boardContainer);
+  container.appendChild(moveInfo);
+  container.appendChild(controls);
 
   if (showMoveList) {
     const outer = document.createElement("div");
@@ -544,7 +438,7 @@ export function createInteractivePGNBoard(
       max-width: min(100%, ${boardWidthPx + MOVELIST_GAP + MOVELIST_MIN_WIDTH}px);
       margin: 0 auto;
     `;
-    boardColumn.style.margin = "0";
+    container.style.margin = "0";
     moveListPanel = createMoveListPanel(
       gameState,
       boardWidthPx,
@@ -553,12 +447,12 @@ export function createInteractivePGNBoard(
         updateUI();
       },
     );
-    outer.appendChild(boardColumn);
+    outer.appendChild(container);
     outer.appendChild(moveListPanel);
     updateUI();
     return outer;
   }
 
   updateUI();
-  return boardColumn;
+  return container;
 }

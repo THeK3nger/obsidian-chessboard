@@ -5,7 +5,6 @@ import {
   Notice,
   Plugin,
   PluginSettingTab,
-  Setting,
   SettingGroup,
 } from "obsidian";
 import {
@@ -63,24 +62,18 @@ export default class ObsidianChess extends Plugin {
     _ctx: MarkdownPostProcessorContext,
   ) {
     const xmlns = "http://www.w3.org/2000/svg";
-    const boardWidthPx = this.setting.boardWidthPx;
-    const block = document.createElementNS(xmlns, "svg");
+    const block = activeDocument.createElementNS(xmlns, "svg");
     block.setAttributeNS(null, "viewBox", `0 0 320 320`);
     block.appendChild(chessboard.draw());
-    block.style.display = "block";
-    block.style.width = "100%";
-    block.style.maxWidth = `${boardWidthPx}px`;
-    block.style.height = "auto";
+    block.addClass("chess-board-svg");
+    block.setCssProps({"--chess-board-max-width": `${this.setting.boardWidthPx}px`});
     el.appendChild(block);
   }
 
   private drawErrorMessage(error: Error, el: HTMLElement) {
     console.error(error);
     // Append the error message to the block with red color
-    const errorMessage = document.createTextNode(error.message);
-    const errorEl = document.createElement("div");
-    errorEl.style.color = "red";
-    errorEl.appendChild(errorMessage);
+    const errorEl = createDiv({ cls: "chess-error", text: error.message });
     el.appendChild(errorEl);
   }
 
@@ -298,7 +291,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
       DEFAULT_CHESS_SETTINGS.blackPieceColor;
     this.plugin.setting.boardWidthPx = DEFAULT_CHESS_SETTINGS.boardWidthPx;
 
-    this.plugin.saveData(this.plugin.setting);
+    void this.plugin.saveData(this.plugin.setting);
 
     this.plugin.refreshChessboardBlocks();
     this.display();
@@ -328,7 +321,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
             .onChange((value) => {
               settings.whiteSquareColor = value;
               this.plugin.refreshChessboardBlocks();
-              this.plugin.saveData(settings);
+              void this.plugin.saveData(settings);
             }),
         );
     });
@@ -343,7 +336,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
             .onChange((value) => {
               settings.blackSquareColor = value;
               this.plugin.refreshChessboardBlocks();
-              this.plugin.saveData(settings);
+              void this.plugin.saveData(settings);
             }),
         );
     });
@@ -356,7 +349,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
           color.setValue(settings.whitePieceColor).onChange((value) => {
             settings.whitePieceColor = value;
             this.plugin.refreshChessboardBlocks();
-            this.plugin.saveData(settings);
+            void this.plugin.saveData(settings);
           }),
         );
     });
@@ -369,7 +362,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
           color.setValue(String(settings.blackPieceColor)).onChange((value) => {
             settings.blackPieceColor = value;
             this.plugin.refreshChessboardBlocks();
-            this.plugin.saveData(settings);
+            void this.plugin.saveData(settings);
           }),
         );
     });
@@ -386,7 +379,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
             if (!isNaN(numericValue) && numericValue > 0) {
               settings.boardWidthPx = numericValue;
               this.plugin.refreshChessboardBlocks();
-              this.plugin.saveData(settings);
+              void this.plugin.saveData(settings);
             } else {
               new Notice(
                 "Please enter a valid positive number for the board size.",

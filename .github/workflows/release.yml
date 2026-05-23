@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@v3
 
@@ -22,6 +24,13 @@ jobs:
         run: |
           npm ci
           npm run build
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            styles.css
 
       - name: Validate version
         run: |
@@ -48,4 +57,4 @@ jobs:
             --title="$tag" \
             --notes-file release_notes.md \
             --draft \
-            main.js manifest.json
+            main.js manifest.json styles.css
