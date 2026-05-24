@@ -244,19 +244,6 @@ function renderBoard(
 const MOVELIST_MIN_WIDTH = 220;
 const MOVELIST_GAP = 12;
 
-const MOVE_CELL_BUTTON_STYLE = `
-  margin: 0;
-  padding: 2px 4px;
-  border: none;
-  border-radius: 3px;
-  background: transparent;
-  font-family: var(--font-monospace);
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  touch-action: manipulation;
-  color: var(--text-normal);
-`;
 
 function syncMoveListHighlight(panel: HTMLElement, currentPly: number): void {
   panel.querySelectorAll("button[data-ply]").forEach((node) => {
@@ -265,20 +252,13 @@ function syncMoveListHighlight(panel: HTMLElement, currentPly: number): void {
     const isCurrent = cellPly === currentPly && currentPly > 0;
 
     btn.removeAttribute("aria-current");
+    btn.classList.remove("chess-move-btn-past", "chess-move-btn-current");
 
     if (isCurrent) {
-      btn.style.backgroundColor = "var(--background-modifier-hover)";
-      btn.style.color = "var(--text-accent)";
-      btn.style.fontWeight = "600";
+      btn.classList.add("chess-move-btn-current");
       btn.setAttribute("aria-current", "true");
     } else if (cellPly < currentPly) {
-      btn.style.backgroundColor = "transparent";
-      btn.style.color = "var(--text-normal)";
-      btn.style.fontWeight = "400";
-    } else {
-      btn.style.backgroundColor = "transparent";
-      btn.style.color = "var(--text-muted)";
-      btn.style.fontWeight = "400";
+      btn.classList.add("chess-move-btn-past");
     }
   });
 }
@@ -288,11 +268,9 @@ function createMoveCellButton(
   ply: number,
   onSelectPly: (ply: number) => void,
 ): HTMLButtonElement {
-  const btn = document.createElement("button");
-  btn.type = "button";
+  const btn = createEl("button", { cls: "chess-move-btn", attr: { type: "button" } });
   btn.textContent = san;
   btn.dataset.ply = String(ply);
-  btn.style.cssText = MOVE_CELL_BUTTON_STYLE;
   btn.addEventListener("click", () => {
     onSelectPly(ply);
   });
@@ -304,7 +282,7 @@ function createMoveListPanel(
   boardWidthPx: number,
   onSelectPly: (ply: number) => void,
 ): HTMLElement {
-  const root = document.createElement("div");
+  const root = createDiv();
   root.setAttribute("role", "navigation");
   root.setAttribute("aria-label", "Move list");
   root.style.cssText = `
@@ -350,30 +328,23 @@ function createMoveListPanel(
   });
 
   for (const rowNum of Array.from(rows.keys()).sort((a, b) => a - b)) {
-    const rowData = rows.get(rowNum)!;
+    const rowData = rows.get(rowNum);
 
-    const row = document.createElement("div");
-    row.style.display = "grid";
-    row.style.gridTemplateColumns = "2.2em 1fr 1fr";
-    row.style.columnGap = "6px";
-    row.style.alignItems = "center";
-    row.style.marginBottom = "2px";
+    const row = createDiv("chess-move-row");
 
-    const num = document.createElement("span");
+    const num = createSpan("chess-move-num");
     num.textContent = `${rowNum}.`;
-    num.style.color = "var(--text-faint)";
-    num.style.textAlign = "right";
 
     row.appendChild(num);
     row.appendChild(
       rowData.white
         ? createMoveCellButton(rowData.white.move.san, rowData.white.ply, onSelectPly)
-        : document.createElement("span"),
+        : createSpan(),
     );
     row.appendChild(
       rowData.black
         ? createMoveCellButton(rowData.black.move.san, rowData.black.ply, onSelectPly)
-        : document.createElement("span"),
+        : createSpan(),
     );
 
     root.appendChild(row);
@@ -458,7 +429,7 @@ export function createInteractivePGNBoard(
   container.appendChild(controls);
 
   if (showMoveList) {
-    const outer = document.createElement("div");
+    const outer = createDiv();
     outer.style.cssText = `
       display: flex;
       flex-direction: row;
@@ -469,7 +440,7 @@ export function createInteractivePGNBoard(
       max-width: min(100%, ${boardWidthPx + MOVELIST_GAP + MOVELIST_MIN_WIDTH}px);
       margin: 0 auto;
     `;
-    container.style.margin = "0";
+    container.classList.add("chess-pgn-container--in-panel");
     moveListPanel = createMoveListPanel(
       gameState,
       boardWidthPx,

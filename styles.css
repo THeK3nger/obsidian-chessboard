@@ -60,3 +60,44 @@
 .chess-error {
   color: red;
 }
+
+.chess-move-row {
+  display: grid;
+  grid-template-columns: 2.2em 1fr 1fr;
+  gap: 2px 6px;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.chess-move-num {
+  color: var(--text-faint);
+  text-align: right;
+}
+
+.chess-move-btn {
+  margin: 0;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  color: var(--text-muted);
+}
+
+.chess-move-btn-past {
+  color: var(--text-normal);
+}
+
+.chess-move-btn-current {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-accent);
+  font-weight: 600;
+}
+
+.chess-pgn-container--in-panel {
+  margin: 0;
+}
