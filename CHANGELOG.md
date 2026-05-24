@@ -2,13 +2,15 @@
 
 ## [Unreleased]
 
+## v0.18.0
+
 ### New
 
 - Add optional `move-list: true` for `chessboard-pgn` blocks: shows a scrollable SAN move list beside the board (with wrapping on narrow layouts). Click a move to jump to that position. If `move-list` is enabled without `interactive: true`, interactive navigation is turned on automatically. (Thanks to @christianwannerstedt for the PR).
 
-### Fixes 
+### Fixes
 
-- The UI now uses sentence-case text as prescribed by Obsidian guidelines. 
+- The UI now uses sentence-case text as prescribed by Obsidian guidelines.
 
 ## v0.17.1
 
