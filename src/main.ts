@@ -313,7 +313,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
 
     customizationGroup.addSetting((setting) => {
       setting
-        .setName("White Square Color")
+        .setName("White square color")
         .setDesc('Set the color of the "white" squares.')
         .addColorPicker((color) =>
           color
@@ -328,7 +328,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
 
     customizationGroup.addSetting((setting) => {
       setting
-        .setName("Black Square Color")
+        .setName("Black square color")
         .setDesc('Set the color of the "black" squares.')
         .addColorPicker((color) =>
           color
@@ -343,7 +343,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
 
     customizationGroup.addSetting((setting) => {
       setting
-        .setName("White Pieces Color")
+        .setName("White pieces color")
         .setDesc('Set the color of the "white" pieces.')
         .addColorPicker((color) =>
           color.setValue(settings.whitePieceColor).onChange((value) => {
@@ -356,7 +356,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
 
     customizationGroup.addSetting((setting) => {
       setting
-        .setName("Black Pieces Color")
+        .setName("Black pieces color")
         .setDesc('Set the color of the "black" pieces.')
         .addColorPicker((color) =>
           color.setValue(String(settings.blackPieceColor)).onChange((value) => {
@@ -369,7 +369,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
 
     customizationGroup.addSetting((setting) => {
       setting
-        .setName("Chessboard Max Width (px)")
+        .setName("Chessboard max width (px)")
         .setDesc(
           "Sets the maximum width of the chess board in pixels. On narrow screens, the board will scale down to fit the viewport.",
         )
@@ -392,7 +392,7 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
     // Add reset button at the bottom
     customizationGroup.addSetting((setting) => {
       setting
-        .setName("Reset to Defaults")
+        .setName("Reset to defaults")
         .setDesc(
           "Restore all chessboard customization settings to their default values.",
         )
