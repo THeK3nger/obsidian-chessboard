@@ -1,20 +1,11 @@
-//@ts-ignore
 import brilliant from "./icons/brilliant.svg";
-// @ts-ignore
 import best from "./icons/best.svg";
-// @ts-ignore
 import blunder from "./icons/blunder.svg";
-// @ts-ignore
 import good from "./icons/good.svg";
-// @ts-ignore
 import inaccuracy from "./icons/inaccuracy.svg";
-// @ts-ignore
 import incorrect from "./icons/incorrect.svg";
-// @ts-ignore
 import mistake from "./icons/mistake.svg";
-// @ts-ignore
 import excellent from "./icons/excellent.svg";
-// @ts-ignore
 import forced from "./icons/forced.svg";
 
 export class Icons {

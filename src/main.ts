@@ -30,7 +30,7 @@ export default class ObsidianChess extends Plugin {
   onInit() {}
 
   async onload() {
-    this.setting = (await this.loadData()) || { ...DEFAULT_CHESS_SETTINGS };
+    this.setting = (((await this.loadData()) ?? { ...DEFAULT_CHESS_SETTINGS }) as ObsidianChessSettings);
     // In case the settting exists but is missing a field due to an update
     if (this.setting.boardWidthPx === undefined) {
       this.setting.boardWidthPx = 320;
@@ -70,10 +70,10 @@ export default class ObsidianChess extends Plugin {
     el.appendChild(block);
   }
 
-  private drawErrorMessage(error: Error, el: HTMLElement) {
+  private drawErrorMessage(error: unknown, el: HTMLElement) {
     console.error(error);
-    // Append the error message to the block with red color
-    const errorEl = createDiv({ cls: "chess-error", text: error.message });
+    const message = error instanceof Error ? error.message : "Unknown error";
+    const errorEl = createDiv({ cls: "chess-error", text: message });
     el.appendChild(errorEl);
   }
 
