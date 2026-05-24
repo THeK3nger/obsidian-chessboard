@@ -137,6 +137,8 @@ It is possible to specify a PGN diagram as interactive by using the `interactive
 
 <img width="500px" alt="Interactive PGN Mode Example" src="https://github.com/user-attachments/assets/7f5093a9-4392-44a8-824f-141d625472c0" />
 
+You can also add `move-list: true` to show a move list next to the board (SAN in two columns, one full move per row). Click any half-move to jump there; the current position is highlighted. On small widths the list wraps below the board. If you set `move-list: true` without `interactive: true`, the plugin enables interactive mode for you so navigation and the list stay in sync.
+
 ### Current Limitations
 
 This supports the full PGN specification but, for now, the feature is experimental and has limitations:
