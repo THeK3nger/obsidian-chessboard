@@ -61,6 +61,15 @@ export interface ParsedChessCode {
  * @param input The input string of the FEN code block.
  * @returns An object with the parsed data.
  */
+const ICON_MAPPING: Record<string, string> = {
+  "!!": "brilliant",
+  "!?": "good",
+  "??": "blunder",
+  "?": "mistake",
+  "!": "excellent",
+  "F": "forced",
+};
+
 export function parseCodeBlock(input: string): ParsedChessCode {
   const lines = input.split(/\r?\n/);
   let fen = lines[0];
@@ -124,19 +133,11 @@ export function parseCodeBlock(input: string): ParsedChessCode {
           });
           continue;
         }
-        const iconMapping: Record<string, string> = {
-          "!!": "brilliant",
-          "!?": "good",
-          "??": "blunder",
-          "?": "mistake",
-          "!": "excellent",
-          "F": "forced"
-        };
         if (annotation.startsWith("F")) {
           annotations.push({
             type: "icon",
             square: annotation.substring(1, 3),
-            icon: iconMapping["F"],
+            icon: ICON_MAPPING["F"],
           });
           continue;
         }
@@ -144,7 +145,7 @@ export function parseCodeBlock(input: string): ParsedChessCode {
           annotations.push({
             type: "icon",
             square: annotation.substring(2, 4),
-            icon: iconMapping["!?"],
+            icon: ICON_MAPPING["!?"],
           });
           continue;
         }
@@ -152,12 +153,12 @@ export function parseCodeBlock(input: string): ParsedChessCode {
           annotations.push({
             type: "icon",
             square: annotation.substring(2, 4),
-            icon: iconMapping["!!"],
+            icon: ICON_MAPPING["!!"],
           });
           continue;
         }
         if (annotation.startsWith("!")) {
-          let icon = iconMapping["!"];
+          let icon = ICON_MAPPING["!"];
           annotations.push({
             type: "icon",
             square: annotation.substring(1, 3),
@@ -166,7 +167,7 @@ export function parseCodeBlock(input: string): ParsedChessCode {
           continue;
         }
         if (annotation.startsWith("??")) {
-          let icon = iconMapping["??"];
+          let icon = ICON_MAPPING["??"];
           annotations.push({
             type: "icon",
             square: annotation.substring(2, 4),
@@ -175,7 +176,7 @@ export function parseCodeBlock(input: string): ParsedChessCode {
           continue;
         }
         if (annotation.startsWith("?")) {
-          let icon = iconMapping["?"];
+          let icon = ICON_MAPPING["?"];
           annotations.push({
             type: "icon",
             square: annotation.substring(1, 3),
