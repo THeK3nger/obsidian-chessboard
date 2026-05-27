@@ -282,23 +282,10 @@ function createMoveListPanel(
   boardWidthPx: number,
   onSelectPly: (ply: number) => void,
 ): HTMLElement {
-  const root = createDiv();
+  const root = createDiv("chess-move-list");
   root.setAttribute("role", "navigation");
   root.setAttribute("aria-label", "Move list");
-  root.style.cssText = `
-    font-family: var(--font-text);
-    font-size: 13px;
-    min-width: ${MOVELIST_MIN_WIDTH}px;
-    width: min(240px, 100%);
-    flex: 1 1 ${MOVELIST_MIN_WIDTH}px;
-    max-height: ${boardWidthPx}px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 4px 6px;
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 6px;
-    color: var(--text-normal);
-  `;
+  root.setCssProps({ "--chess-board-max-width": `${boardWidthPx}px` });
 
   const history = gameState.getMoveHistory();
   const blackStartsFirst = gameState.blackStartsFirst();
@@ -429,17 +416,10 @@ export function createInteractivePGNBoard(
   container.appendChild(controls);
 
   if (showMoveList) {
-    const outer = createDiv();
-    outer.style.cssText = `
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      justify-content: center;
-      gap: ${MOVELIST_GAP}px;
-      max-width: min(100%, ${boardWidthPx + MOVELIST_GAP + MOVELIST_MIN_WIDTH}px);
-      margin: 0 auto;
-    `;
+    const outer = createDiv("chess-pgn-with-movelist");
+    outer.setCssProps({
+      "--chess-pgn-with-movelist-max-width": `${boardWidthPx + MOVELIST_GAP + MOVELIST_MIN_WIDTH}px`,
+    });
     container.classList.add("chess-pgn-container--in-panel");
     moveListPanel = createMoveListPanel(
       gameState,

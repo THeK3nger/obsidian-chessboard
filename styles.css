@@ -101,3 +101,29 @@
 .chess-pgn-container--in-panel {
   margin: 0;
 }
+
+.chess-pgn-with-movelist {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--chess-movelist-gap, 12px);
+  max-width: min(100%, var(--chess-pgn-with-movelist-max-width, 572px));
+  margin: 0 auto;
+}
+
+.chess-move-list {
+  font-family: var(--font-text);
+  font-size: 13px;
+  min-width: 220px;
+  width: min(240px, 100%);
+  flex: 1 1 220px;
+  max-height: var(--chess-board-max-width, 320px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 6px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  color: var(--text-normal);
+}
