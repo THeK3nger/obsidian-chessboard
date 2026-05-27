@@ -14,18 +14,18 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-commonjs": "^29.0.2",
     "@rollup/plugin-legacy": "^3.0.2",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-typescript": "^12.1.2",
-    "@types/node": "^22.14.1",
-    "eslint": "^10.3.0",
-    "eslint-plugin-obsidianmd": "^0.2.9",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/node": "^25.9.1",
+    "eslint": "^10.4.0",
+    "eslint-plugin-obsidianmd": "^0.3.0",
     "obsidian": "^1.11.0",
-    "rollup": "^4.40.0",
+    "rollup": "^4.60.4",
     "rollup-plugin-svg-import": "^3.0.0",
     "tslib": "^2.8.1",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "chess.js": "^1.4.0"
