@@ -315,7 +315,7 @@ function createMoveListPanel(
   });
 
   for (const rowNum of Array.from(rows.keys()).sort((a, b) => a - b)) {
-    const rowData = rows.get(rowNum);
+    const rowData = rows.get(rowNum)!;
 
     const row = createDiv("chess-move-row");
 

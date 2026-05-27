@@ -26,16 +26,12 @@ export class Chessboard {
     this.chessboard.put(piece, Chessboard.coordToAlgebraic([c, r]));
   }
 
-  get(c: number, r: number): Piece {
+  get(c: number, r: number): Piece | undefined {
     return this.chessboard.get(Chessboard.coordToAlgebraic([c, r]));
   }
 
   setAlgebraic(algebraic: Square, piece: Piece): boolean {
     return this.chessboard.put(piece, algebraic);
-  }
-
-  getAlgebraic(algebraic: Square): Piece {
-    return this.chessboard.get(algebraic);
   }
 
   getLastMove(): Move | undefined {

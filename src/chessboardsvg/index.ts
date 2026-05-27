@@ -18,7 +18,7 @@ import {
   recolorWhite,
   recolorBlack,
 } from "./Pieces";
-import { Annotation } from "src/Annotations";
+import { Annotation } from "../Annotations";
 
 export type ShowMoveOption = "none" | "squares" | "arrow";
 
@@ -247,21 +247,18 @@ export class SVGChessboard {
         let pos = Chessboard.algebraicToCoord(annotation.square);
         let [x, y] = this.getBoardSVGCord(pos);
 
-        let shapeElement: SVGElement;
+        // Append to foreground group to render above pieces
         switch (annotation.shape) {
           case "circle":
-            shapeElement = Shapes.drawCircle(x, y, this.squareSize, annotation.color);
+            g_foreground.appendChild(Shapes.drawCircle(x, y, this.squareSize, annotation.color));
             break;
           case "square":
-            shapeElement = Shapes.drawSquare(x, y, this.squareSize, annotation.color);
+            g_foreground.appendChild(Shapes.drawSquare(x, y, this.squareSize, annotation.color));
             break;
           case "squircle":
-            shapeElement = Shapes.drawSquircle(x, y, this.squareSize, annotation.color);
+            g_foreground.appendChild(Shapes.drawSquircle(x, y, this.squareSize, annotation.color));
             break;
         }
-
-        // Append to foreground group to render above pieces
-        g_foreground.appendChild(shapeElement);
       }
     }
     return [g, g_foreground];

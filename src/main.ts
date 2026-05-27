@@ -25,7 +25,7 @@ const DEFAULT_CHESS_SETTINGS = {
 
 export default class ObsidianChess extends Plugin {
   // This field stores your plugin settings.
-  setting: ObsidianChessSettings;
+  setting!: ObsidianChessSettings;
 
   onInit() {}
 
