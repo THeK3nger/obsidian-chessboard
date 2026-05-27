@@ -384,6 +384,26 @@ export function createInteractivePGNBoard(
     }
   };
 
+  // Keyboard navigation
+  container.setAttribute("tabindex", "0");
+  container.setAttribute("aria-label", "Chess board. Use arrow keys to navigate moves.");
+  container.addEventListener("keydown", (e: KeyboardEvent) => {
+    switch (e.key) {
+      case "ArrowLeft":
+        gameState.goToPrevious();
+        updateUI();
+        e.preventDefault();
+        e.stopPropagation();
+        break;
+      case "ArrowRight":
+        gameState.goToNext();
+        updateUI();
+        e.preventDefault();
+        e.stopPropagation();
+        break;
+    }
+  });
+
   // Event handlers
   firstButton.addEventListener("click", () => {
     gameState.goToStart();

@@ -12,6 +12,13 @@
   gap: 8px;
   margin: 0 auto;
   max-width: var(--chess-board-max-width, 320px);
+  outline: none;
+}
+
+.chess-pgn-container:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 .chess-pgn-board {
