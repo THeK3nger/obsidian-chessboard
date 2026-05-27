@@ -28,7 +28,6 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "chess.js": "^1.4.0",
-    "codemirror": "^6.0.2"
+    "chess.js": "^1.4.0"
   }
 }
