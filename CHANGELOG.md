@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## v0.19.0
+
+### New
+
+- Add keyboard navigation for interactive PGN diagrams. Use the left/right arrow keys to step backward and forward through moves when a board is focused.
+
+### Behind the Scenes
+
+- Move inline styles from TypeScript code into `styles.css`.
+- Update packages.
+
 ## v0.18.0
 
 ### New
