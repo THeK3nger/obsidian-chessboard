@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     "rootDir": "./src",
-"inlineSourceMap": true,
+    "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
-    "target": "es2018",
+    "target": "ES2022",
     "allowJs": true,
     "noImplicitAny": true,
     "moduleResolution": "bundler",
     "importHelpers": true,
     "allowSyntheticDefaultImports": true,
-    "lib": ["dom", "es5", "scripthost", "es2015"]
+    "lib": ["dom", "es5", "scripthost", "es2015"],
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
 }
