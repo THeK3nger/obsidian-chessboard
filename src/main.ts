@@ -5,7 +5,7 @@ import {
   Notice,
   Plugin,
   PluginSettingTab,
-  SettingGroup,
+  SettingDefinitionItem,
 } from "obsidian";
 import {
   SVGChessboard,
@@ -30,7 +30,9 @@ export default class ObsidianChess extends Plugin {
   onInit() {}
 
   async onload() {
-    this.setting = (((await this.loadData()) ?? { ...DEFAULT_CHESS_SETTINGS }) as ObsidianChessSettings);
+    this.setting = ((await this.loadData()) ?? {
+      ...DEFAULT_CHESS_SETTINGS,
+    }) as ObsidianChessSettings;
     // In case the settting exists but is missing a field due to an update
     if (this.setting.boardWidthPx === undefined) {
       this.setting.boardWidthPx = 320;
@@ -66,7 +68,9 @@ export default class ObsidianChess extends Plugin {
     block.setAttributeNS(null, "viewBox", `0 0 320 320`);
     block.appendChild(chessboard.draw());
     block.addClass("chess-board-svg");
-    block.setCssProps({"--chess-board-max-width": `${this.setting.boardWidthPx}px`});
+    block.setCssProps({
+      "--chess-board-max-width": `${this.setting.boardWidthPx}px`,
+    });
     el.appendChild(block);
   }
 
@@ -167,6 +171,8 @@ export default class ObsidianChess extends Plugin {
  * as you wish by adding fields and all the data you need.
  */
 interface ObsidianChessSettings extends SVGChessboardOptions {
+  // Required so getControlValue/setControlValue can access properties by the string key Obsidian passes in.
+  [key: string]: unknown;
   whiteSquareColor: string;
   blackSquareColor: string;
   whitePieceColor: string;
@@ -182,131 +188,60 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
     this.plugin = plugin;
   }
 
-  private resetToDefaults(): void {
-    // Update settings object with defaults
-    this.plugin.setting.whiteSquareColor =
-      DEFAULT_CHESS_SETTINGS.whiteSquareColor;
-    this.plugin.setting.blackSquareColor =
-      DEFAULT_CHESS_SETTINGS.blackSquareColor;
-    this.plugin.setting.whitePieceColor =
-      DEFAULT_CHESS_SETTINGS.whitePieceColor;
-    this.plugin.setting.blackPieceColor =
-      DEFAULT_CHESS_SETTINGS.blackPieceColor;
-    this.plugin.setting.boardWidthPx = DEFAULT_CHESS_SETTINGS.boardWidthPx;
-
-    void this.plugin.saveData(this.plugin.setting);
-
-    this.plugin.refreshChessboardBlocks();
-    this.display();
-
-    new Notice("Chessboard settings reset to default values");
+  getSettingDefinitions(): SettingDefinitionItem[] {
+    return [
+      {
+        type: "group",
+        heading: "Chessboard Customization",
+        items: [
+          {
+            name: "White square color",
+            desc: 'Set the color of the "white" squares.',
+            control: { type: "color", key: "whiteSquareColor" },
+          },
+          {
+            name: "Black square color",
+            desc: 'Set the color of the "black" squares.',
+            control: { type: "color", key: "blackSquareColor" },
+          },
+          {
+            name: "White pieces color",
+            desc: 'Set the color of the "white" pieces.',
+            control: { type: "color", key: "whitePieceColor" },
+          },
+          {
+            name: "Black pieces color",
+            desc: 'Set the color of the "black" pieces.',
+            control: { type: "color", key: "blackPieceColor" },
+          },
+          {
+            name: "Chessboard max width (px)",
+            desc: "Sets the maximum width of the chess board in pixels. On narrow screens, the board will scale down to fit the viewport.",
+            control: { type: "number", key: "boardWidthPx", min: 1 },
+          },
+          {
+            name: "Reset to defaults",
+            desc: "Restore all chessboard customization settings to their default values.",
+            action: () => {
+              Object.assign(this.plugin.setting, DEFAULT_CHESS_SETTINGS);
+              void this.plugin.saveData(this.plugin.setting);
+              this.plugin.refreshChessboardBlocks();
+              this.update();
+              new Notice("Chessboard settings reset to default values");
+            },
+          },
+        ],
+      },
+    ];
   }
 
-  display(): void {
-    const { containerEl } = this;
-    const settings = this.plugin.setting;
+  getControlValue(key: string): unknown {
+    return this.plugin.setting[key];
+  }
 
-    containerEl.empty();
-
-    const customizationGroup = new SettingGroup(containerEl).setHeading(
-      "Chessboard Customization",
-    );
-
-    //new Setting(containerEl).setName("Chessboard Customization").setHeading();
-
-    customizationGroup.addSetting((setting) => {
-      setting
-        .setName("White square color")
-        .setDesc('Set the color of the "white" squares.')
-        .addColorPicker((color) =>
-          color
-            .setValue(String(settings.whiteSquareColor))
-            .onChange((value) => {
-              settings.whiteSquareColor = value;
-              this.plugin.refreshChessboardBlocks();
-              void this.plugin.saveData(settings);
-            }),
-        );
-    });
-
-    customizationGroup.addSetting((setting) => {
-      setting
-        .setName("Black square color")
-        .setDesc('Set the color of the "black" squares.')
-        .addColorPicker((color) =>
-          color
-            .setValue(String(settings.blackSquareColor))
-            .onChange((value) => {
-              settings.blackSquareColor = value;
-              this.plugin.refreshChessboardBlocks();
-              void this.plugin.saveData(settings);
-            }),
-        );
-    });
-
-    customizationGroup.addSetting((setting) => {
-      setting
-        .setName("White pieces color")
-        .setDesc('Set the color of the "white" pieces.')
-        .addColorPicker((color) =>
-          color.setValue(settings.whitePieceColor).onChange((value) => {
-            settings.whitePieceColor = value;
-            this.plugin.refreshChessboardBlocks();
-            void this.plugin.saveData(settings);
-          }),
-        );
-    });
-
-    customizationGroup.addSetting((setting) => {
-      setting
-        .setName("Black pieces color")
-        .setDesc('Set the color of the "black" pieces.')
-        .addColorPicker((color) =>
-          color.setValue(String(settings.blackPieceColor)).onChange((value) => {
-            settings.blackPieceColor = value;
-            this.plugin.refreshChessboardBlocks();
-            void this.plugin.saveData(settings);
-          }),
-        );
-    });
-
-    customizationGroup.addSetting((setting) => {
-      setting
-        .setName("Chessboard max width (px)")
-        .setDesc(
-          "Sets the maximum width of the chess board in pixels. On narrow screens, the board will scale down to fit the viewport.",
-        )
-        .addText((text) =>
-          text.setValue(String(settings.boardWidthPx)).onChange((value) => {
-            const numericValue = Number(value);
-            if (!isNaN(numericValue) && numericValue > 0) {
-              settings.boardWidthPx = numericValue;
-              this.plugin.refreshChessboardBlocks();
-              void this.plugin.saveData(settings);
-            } else {
-              new Notice(
-                "Please enter a valid positive number for the board size.",
-              );
-            }
-          }),
-        );
-    });
-
-    // Add reset button at the bottom
-    customizationGroup.addSetting((setting) => {
-      setting
-        .setName("Reset to defaults")
-        .setDesc(
-          "Restore all chessboard customization settings to their default values.",
-        )
-        .addButton((button) =>
-          button
-            .setButtonText("Reset")
-            .setWarning()
-            .onClick(() => {
-              this.resetToDefaults();
-            }),
-        );
-    });
+  setControlValue(key: string, value: unknown): void {
+    this.plugin.setting[key] = value;
+    void this.plugin.saveData(this.plugin.setting);
+    this.plugin.refreshChessboardBlocks();
   }
 }
