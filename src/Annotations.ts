@@ -70,6 +70,17 @@ const ICON_MAPPING: Record<string, string> = {
   "F": "forced",
 };
 
+export const ANNOTATION_COLORS = {
+  red: "#e67768",
+  yellow: "#f1ad24",
+  green: "#b3ce6e",
+  blue: "#6ab5d6",
+} as const;
+
+export const HIGHLIGHT_DEFAULT = ANNOTATION_COLORS.red;
+export const ARROW_DEFAULT = ANNOTATION_COLORS.yellow;
+export const SHAPE_DEFAULT = ANNOTATION_COLORS.yellow;
+
 export function parseCodeBlock(input: string): ParsedChessCode {
   const lines = input.split(/\r?\n/);
   let fen = lines[0];
@@ -100,13 +111,13 @@ export function parseCodeBlock(input: string): ParsedChessCode {
       let partial_annotations = line.split(" ");
       for (let annotation of partial_annotations) {
         if (annotation.startsWith("H")) {
-          let color = "#e67768"; // default yellow
+          let color = HIGHLIGHT_DEFAULT;
           if (annotation.endsWith("/y")) {
-            color = "#f1ad24";
+            color = ANNOTATION_COLORS.yellow;
           } else if (annotation.endsWith("/g")) {
-            color = "#b3ce6e";
+            color = ANNOTATION_COLORS.green;
           } else if (annotation.endsWith("/b")) {
-            color = "#6ab5d6";
+            color = ANNOTATION_COLORS.blue;
           }
           annotations.push({
             type: "highlight",
@@ -116,13 +127,13 @@ export function parseCodeBlock(input: string): ParsedChessCode {
           continue;
         }
         if (annotation.startsWith("A")) {
-          let color = "#f1ad24"; // default yellow
+          let color = ARROW_DEFAULT;
           if (annotation.endsWith("/r")) {
-            color = "#e67768";
+            color = ANNOTATION_COLORS.red;
           } else if (annotation.endsWith("/g")) {
-            color = "#b3ce6e";
+            color = ANNOTATION_COLORS.green;
           } else if (annotation.endsWith("/b")) {
-            color = "#6ab5d6";
+            color = ANNOTATION_COLORS.blue;
           }
           let [start, end] = annotation.substring(1, 6).split("-");
           annotations.push({
@@ -185,7 +196,7 @@ export function parseCodeBlock(input: string): ParsedChessCode {
           continue;
         }
         if (annotation.startsWith("C") || annotation.startsWith("S") || annotation.startsWith("Q")) {
-          let color = "#f1ad24"; // default yellow
+          let color = SHAPE_DEFAULT;
           let shapeType: "circle" | "square" | "squircle";
 
           // Determine shape type
@@ -199,13 +210,13 @@ export function parseCodeBlock(input: string): ParsedChessCode {
 
           // Parse color modifiers
           if (annotation.endsWith("/r")) {
-            color = "#e67768";
+            color = ANNOTATION_COLORS.red;
           } else if (annotation.endsWith("/g")) {
-            color = "#b3ce6e";
+            color = ANNOTATION_COLORS.green;
           } else if (annotation.endsWith("/b")) {
-            color = "#6ab5d6";
+            color = ANNOTATION_COLORS.blue;
           } else if (annotation.endsWith("/y")) {
-            color = "#f1ad24";
+            color = ANNOTATION_COLORS.yellow;
           }
 
           // Extract square (1-3 handles the square, accounting for color modifiers)

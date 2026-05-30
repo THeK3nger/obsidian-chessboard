@@ -7,7 +7,10 @@
   "type": "module",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
-    "build": "rollup --config rollup.config.js --environment BUILD:production"
+    "build": "rollup --config rollup.config.js --environment BUILD:production",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "obsidian-md"
@@ -19,13 +22,16 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/node": "^25.9.1",
+    "@vitest/coverage-v8": "^4.1.7",
     "eslint": "^10.4.0",
+    "jsdom": "^29.1.1",
     "eslint-plugin-obsidianmd": "^0.3.0",
     "obsidian": "^1.11.0",
     "rollup": "^4.60.4",
     "rollup-plugin-svg-import": "^3.0.0",
     "tslib": "^2.8.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   },
   "dependencies": {
     "chess.js": "^1.4.0"
