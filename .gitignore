@@ -11,4 +11,9 @@ main.js
 pnpm-lock.yaml
 npm-lock.yaml
 
+# Test coverage
+coverage/
+
+# OS
 .DS_Store
+Thumbs.db
