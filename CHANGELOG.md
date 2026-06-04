@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## v0.20.0
+
+### New
+
+- Add checkmate annotation icons. You can now use `#W` for a white checkmate icon and `#B` for a black checkmate icon.
+- Automatically detect and annotate checkmate moves in the PGN viewer.
+
+### Behind the Scenes
+
+- I reduced the size of the bundle by a whopping 70% by removing inline source maps from the production build and by minimizing the output.
+
 ## v0.19.0
 
 ### New
