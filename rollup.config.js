@@ -1,5 +1,6 @@
 import typescript from "@rollup/plugin-typescript";
 import svg from "rollup-plugin-svg-import";
+import terser from "@rollup/plugin-terser";
 
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
@@ -17,8 +18,7 @@ export default {
   output: {
     dir: ".",
     entryFileNames: "main.js",
-    sourcemap: "inline",
-    sourcemapExcludeSources: isProd,
+    sourcemap: isProd ? false : "inline",
     format: "cjs",
     exports: "default",
     banner,
@@ -26,8 +26,15 @@ export default {
   external: ["obsidian"],
   plugins: [
     svg({ stringify: true }),
-    typescript({ allowSyntheticDefaultImports: true, outDir: "./dist" }),
+    typescript({
+      allowSyntheticDefaultImports: true,
+      outDir: "./dist",
+      sourceMap: !isProd,
+      inlineSourceMap: !isProd,
+      inlineSources: !isProd,
+    }),
     nodeResolve({ browser: true }),
     commonjs({ include: "node_modules/**" }),
+    isProd && terser(),
   ],
 };
