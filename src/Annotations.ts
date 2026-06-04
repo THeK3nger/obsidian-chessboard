@@ -68,6 +68,8 @@ const ICON_MAPPING: Record<string, string> = {
   "?": "mistake",
   "!": "excellent",
   "F": "forced",
+  "#W": "checkmate_white",
+  "#B": "checkmate_black",
 };
 
 export function parseCodeBlock(input: string): ParsedChessCode {
@@ -138,6 +140,22 @@ export function parseCodeBlock(input: string): ParsedChessCode {
             type: "icon",
             square: annotation.substring(1, 3),
             icon: ICON_MAPPING["F"],
+          });
+          continue;
+        }
+        if (annotation.startsWith("#W")) {
+          annotations.push({
+            type: "icon",
+            square: annotation.substring(2, 4),
+            icon: ICON_MAPPING["#W"],
+          });
+          continue;
+        }
+        if (annotation.startsWith("#B")) {
+          annotations.push({
+            type: "icon",
+            square: annotation.substring(2, 4),
+            icon: ICON_MAPPING["#B"],
           });
           continue;
         }

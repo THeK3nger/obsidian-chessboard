@@ -242,6 +242,12 @@ export class SVGChessboard {
           case "forced":
             g_foreground.appendChild(this.drawIcon(pos, Icons.forced));
             break;
+          case "checkmate_black":
+            g_foreground.appendChild(this.drawIcon(pos, Icons.checkmate_black));
+            break;
+          case "checkmate_white":
+            g_foreground.appendChild(this.drawIcon(pos, Icons.checkmate_white));
+            break;
         }
       } else if (annotation.type === "shape") {
         let pos = Chessboard.algebraicToCoord(annotation.square);

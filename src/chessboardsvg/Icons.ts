@@ -7,6 +7,8 @@ import incorrect from "./icons/incorrect.svg";
 import mistake from "./icons/mistake.svg";
 import excellent from "./icons/excellent.svg";
 import forced from "./icons/forced.svg";
+import checkmate_black from "./icons/checkmate_black.svg";
+import checkmate_white from "./icons/checkmate_white.svg";
 
 export class Icons {
   static brilliant = Icons.loadIcon(brilliant);
@@ -18,6 +20,8 @@ export class Icons {
   static mistake = Icons.loadIcon(mistake);
   static excellent = Icons.loadIcon(excellent);
   static forced = Icons.loadIcon(forced);
+  static checkmate_black = Icons.loadIcon(checkmate_black);
+  static checkmate_white = Icons.loadIcon(checkmate_white);
 
   private static loadIcon(icon: string): HTMLElement {
     const parser = new DOMParser();
