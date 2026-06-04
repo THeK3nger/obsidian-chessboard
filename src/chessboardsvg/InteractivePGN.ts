@@ -141,6 +141,31 @@ class PGNGameState {
     return this.moveHistory;
   }
 
+  isCheckmate(): boolean {
+    return this.chess.isCheckmate();
+  }
+
+  getCheckmatedColor(): "w" | "b" | undefined {
+    return this.chess.isCheckmate() ? this.chess.turn() : undefined;
+  }
+
+  getCheckmatedKingSquare(): string | undefined {
+    if (!this.chess.isCheckmate()) return undefined;
+    const color = this.chess.turn();
+    const board = this.chess.board();
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const piece = board[r][c];
+        if (piece && piece.type === "k" && piece.color === color) {
+          const file = String.fromCharCode("a".charCodeAt(0) + c);
+          const rank = 8 - r;
+          return `${file}${rank}`;
+        }
+      }
+    }
+    return undefined;
+  }
+
   /** Whether the starting position has Black to move (affects move-list row layout). */
   blackStartsFirst(): boolean {
     if (this.startingFEN) {
@@ -229,6 +254,15 @@ function renderBoard(
       if (showMove === "arrow") {
         svgBoard.addArrow(lastMove.from, lastMove.to);
       }
+    }
+  }
+
+  const checkmatedColor = gameState.getCheckmatedColor();
+  if (checkmatedColor !== undefined) {
+    const square = gameState.getCheckmatedKingSquare();
+    if (square) {
+      const icon = checkmatedColor === "w" ? "checkmate_white" : "checkmate_black";
+      svgBoard.addIcon(square, icon);
     }
   }
 
