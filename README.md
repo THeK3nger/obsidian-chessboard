@@ -66,6 +66,8 @@ The annotations are written in the `annotations` field, and you can use the foll
 - `!<square>`, adds a "excellent move" icon to the specified square. E.g., `!e5`.
 - `!?<square>`, adds a "okay move" icon to the specified square. E.g., `!?e5`.
 - `F<square>`, adds a "forced move" icon to the specified square. E.g., `Fe5`.
+- `#B<square>`, adds a black "checkmated" icon to the specified square. E.g., `#Be5`.
+- `#W<square>`, adds a white "checkmated" icon to the specified square. E.g., `#We5`.
 
 Not that the annotation syntax is is beta and may change in the future. If you have suggestions, don't hesitate to open an issue.
 
