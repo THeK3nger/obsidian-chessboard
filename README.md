@@ -37,6 +37,17 @@ orientation: black
 ```
 ````
 
+### Invalid Positions
+
+Use the `strict` command to allow non-standard positions. This is useful for antichess or illustrating example positions.
+
+````
+```chessboard
+fen: 8/8/8/8/8/8/8/kP6
+strict: false
+```
+````
+
 ## Annotations (Beta)
 
 You can annotate your schema with arrows, highlights and icons:
