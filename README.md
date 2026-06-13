@@ -48,6 +48,18 @@ strict: false
 ```
 ````
 
+## Plugin Settings
+
+The plugin adds a settings tab (Settings → Community plugins → Chessboard Viewer)
+where you can customize how every board is rendered:
+
+- **White square color** / **Black square color**: the colors of the board squares.
+- **White pieces color** / **Black pieces color**: the fill colors of the pieces.
+- **Chessboard max width (px)**: the maximum width of the rendered board (default `320`). On narrow screens the board scales down to fit the viewport.
+- **Reset to defaults**: restores all of the above to their default values.
+
+Changes are applied immediately to the diagrams in preview mode.
+
 ## Annotations (Beta)
 
 You can annotate your schema with arrows, highlights and icons:
@@ -66,8 +78,8 @@ orientation: white
 
 The annotations are written in the `annotations` field, and you can use the following syntax: 
 
-- `A<square>-<square>`, draws an arrow from the first square to the second square. E.g., `Af8-b4`.
-- `H<square>`, highlight a specific square. E.g., `Hf8`. If you add `/g` or `/r` or `/b` you can highlight the square in green, red or blue.
+- `A<square>-<square>`, draws an arrow from the first square to the second square. E.g., `Af8-b4`. The arrow is yellow by default; add `/r`, `/g` or `/b` to make it red, green or blue (e.g., `Af8-b4/r`).
+- `H<square>`, highlight a specific square. E.g., `Hf8`. The highlight is a red/coral color by default; add `/y`, `/g` or `/b` to highlight the square in yellow, green or blue (e.g., `Hf8/g`).
 - `S<square>`, draws a box around a square.
 - `C<square>`, draws a circle around a square.
 - `Q<square>`, draws a _squircle_ around a square.
@@ -79,6 +91,8 @@ The annotations are written in the `annotations` field, and you can use the foll
 - `F<square>`, adds a "forced move" icon to the specified square. E.g., `Fe5`.
 - `#B<square>`, adds a black "checkmated" icon to the specified square. E.g., `#Be5`.
 - `#W<square>`, adds a white "checkmated" icon to the specified square. E.g., `#We5`.
+
+The shape annotations (`S`, `C`, `Q`) are yellow by default and accept the same color modifiers as arrows: add `/r`, `/g`, `/b` or `/y` for red, green, blue or yellow (e.g., `Ce5/g`).
 
 Not that the annotation syntax is is beta and may change in the future. If you have suggestions, don't hesitate to open an issue.
 
@@ -144,11 +158,30 @@ It is also possible to highlight the *ply*. By using `show-move` you can select 
 - `arrow`: it draws an arrow from the origin to the destination square of the move.
 - `none`: no highlighting (default).
 
+### Board Orientation
+
+Just like the `chessboard` block, PGN diagrams accept the `orientation` property.
+Set it to `white` (default) or `black` to flip the board.
+
+### Games Starting From a Custom Position
+
+If the PGN contains `SetUp "1"` and a `FEN` header, the game starts from that
+position instead of the standard initial position. This works for both static
+and interactive diagrams.
+
+### Checkmate Detection
+
+In interactive diagrams, when the displayed position is a checkmate the plugin
+automatically places a checkmate icon on the mated king's square. No annotation
+is required.
+
 ### Interactive Mode
 
 It is possible to specify a PGN diagram as interactive by using the `interactive: true` option. If a diagram is interactive, the plugin will show buttons to go to the previous or next move (or the first and the last).
 
 <img width="500px" alt="Interactive PGN Mode Example" src="https://github.com/user-attachments/assets/7f5093a9-4392-44a8-824f-141d625472c0" />
+
+When the board is focused, you can also navigate with the keyboard: press the **Left arrow** to go to the previous move and the **Right arrow** to go to the next move.
 
 You can also add `move-list: true` to show a move list next to the board (SAN in two columns, one full move per row). Click any half-move to jump there; the current position is highlighted. On small widths the list wraps below the board. If you set `move-list: true` without `interactive: true`, the plugin enables interactive mode for you so navigation and the list stay in sync.
 
