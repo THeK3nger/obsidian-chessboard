@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### New
+
+- Add `annotations:` support to `chessboard-pgn` blocks (arrows, highlights, icons, shapes), matching FEN mode. Annotations render at the target ply and hide when navigating away in interactive mode.
+
 ## v0.20.0
 
 ### New
