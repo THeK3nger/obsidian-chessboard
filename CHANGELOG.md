@@ -4,7 +4,7 @@
 
 ### New
 
-- Add `annotations:` support to `chessboard-pgn` blocks (arrows, highlights, icons, shapes), matching FEN mode. Annotations render at the target ply and hide when navigating away in interactive mode.
+- Add `annotations:` support to `chessboard-pgn` blocks (arrows, highlights, icons, shapes), matching FEN mode. Annotations render at the target ply and hide when navigating away in interactive mode. (Thanks to @ByteJuggler for the PR)
 
 ## v0.20.0
 

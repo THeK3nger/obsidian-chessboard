@@ -163,6 +163,7 @@ annotations: Ac7-c5/r Hc7/g Hc5/g !c5 Ag7-g6
 1.d4 d5 2.Nc3 Nf6 3.Bf4 g6 4.e3 Bg7 5.Nf3 O-O 6.Be2 c5
 ```
 ````
+If I found a viable syntax, I'd like to implement also annotations for multiple moves as well.
 
 ### Current Limitations
 
