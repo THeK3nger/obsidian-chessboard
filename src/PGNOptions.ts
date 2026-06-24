@@ -19,7 +19,7 @@ export function parsePGNBlock(source: string): ParsedPGNBlock {
   let orientation: "white" | "black" = "white";
   const annotations: Annotation[] = [];
 
-  const lines = source.split("\n");
+  const lines = source.split(/\r?\n/);
   const keepLines: string[] = [];
 
   for (const line of lines) {
