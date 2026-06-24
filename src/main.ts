@@ -10,10 +10,10 @@ import {
 import {
   SVGChessboard,
   SVGChessboardOptions,
-  ShowMoveOption,
 } from "./chessboardsvg/index";
 import { parseCodeBlock } from "./Annotations";
 import { createInteractivePGNBoard } from "./chessboardsvg/InteractivePGN";
+import { parsePGNBlock } from "./PGNOptions";
 
 const DEFAULT_CHESS_SETTINGS = {
   whiteSquareColor: "#f0d9b5",
@@ -84,95 +84,11 @@ export default class ObsidianChess extends Plugin {
       ctx: MarkdownPostProcessorContext,
     ) => {
       try {
-        // Extract parameters if present
-        let ply: number | undefined = undefined;
-        let showMove: ShowMoveOption = "none";
-        let interactive = false;
-        let moveList = false;
-        let orientation: "white" | "black" = "white";
-        let pgnSource = source;
-
-        const lines = source.split("\n");
-        const plyLine = lines.find((line) =>
-          line.trim().toLowerCase().startsWith("ply:"),
-        );
-        const showMoveLine = lines.find((line) =>
-          line.trim().toLowerCase().startsWith("show-move:"),
-        );
-        const interactiveLine = lines.find((line) =>
-          line.trim().toLowerCase().startsWith("interactive:"),
-        );
-        const moveListLine = lines.find((line) =>
-          line.trim().toLowerCase().startsWith("move-list:"),
-        );
-        const orientationLine = lines.find((line) =>
-          line.trim().toLowerCase().startsWith("orientation:"),
-        );
-
-        if (plyLine) {
-          const plyMatch = plyLine.match(/ply:\s*(\d+)/i);
-          if (plyMatch) {
-            ply = parseInt(plyMatch[1], 10);
-          }
-        }
-
-        if (showMoveLine) {
-          const showMoveMatch = showMoveLine.match(
-            /show-move:\s*(none|squares|arrow)/i,
-          );
-          if (showMoveMatch) {
-            showMove = showMoveMatch[1].toLowerCase() as ShowMoveOption;
-          }
-        }
-
-        if (interactiveLine) {
-          const interactiveMatch = interactiveLine.match(
-            /interactive:\s*(true|false)/i,
-          );
-          if (interactiveMatch) {
-            interactive = interactiveMatch[1].toLowerCase() === "true";
-          }
-        }
-
-        if (moveListLine) {
-          const moveListMatch = moveListLine.match(
-            /move-list:\s*(true|false)/i,
-          );
-          if (moveListMatch) {
-            moveList = moveListMatch[1].toLowerCase() === "true";
-          }
-        }
-
-        if (moveList && !interactive) {
-          interactive = true;
-        }
-
-        if (orientationLine) {
-          const orientationMatch = orientationLine.match(
-            /orientation:\s*(white|black)/i,
-          );
-          if (orientationMatch) {
-            orientation = orientationMatch[1].toLowerCase() as
-              | "white"
-              | "black";
-          }
-        }
-
-        // Remove parameter lines from the source
-        pgnSource = lines
-          .filter(
-            (line) =>
-              line !== plyLine &&
-              line !== showMoveLine &&
-              line !== interactiveLine &&
-              line !== moveListLine &&
-              line !== orientationLine,
-          )
-          .join("\n");
+        const { pgnSource, ply, showMove, interactive, moveList, orientation, annotations } =
+          parsePGNBlock(source);
+        const boardOptions = { ...this.setting, orientation };
 
         if (interactive) {
-          const boardOptions = { ...this.setting, orientation };
-          // Use interactive rendering
           const interactiveBoard = createInteractivePGNBoard(
             pgnSource,
             boardOptions,
@@ -180,30 +96,17 @@ export default class ObsidianChess extends Plugin {
             showMove,
             this.setting.boardWidthPx,
             moveList,
+            annotations,
           );
           el.appendChild(interactiveBoard);
         } else {
-          const boardOptions = { ...this.setting, orientation };
-          // Use static rendering
-          const chessboard = SVGChessboard.fromPGN(
-            pgnSource,
-            boardOptions,
-            ply,
-            showMove,
-          );
-          // TODO: Add support for annotations in PGN
-          // for (let annotation of parsedCode.annotations) {
-          //   if (annotation.type === "arrow") {
-          //     chessboard.addArrow(
-          //       annotation.start,
-          //       annotation.end,
-          //       annotation.color
-          //     );
-          //   }
-          //   if (annotation.type === "highlight") {
-          //     chessboard.highlight(annotation.square, annotation.color);
-          //   }
-          // }
+          const chessboard = SVGChessboard.fromPGN(pgnSource, boardOptions, ply, showMove);
+          for (const ann of annotations) {
+            if (ann.type === "arrow") chessboard.addArrow(ann.start, ann.end, ann.color);
+            else if (ann.type === "highlight") chessboard.highlight(ann.square, ann.color);
+            else if (ann.type === "icon") chessboard.addIcon(ann.square, ann.icon);
+            else if (ann.type === "shape") chessboard.addShape(ann.square, ann.shape, ann.color);
+          }
           this.drawChessboard(chessboard, el, ctx);
         }
       } catch (e) {

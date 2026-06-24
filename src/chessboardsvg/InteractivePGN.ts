@@ -1,5 +1,6 @@
 import { Chess, Move } from "chess.js";
 import { SVGChessboard, SVGChessboardOptions, ShowMoveOption } from "./index";
+import { Annotation } from "../Annotations";
 
 /**
  * Manages the state of a PGN game for interactive navigation.
@@ -240,6 +241,8 @@ function renderBoard(
   gameState: PGNGameState,
   options: Partial<SVGChessboardOptions>,
   svgContainer: HTMLElement,
+  annotations: Annotation[],
+  targetPly: number,
 ): void {
   svgContainer.innerHTML = "";
 
@@ -263,6 +266,15 @@ function renderBoard(
     if (square) {
       const icon = checkmatedColor === "w" ? "checkmate_white" : "checkmate_black";
       svgBoard.addIcon(square, icon);
+    }
+  }
+
+  if (annotations.length > 0 && gameState.getCurrentPly() === targetPly) {
+    for (const ann of annotations) {
+      if (ann.type === "arrow") svgBoard.addArrow(ann.start, ann.end, ann.color);
+      else if (ann.type === "highlight") svgBoard.highlight(ann.square, ann.color);
+      else if (ann.type === "icon") svgBoard.addIcon(ann.square, ann.icon);
+      else if (ann.type === "shape") svgBoard.addShape(ann.square, ann.shape, ann.color);
     }
   }
 
@@ -385,9 +397,11 @@ export function createInteractivePGNBoard(
   showMove: ShowMoveOption,
   boardWidthPx: number,
   showMoveList = false,
+  annotations: Annotation[] = [],
 ): HTMLElement {
   // Create game state
   const gameState = new PGNGameState(pgnString, initialPly, showMove);
+  const targetPly = initialPly !== undefined ? gameState.getCurrentPly() : gameState.getTotalPlies();
 
   const container = createDiv("chess-pgn-container");
   container.setCssProps({ "--chess-board-max-width": `${boardWidthPx}px` });
@@ -405,7 +419,7 @@ export function createInteractivePGNBoard(
 
   // Update UI function
   const updateUI = () => {
-    renderBoard(gameState, options, boardContainer);
+    renderBoard(gameState, options, boardContainer, annotations, targetPly);
     updateMoveDisplay(gameState, moveInfo);
     updateButtonStates(gameState, {
       first: firstButton,

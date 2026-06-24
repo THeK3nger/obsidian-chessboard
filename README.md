@@ -152,18 +152,21 @@ It is possible to specify a PGN diagram as interactive by using the `interactive
 
 You can also add `move-list: true` to show a move list next to the board (SAN in two columns, one full move per row). Click any half-move to jump there; the current position is highlighted. On small widths the list wraps below the board. If you set `move-list: true` without `interactive: true`, the plugin enables interactive mode for you so navigation and the list stay in sync.
 
+### Annotations in PGN Mode
+
+PGN diagrams support the same `annotations:` syntax as FEN boards (see [Annotations](#annotations-beta) above). Annotations are displayed only at the **target ply**: the value of `ply:` if specified, or the last move in the game if `ply:` is omitted. In interactive mode, annotations appear when the board is at the target ply and disappear when you navigate away.
+
+````
+```chessboard-pgn
+ply: 12
+annotations: Ac7-c5/r Hc7/g Hc5/g !c5 Ag7-g6
+1.d4 d5 2.Nc3 Nf6 3.Bf4 g6 4.e3 Bg7 5.Nf3 O-O 6.Be2 c5
+```
+````
+
 ### Current Limitations
 
-This supports the full PGN specification but, for now, the feature is experimental and has limitations:
-
-1. At the moment, this mode do not support annotations.
-
-Moreover, the syntax in PGN games is still unstable. I may change it in new versions.
-
-### Syntax
-
-- `A<square>-<square>`, draws an arrow from the first square to the second square. E.g., `Af8-b4`.
-- `H<square>`, highlight a specific square. E.g., `Hf8`.
+This supports the full PGN specification but, for now, the feature is experimental. The syntax in PGN games is still unstable and may change in new versions.
 
 ## How to compile the plugin
 
