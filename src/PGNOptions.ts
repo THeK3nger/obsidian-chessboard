@@ -23,35 +23,36 @@ export function parsePGNBlock(source: string): ParsedPGNBlock {
   const keepLines: string[] = [];
 
   for (const line of lines) {
-    const trimmed = line.trim().toLowerCase();
+    const trimmed = line.trim();
+    const lower = trimmed.toLowerCase();
 
-    if (trimmed.startsWith("ply:")) {
-      const m = line.match(/ply:\s*(\d+)/i);
+    if (lower.startsWith("ply:")) {
+      const m = trimmed.match(/ply:\s*(\d+)/i);
       if (m) ply = parseInt(m[1], 10);
       continue;
     }
-    if (trimmed.startsWith("show-move:")) {
-      const m = line.match(/show-move:\s*(none|squares|arrow)/i);
+    if (lower.startsWith("show-move:")) {
+      const m = trimmed.match(/show-move:\s*(none|squares|arrow)/i);
       if (m) showMove = m[1].toLowerCase() as ShowMoveOption;
       continue;
     }
-    if (trimmed.startsWith("interactive:")) {
-      const m = line.match(/interactive:\s*(true|false)/i);
+    if (lower.startsWith("interactive:")) {
+      const m = trimmed.match(/interactive:\s*(true|false)/i);
       if (m) interactive = m[1].toLowerCase() === "true";
       continue;
     }
-    if (trimmed.startsWith("move-list:")) {
-      const m = line.match(/move-list:\s*(true|false)/i);
+    if (lower.startsWith("move-list:")) {
+      const m = trimmed.match(/move-list:\s*(true|false)/i);
       if (m) moveList = m[1].toLowerCase() === "true";
       continue;
     }
-    if (trimmed.startsWith("orientation:")) {
-      const m = line.match(/orientation:\s*(white|black)/i);
+    if (lower.startsWith("orientation:")) {
+      const m = trimmed.match(/orientation:\s*(white|black)/i);
       if (m) orientation = m[1].toLowerCase() as "white" | "black";
       continue;
     }
-    if (trimmed.startsWith("annotations:")) {
-      const tokenLine = line.replace(/^annotations:\s*/i, "");
+    if (lower.startsWith("annotations:")) {
+      const tokenLine = trimmed.replace(/^annotations:\s*/i, "");
       annotations.push(...parseAnnotationLine(tokenLine));
       continue;
     }
