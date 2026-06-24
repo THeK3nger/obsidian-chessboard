@@ -88,7 +88,7 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
   const tokens = line.split(" ");
   for (const annotation of tokens) {
     if (annotation.startsWith("H")) {
-      let color = HIGHLIGHT_DEFAULT;
+      let color: string = HIGHLIGHT_DEFAULT;
       if (annotation.endsWith("/y")) {
         color = ANNOTATION_COLORS.yellow;
       } else if (annotation.endsWith("/g")) {
@@ -100,7 +100,7 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
       continue;
     }
     if (annotation.startsWith("A")) {
-      let color = ARROW_DEFAULT;
+      let color: string = ARROW_DEFAULT;
       if (annotation.endsWith("/r")) {
         color = ANNOTATION_COLORS.red;
       } else if (annotation.endsWith("/g")) {
@@ -145,7 +145,7 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
       continue;
     }
     if (annotation.startsWith("C") || annotation.startsWith("S") || annotation.startsWith("Q")) {
-      let color = SHAPE_DEFAULT;
+      let color: string = SHAPE_DEFAULT;
       let shapeType: "circle" | "square" | "squircle";
       if (annotation.startsWith("C")) {
         shapeType = "circle";
