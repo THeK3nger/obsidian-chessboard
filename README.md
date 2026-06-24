@@ -8,7 +8,7 @@ If you want a more fully featured interactive chess plugin, I recommend [Chesser
 
 ## How to use it
 
-After you installed the plugin, just write the FEN position representation inside a code block with the `chessboard` language.
+After you install the plugin, just write the FEN position representation inside a code block with the `chessboard` language.
 
 ### Example
 
@@ -50,7 +50,7 @@ strict: false
 
 ## Annotations (Beta)
 
-You can annotate your schema with arrows, highlights and icons:
+You can annotate your diagram with arrows, highlights and icons:
 
 ````
 ```chessboard
@@ -74,13 +74,13 @@ The annotations are written in the `annotations` field, and you can use the foll
 - `!!<square>`, adds a "brilliant move" icon to the specified square. E.g., `!!e5`.
 - `??<square>`, adds a "blunder" icon to the specified square. E.g., `??e5`.
 - `?<square>`, adds a "questionable move" icon to the specified square. E.g., `?e5`.
-- `!<square>`, adds a "excellent move" icon to the specified square. E.g., `!e5`.
-- `!?<square>`, adds a "okay move" icon to the specified square. E.g., `!?e5`.
+- `!<square>`, adds an "excellent move" icon to the specified square. E.g., `!e5`.
+- `!?<square>`, adds an "okay move" icon to the specified square. E.g., `!?e5`.
 - `F<square>`, adds a "forced move" icon to the specified square. E.g., `Fe5`.
 - `#B<square>`, adds a black "checkmated" icon to the specified square. E.g., `#Be5`.
 - `#W<square>`, adds a white "checkmated" icon to the specified square. E.g., `#We5`.
 
-Not that the annotation syntax is is beta and may change in the future. If you have suggestions, don't hesitate to open an issue.
+Note that the annotation syntax is beta and may change in the future. If you have suggestions, don't hesitate to open an issue.
 
 ## Experimental: PGN
 
@@ -140,13 +140,13 @@ Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8
 
 It is also possible to highlight the *ply*. By using `show-move` you can select the style:
 
-- `squares`: it highlights green the origin and destination squares of the move.
+- `squares`: it highlights the origin and destination squares of the move in green.
 - `arrow`: it draws an arrow from the origin to the destination square of the move.
 - `none`: no highlighting (default).
 
 ### Interactive Mode
 
-It is possible to specify a PGN diagram as interactive by using the `interactive: true` option. If a diagram is interactive, the plugin will show buttons to go to the previous or next move (or the first and the last).
+It is possible to specify a PGN diagram as interactive by using the `interactive: true` option. If a diagram is interactive, the plugin will show buttons to go to the previous or next move (or the first and last).
 
 <img width="500px" alt="Interactive PGN Mode Example" src="https://github.com/user-attachments/assets/7f5093a9-4392-44a8-824f-141d625472c0" />
 
@@ -163,7 +163,7 @@ annotations: Ac7-c5/r Hc7/g Hc5/g !c5 Ag7-g6
 1.d4 d5 2.Nc3 Nf6 3.Bf4 g6 4.e3 Bg7 5.Nf3 O-O 6.Be2 c5
 ```
 ````
-If I found a viable syntax, I'd like to implement also annotations for multiple moves as well.
+If I find a viable syntax, I'd also like to implement annotations for multiple moves as well.
 
 ### Current Limitations
 
