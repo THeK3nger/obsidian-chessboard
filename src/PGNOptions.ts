@@ -11,6 +11,16 @@ export interface ParsedPGNBlock {
   annotations: Annotation[];
 }
 
+function parseOption<T extends string>(line: string, key: string, allowedValues: readonly T[]): T | undefined {
+  const match = line.match(new RegExp(`${key}:\\s*(${allowedValues.join("|")})`, "i"));
+  return match?.[1].toLowerCase() as T | undefined;
+}
+
+function parseBooleanOption(line: string, key: string): boolean | undefined {
+  const value = parseOption(line, key, ["true", "false"] as const);
+  return value === undefined ? undefined : value === "true";
+}
+
 export function parsePGNBlock(source: string): ParsedPGNBlock {
   let ply: number | undefined = undefined;
   let showMove: ShowMoveOption = "none";
@@ -32,23 +42,23 @@ export function parsePGNBlock(source: string): ParsedPGNBlock {
       continue;
     }
     if (lower.startsWith("show-move:")) {
-      const m = trimmed.match(/show-move:\s*(none|squares|arrow)/i);
-      if (m) showMove = m[1].toLowerCase() as ShowMoveOption;
+      const value = parseOption<ShowMoveOption>(trimmed, "show-move", ["none", "squares", "arrow"]);
+      if (value) showMove = value;
       continue;
     }
     if (lower.startsWith("interactive:")) {
-      const m = trimmed.match(/interactive:\s*(true|false)/i);
-      if (m) interactive = m[1].toLowerCase() === "true";
+      const value = parseBooleanOption(trimmed, "interactive");
+      if (value !== undefined) interactive = value;
       continue;
     }
     if (lower.startsWith("move-list:")) {
-      const m = trimmed.match(/move-list:\s*(true|false)/i);
-      if (m) moveList = m[1].toLowerCase() === "true";
+      const value = parseBooleanOption(trimmed, "move-list");
+      if (value !== undefined) moveList = value;
       continue;
     }
     if (lower.startsWith("orientation:")) {
-      const m = trimmed.match(/orientation:\s*(white|black)/i);
-      if (m) orientation = m[1].toLowerCase() as "white" | "black";
+      const value = parseOption<"white" | "black">(trimmed, "orientation", ["white", "black"]);
+      if (value) orientation = value;
       continue;
     }
     if (lower.startsWith("annotations:")) {
