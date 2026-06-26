@@ -45,7 +45,11 @@ export interface ShapeAnnotation {
   color: string;
 }
 
-export type Annotation = Highlight | ArrowAnnotation | IconAnnotation | ShapeAnnotation;
+export type Annotation =
+  | Highlight
+  | ArrowAnnotation
+  | IconAnnotation
+  | ShapeAnnotation;
 
 export interface ParsedChessCode {
   fen: string;
@@ -55,11 +59,43 @@ export interface ParsedChessCode {
 }
 
 /**
- * Parses a code block containing the FEN board position and the annotations
- * and returns an object with the parsed data.
+ * The four annotation colors that can be referenced by name (via the `/r`,
+ * `/g`, `/b`, `/y` suffixes) or used as the default for an annotation type.
+ */
+export type AnnotationColorName = "red" | "yellow" | "green" | "blue";
+
+/**
+ * Maps each annotation color name to the value used to render it.
  *
- * @param input The input string of the FEN code block.
- * @returns An object with the parsed data.
+ * This is the configuration surface that lets the annotation colors be
+ * overridden from settings. Callers that don't supply a config fall back to
+ * {@link DEFAULT_ANNOTATION_COLORS}.
+ */
+export type AnnotationColorConfig = Record<AnnotationColorName, string>;
+
+/**
+ * Built-in defaults for the annotation colors, used when no configuration is
+ * provided.
+ */
+export const DEFAULT_ANNOTATION_COLORS: AnnotationColorConfig = {
+  red: "#e67768",
+  yellow: "#f1ad24",
+  green: "#b3ce6e",
+  blue: "#6ab5d6",
+} as const;
+
+/**
+ * The color applied to each annotation type when its token omits a color
+ * suffix. These are color *names* resolved against the active config, so they
+ * track whatever values the user has chosen.
+ */
+const HIGHLIGHT_DEFAULT: AnnotationColorName = "red";
+const ARROW_DEFAULT: AnnotationColorName = "yellow";
+const SHAPE_DEFAULT: AnnotationColorName = "yellow";
+
+/**
+ * Maps the icon token prefixes (e.g. `!!`, `F`, `#W`) recognized in an
+ * annotation line to the icon name used to render them.
  */
 const ICON_MAPPING: Record<string, string> = {
   "!!": "brilliant",
@@ -67,115 +103,109 @@ const ICON_MAPPING: Record<string, string> = {
   "??": "blunder",
   "?": "mistake",
   "!": "excellent",
-  "F": "forced",
+  F: "forced",
   "#W": "checkmate_white",
   "#B": "checkmate_black",
 };
 
-export const ANNOTATION_COLORS = {
-  red: "#e67768",
-  yellow: "#f1ad24",
-  green: "#b3ce6e",
-  blue: "#6ab5d6",
-} as const;
+/**
+ * Icon prefixes in the order they must be matched. Two-character prefixes
+ * (`!!`, `!?`, `??`) are listed before their one-character counterparts (`!`,
+ * `?`) so that the longer match wins.
+ */
+const ICON_PREFIXES = ["#W", "#B", "!?", "!!", "??", "F", "!", "?"];
 
-export const HIGHLIGHT_DEFAULT = ANNOTATION_COLORS.red;
-export const ARROW_DEFAULT = ANNOTATION_COLORS.yellow;
-export const SHAPE_DEFAULT = ANNOTATION_COLORS.yellow;
+const SHAPE_PREFIX_MAP: Record<string, "circle" | "square" | "squircle"> = {
+  C: "circle",
+  S: "square",
+  Q: "squircle",
+};
 
-export function parseAnnotationLine(line: string): Array<Annotation> {
+/**
+ * Resolves the color for an annotation token, honoring an explicit `/r`, `/g`,
+ * `/b`, or `/y` suffix and falling back to `defaultColor` when none is present.
+ */
+function resolveColor(
+  token: string,
+  colors: AnnotationColorConfig,
+  defaultColor: AnnotationColorName,
+): string {
+  if (token.endsWith("/r")) return colors.red;
+  if (token.endsWith("/g")) return colors.green;
+  if (token.endsWith("/b")) return colors.blue;
+  if (token.endsWith("/y")) return colors.yellow;
+  return colors[defaultColor];
+}
+
+export function parseAnnotationLine(
+  line: string,
+  colors: AnnotationColorConfig = DEFAULT_ANNOTATION_COLORS,
+): Array<Annotation> {
   const annotations: Array<Annotation> = [];
   const tokens = line.split(" ");
   for (const annotation of tokens) {
+    // Check for highlight annotations
     if (annotation.startsWith("H")) {
-      let color: string = HIGHLIGHT_DEFAULT;
-      if (annotation.endsWith("/y")) {
-        color = ANNOTATION_COLORS.yellow;
-      } else if (annotation.endsWith("/g")) {
-        color = ANNOTATION_COLORS.green;
-      } else if (annotation.endsWith("/b")) {
-        color = ANNOTATION_COLORS.blue;
-      }
-      annotations.push({ type: "highlight", square: annotation.substring(1, 3), color });
+      const color = resolveColor(annotation, colors, HIGHLIGHT_DEFAULT);
+      annotations.push({
+        type: "highlight",
+        square: annotation.substring(1, 3),
+        color,
+      });
       continue;
     }
+    // Check for arrow annotations
     if (annotation.startsWith("A")) {
-      let color: string = ARROW_DEFAULT;
-      if (annotation.endsWith("/r")) {
-        color = ANNOTATION_COLORS.red;
-      } else if (annotation.endsWith("/g")) {
-        color = ANNOTATION_COLORS.green;
-      } else if (annotation.endsWith("/b")) {
-        color = ANNOTATION_COLORS.blue;
-      }
+      const color = resolveColor(annotation, colors, ARROW_DEFAULT);
       const [start, end] = annotation.substring(1, 6).split("-");
       annotations.push({ type: "arrow", start, end, color });
       continue;
     }
-    if (annotation.startsWith("F")) {
-      annotations.push({ type: "icon", square: annotation.substring(1, 3), icon: ICON_MAPPING["F"] });
+    // Check for icon annotations
+    const iconPrefix = ICON_PREFIXES.find((p) => annotation.startsWith(p));
+    if (iconPrefix) {
+      const start = iconPrefix.length;
+      annotations.push({
+        type: "icon",
+        square: annotation.substring(start, start + 2),
+        icon: ICON_MAPPING[iconPrefix],
+      });
       continue;
     }
-    if (annotation.startsWith("#W")) {
-      annotations.push({ type: "icon", square: annotation.substring(2, 4), icon: ICON_MAPPING["#W"] });
-      continue;
-    }
-    if (annotation.startsWith("#B")) {
-      annotations.push({ type: "icon", square: annotation.substring(2, 4), icon: ICON_MAPPING["#B"] });
-      continue;
-    }
-    if (annotation.startsWith("!?")) {
-      annotations.push({ type: "icon", square: annotation.substring(2, 4), icon: ICON_MAPPING["!?"] });
-      continue;
-    }
-    if (annotation.startsWith("!!")) {
-      annotations.push({ type: "icon", square: annotation.substring(2, 4), icon: ICON_MAPPING["!!"] });
-      continue;
-    }
-    if (annotation.startsWith("!")) {
-      annotations.push({ type: "icon", square: annotation.substring(1, 3), icon: ICON_MAPPING["!"] });
-      continue;
-    }
-    if (annotation.startsWith("??")) {
-      annotations.push({ type: "icon", square: annotation.substring(2, 4), icon: ICON_MAPPING["??"] });
-      continue;
-    }
-    if (annotation.startsWith("?")) {
-      annotations.push({ type: "icon", square: annotation.substring(1, 3), icon: ICON_MAPPING["?"] });
-      continue;
-    }
-    if (annotation.startsWith("C") || annotation.startsWith("S") || annotation.startsWith("Q")) {
-      let color: string = SHAPE_DEFAULT;
-      let shapeType: "circle" | "square" | "squircle";
-      if (annotation.startsWith("C")) {
-        shapeType = "circle";
-      } else if (annotation.startsWith("S")) {
-        shapeType = "square";
-      } else {
-        shapeType = "squircle";
-      }
-      if (annotation.endsWith("/r")) {
-        color = ANNOTATION_COLORS.red;
-      } else if (annotation.endsWith("/g")) {
-        color = ANNOTATION_COLORS.green;
-      } else if (annotation.endsWith("/b")) {
-        color = ANNOTATION_COLORS.blue;
-      } else if (annotation.endsWith("/y")) {
-        color = ANNOTATION_COLORS.yellow;
-      }
-      annotations.push({ type: "shape", square: annotation.substring(1, 3), shape: shapeType, color });
+    // Check for shape annotations
+    const shapeType = SHAPE_PREFIX_MAP[annotation[0]];
+    if (shapeType) {
+      const color = resolveColor(annotation, colors, SHAPE_DEFAULT);
+      annotations.push({
+        type: "shape",
+        square: annotation.substring(1, 3),
+        shape: shapeType,
+        color,
+      });
       continue;
     }
   }
   return annotations;
 }
 
-export function parseCodeBlock(input: string): ParsedChessCode {
+/**
+ * Parses a code block containing the FEN board position and the annotations
+ * and returns an object with the parsed data.
+ *
+ * @param input The input string of the FEN code block.
+ * @param colors The annotation color configuration. Defaults to
+ * {@link DEFAULT_ANNOTATION_COLORS} when not provided (e.g. before the
+ * settings UI supplies a user-chosen palette).
+ * @returns An object with the parsed data.
+ */
+export function parseCodeBlock(
+  input: string,
+  colors: AnnotationColorConfig = DEFAULT_ANNOTATION_COLORS,
+): ParsedChessCode {
   const lines = input.split(/\r?\n/);
-  let fen = lines[0];
-  if (fen.startsWith("fen: ")) {
-    fen = fen.replace("fen: ", "");
-  }
+  const fen = lines[0].startsWith("fen: ")
+    ? lines[0].slice("fen: ".length)
+    : lines[0];
   const annotations: Array<Annotation> = [];
   let orientation: "white" | "black" = "white";
   let strict = true;
@@ -188,16 +218,15 @@ export function parseCodeBlock(input: string): ParsedChessCode {
       strict = value !== "false";
     }
     if (line.startsWith("orientation: ")) {
-      line = line.replace("orientation: ", "");
-      line = line.trim();
-      if (line !== "white" && line !== "black") {
-        throw Error(`Unknown orientation ${orientation}`);
+      const value = line.replace("orientation: ", "").trim();
+      if (value !== "white" && value !== "black") {
+        throw Error(`Unknown orientation ${value}`);
       }
-      orientation = line;
+      orientation = value;
     }
     if (line.startsWith("annotations: ")) {
       const tokenLine = line.replace("annotations: ", "");
-      annotations.push(...parseAnnotationLine(tokenLine));
+      annotations.push(...parseAnnotationLine(tokenLine, colors));
     }
   }
   return { fen, annotations, orientation, strict };
