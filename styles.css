@@ -81,12 +81,13 @@
   text-align: right;
 }
 
-.chess-move-btn {
+.chess-move-list button.chess-move-btn {
   margin: 0;
   padding: 2px 4px;
   border: none;
   border-radius: 3px;
-  background: transparent;
+  background-color: transparent;
+  box-shadow: none;
   font-family: var(--font-monospace);
   font-size: 13px;
   text-align: left;
@@ -95,13 +96,18 @@
   color: var(--text-muted);
 }
 
-.chess-move-btn-past {
+.chess-move-list button.chess-move-btn:hover:not(.chess-move-btn-current) {
+  background-color: var(--background-modifier-hover);
+}
+
+.chess-move-list button.chess-move-btn-past {
   color: var(--text-normal);
 }
 
-.chess-move-btn-current {
-  background-color: var(--background-modifier-hover);
-  color: var(--text-accent);
+.chess-move-list button.chess-move-btn-current,
+.chess-move-list button.chess-move-btn-current:hover {
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
   font-weight: 600;
 }
 
