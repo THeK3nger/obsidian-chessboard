@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## v0.22.0
+
+### New
+
+- Rework the settings tab to support searchable settings. This bumps the minimum required Obsidian version to 1.13.0.
+
+### Behind the Scenes
+
+- Preliminary refactoring of the annotations code to allow custom annotation colors.
+
 ## v0.21.0
 
 ### New
