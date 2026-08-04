@@ -18,9 +18,32 @@ import {
   recolorWhite,
   recolorBlack,
 } from "./Pieces";
-import { Annotation } from "../Annotations";
+import {
+  Annotation,
+  AnnotationColorName,
+  IconAnnotation,
+} from "../Annotations";
 
 export type ShowMoveOption = "none" | "squares" | "arrow";
+
+export type AnnotationColorConfig = Record<AnnotationColorName, string>;
+
+export const DEFAULT_ANNOTATION_COLORS: AnnotationColorConfig = {
+  red: "#e67768",
+  yellow: "#f1ad24",
+  green: "#b3ce6e",
+  blue: "#6ab5d6",
+};
+
+type DrawableAnnotation =
+  | { type: "arrow"; start: string; end: string; color: string }
+  | IconAnnotation
+  | {
+      type: "shape";
+      square: string;
+      shape: "circle" | "square" | "squircle";
+      color: string;
+    };
 
 export interface SVGChessboardOptions {
   orientation: "white" | "black";
@@ -54,7 +77,7 @@ export class SVGChessboard {
   private defaultArrowColor = "#ff6060";
 
   private highlights: Array<[BoardCoordinate, string]> = [];
-  private annotations: Annotation[] = [];
+  private annotations: DrawableAnnotation[] = [];
 
   private COLORED_WHITE_PIECES: Record<string, string>;
   private COLORED_BLACK_PIECES: Record<string, string>;
@@ -161,6 +184,23 @@ export class SVGChessboard {
       shape: shape,
       color: color,
     });
+  }
+
+  addAnnotations(
+    annotations: readonly Annotation[],
+    colors: AnnotationColorConfig = DEFAULT_ANNOTATION_COLORS,
+  ): void {
+    for (const annotation of annotations) {
+      if (annotation.type === "arrow") {
+        this.addArrow(annotation.start, annotation.end, colors[annotation.color]);
+      } else if (annotation.type === "highlight") {
+        this.highlight(annotation.square, colors[annotation.color]);
+      } else if (annotation.type === "icon") {
+        this.addIcon(annotation.square, annotation.icon);
+      } else if (annotation.type === "shape") {
+        this.addShape(annotation.square, annotation.shape, colors[annotation.color]);
+      }
+    }
   }
 
   highlightCoord(c: number, r: number, color = this.defaultHighlightColor) {

@@ -1,5 +1,11 @@
 import { Chess, Move } from "chess.js";
-import { SVGChessboard, SVGChessboardOptions, ShowMoveOption } from "./index";
+import {
+  AnnotationColorConfig,
+  DEFAULT_ANNOTATION_COLORS,
+  SVGChessboard,
+  SVGChessboardOptions,
+  ShowMoveOption,
+} from "./index";
 import { Annotation } from "../Annotations";
 
 /**
@@ -242,6 +248,7 @@ function renderBoard(
   options: Partial<SVGChessboardOptions>,
   svgContainer: HTMLElement,
   annotations: Annotation[],
+  annotationColors: AnnotationColorConfig,
   targetPly: number,
 ): void {
   svgContainer.innerHTML = "";
@@ -270,12 +277,7 @@ function renderBoard(
   }
 
   if (annotations.length > 0 && gameState.getCurrentPly() === targetPly) {
-    for (const ann of annotations) {
-      if (ann.type === "arrow") svgBoard.addArrow(ann.start, ann.end, ann.color);
-      else if (ann.type === "highlight") svgBoard.highlight(ann.square, ann.color);
-      else if (ann.type === "icon") svgBoard.addIcon(ann.square, ann.icon);
-      else if (ann.type === "shape") svgBoard.addShape(ann.square, ann.shape, ann.color);
-    }
+    svgBoard.addAnnotations(annotations, annotationColors);
   }
 
   const xmlns = "http://www.w3.org/2000/svg";
@@ -398,6 +400,7 @@ export function createInteractivePGNBoard(
   boardWidthPx: number,
   showMoveList = false,
   annotations: Annotation[] = [],
+  annotationColors: AnnotationColorConfig = DEFAULT_ANNOTATION_COLORS,
 ): HTMLElement {
   // Create game state
   const gameState = new PGNGameState(pgnString, initialPly, showMove);
@@ -419,7 +422,14 @@ export function createInteractivePGNBoard(
 
   // Update UI function
   const updateUI = () => {
-    renderBoard(gameState, options, boardContainer, annotations, targetPly);
+    renderBoard(
+      gameState,
+      options,
+      boardContainer,
+      annotations,
+      annotationColors,
+      targetPly,
+    );
     updateMoveDisplay(gameState, moveInfo);
     updateButtonStates(gameState, {
       first: firstButton,

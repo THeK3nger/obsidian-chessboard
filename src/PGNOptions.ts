@@ -1,9 +1,4 @@
-import {
-  Annotation,
-  AnnotationColorConfig,
-  DEFAULT_ANNOTATION_COLORS,
-  parseAnnotationLine,
-} from "./Annotations";
+import { Annotation, parseAnnotationLine } from "./Annotations";
 import { ShowMoveOption } from "./chessboardsvg/index";
 
 export interface ParsedPGNBlock {
@@ -29,14 +24,13 @@ function parseBooleanOption(line: string, key: string): boolean | undefined {
 /**
  * Parses a PGN block into a structured format.
  *
+ * Annotation colors are left as symbolic slot names (see {@link Annotation});
+ * the renderer resolves them against the active color configuration.
+ *
  * @param source The string of the PGN block
- * @param colors A map between annotation keys and their colors
  * @returns A parsed PGN block
  */
-export function parsePGNBlock(
-  source: string,
-  colors: AnnotationColorConfig = DEFAULT_ANNOTATION_COLORS,
-): ParsedPGNBlock {
+export function parsePGNBlock(source: string): ParsedPGNBlock {
   let ply: number | undefined = undefined;
   let showMove: ShowMoveOption = "none";
   let interactive = false;
@@ -78,7 +72,7 @@ export function parsePGNBlock(
     }
     if (lower.startsWith("annotations:")) {
       const tokenLine = trimmed.replace(/^annotations:\s*/i, "");
-      annotations.push(...parseAnnotationLine(tokenLine, colors));
+      annotations.push(...parseAnnotationLine(tokenLine));
       continue;
     }
 

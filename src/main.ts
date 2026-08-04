@@ -9,14 +9,12 @@ import {
   SettingGroupItem,
 } from "obsidian";
 import {
+  AnnotationColorConfig,
+  DEFAULT_ANNOTATION_COLORS,
   SVGChessboard,
   SVGChessboardOptions,
 } from "./chessboardsvg/index";
-import {
-  AnnotationColorConfig,
-  DEFAULT_ANNOTATION_COLORS,
-  parseCodeBlock,
-} from "./Annotations";
+import { parseCodeBlock } from "./Annotations";
 import { createInteractivePGNBoard } from "./chessboardsvg/InteractivePGN";
 import { parsePGNBlock } from "./PGNOptions";
 
@@ -112,7 +110,7 @@ export default class ObsidianChess extends Plugin {
     ) => {
       try {
         const { pgnSource, ply, showMove, interactive, moveList, orientation, annotations } =
-          parsePGNBlock(source, this.getAnnotationColors());
+          parsePGNBlock(source);
         const boardOptions = { ...this.setting, orientation };
 
         if (interactive) {
@@ -124,16 +122,12 @@ export default class ObsidianChess extends Plugin {
             this.setting.boardWidthPx,
             moveList,
             annotations,
+            this.getAnnotationColors(),
           );
           el.appendChild(interactiveBoard);
         } else {
           const chessboard = SVGChessboard.fromPGN(pgnSource, boardOptions, ply, showMove);
-          for (const ann of annotations) {
-            if (ann.type === "arrow") chessboard.addArrow(ann.start, ann.end, ann.color);
-            else if (ann.type === "highlight") chessboard.highlight(ann.square, ann.color);
-            else if (ann.type === "icon") chessboard.addIcon(ann.square, ann.icon);
-            else if (ann.type === "shape") chessboard.addShape(ann.square, ann.shape, ann.color);
-          }
+          chessboard.addAnnotations(annotations, this.getAnnotationColors());
           this.drawChessboard(chessboard, el, ctx);
         }
       } catch (e) {
@@ -149,7 +143,7 @@ export default class ObsidianChess extends Plugin {
       ctx: MarkdownPostProcessorContext,
     ) => {
       try {
-        const parsedCode = parseCodeBlock(source, this.getAnnotationColors());
+        const parsedCode = parseCodeBlock(source);
         const boardOptions = {
           ...this.setting,
           orientation: parsedCode.orientation,
@@ -159,28 +153,10 @@ export default class ObsidianChess extends Plugin {
           boardOptions,
           !parsedCode.strict,
         );
-        for (let annotation of parsedCode.annotations) {
-          if (annotation.type === "arrow") {
-            chessboard.addArrow(
-              annotation.start,
-              annotation.end,
-              annotation.color,
-            );
-          }
-          if (annotation.type === "highlight") {
-            chessboard.highlight(annotation.square, annotation.color);
-          }
-          if (annotation.type === "icon") {
-            chessboard.addIcon(annotation.square, annotation.icon);
-          }
-          if (annotation.type === "shape") {
-            chessboard.addShape(
-              annotation.square,
-              annotation.shape,
-              annotation.color,
-            );
-          }
-        }
+        chessboard.addAnnotations(
+          parsedCode.annotations,
+          this.getAnnotationColors(),
+        );
         this.drawChessboard(chessboard, el, ctx);
       } catch (e) {
         this.drawErrorMessage(e, el);

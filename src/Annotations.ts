@@ -1,24 +1,33 @@
 /**
+ * The four annotation colors that can be referenced by name (via the `/r`,
+ * `/g`, `/b`, `/y` suffixes) or used as the default for an annotation type.
+ */
+export type AnnotationColorName = "red" | "yellow" | "green" | "blue";
+
+/**
  * Represents a highlight annotation on the board.
  *
- * It is defined by the square to highlight (in algebraic notation) and the color to use.
+ * It is defined by the square to highlight (in algebraic notation) and a
+ * symbolic color slot (e.g. `"red"`). The renderer decides which actual
+ * color value that slot represents.
  */
 export interface Highlight {
   type: "highlight";
   square: string;
-  color: string;
+  color: AnnotationColorName;
 }
 
 /**
  * Represents an arrow annotation on the board.
  *
- * It is defined by the start and end squares of the arrow (in algebraic notation) and the color to use.
+ * It is defined by the start and end squares of the arrow (in algebraic
+ * notation) and a symbolic color slot. See {@link Highlight}.
  */
 export interface ArrowAnnotation {
   type: "arrow";
   start: string;
   end: string;
-  color: string;
+  color: AnnotationColorName;
 }
 
 /**
@@ -36,15 +45,22 @@ export interface IconAnnotation {
  * Represents a shape annotation on the board.
  *
  * It is defined by the square to draw the shape (in algebraic notation),
- * the shape type (circle, square, squircle), and the color to use.
+ * the shape type (circle, square, squircle), and a symbolic color slot. See
+ * {@link Highlight}.
  */
 export interface ShapeAnnotation {
   type: "shape";
   square: string;
   shape: "circle" | "square" | "squircle";
-  color: string;
+  color: AnnotationColorName;
 }
 
+/**
+ * An annotation as produced by parsing: colors are symbolic slot names
+ * (`AnnotationColorName`), not rendering values. Parsing a code block only
+ * needs to recognize the `/r`, `/g`, `/b`, `/y` tokens — it doesn't need to
+ * know what "red" actually looks like.
+ */
 export type Annotation =
   | Highlight
   | ArrowAnnotation
@@ -59,35 +75,8 @@ export interface ParsedChessCode {
 }
 
 /**
- * The four annotation colors that can be referenced by name (via the `/r`,
- * `/g`, `/b`, `/y` suffixes) or used as the default for an annotation type.
- */
-export type AnnotationColorName = "red" | "yellow" | "green" | "blue";
-
-/**
- * Maps each annotation color name to the value used to render it.
- *
- * This is the configuration surface that lets the annotation colors be
- * overridden from settings. Callers that don't supply a config fall back to
- * {@link DEFAULT_ANNOTATION_COLORS}.
- */
-export type AnnotationColorConfig = Record<AnnotationColorName, string>;
-
-/**
- * Built-in defaults for the annotation colors, used when no configuration is
- * provided.
- */
-export const DEFAULT_ANNOTATION_COLORS: AnnotationColorConfig = {
-  red: "#e67768",
-  yellow: "#f1ad24",
-  green: "#b3ce6e",
-  blue: "#6ab5d6",
-} as const;
-
-/**
  * The color applied to each annotation type when its token omits a color
- * suffix. These are color *names* resolved against the active config, so they
- * track whatever values the user has chosen.
+ * suffix.
  */
 const HIGHLIGHT_DEFAULT: AnnotationColorName = "red";
 const ARROW_DEFAULT: AnnotationColorName = "yellow";
@@ -122,31 +111,28 @@ const SHAPE_PREFIX_MAP: Record<string, "circle" | "square" | "squircle"> = {
 };
 
 /**
- * Resolves the color for an annotation token, honoring an explicit `/r`, `/g`,
- * `/b`, or `/y` suffix and falling back to `defaultColor` when none is present.
+ * Resolves the color slot for an annotation token, honoring an explicit
+ * `/r`, `/g`, `/b`, or `/y` suffix and falling back to `defaultColor` when
+ * none is present.
  */
-function resolveColor(
+function resolveColorName(
   token: string,
-  colors: AnnotationColorConfig,
   defaultColor: AnnotationColorName,
-): string {
-  if (token.endsWith("/r")) return colors.red;
-  if (token.endsWith("/g")) return colors.green;
-  if (token.endsWith("/b")) return colors.blue;
-  if (token.endsWith("/y")) return colors.yellow;
-  return colors[defaultColor];
+): AnnotationColorName {
+  if (token.endsWith("/r")) return "red";
+  if (token.endsWith("/g")) return "green";
+  if (token.endsWith("/b")) return "blue";
+  if (token.endsWith("/y")) return "yellow";
+  return defaultColor;
 }
 
-export function parseAnnotationLine(
-  line: string,
-  colors: AnnotationColorConfig = DEFAULT_ANNOTATION_COLORS,
-): Array<Annotation> {
+export function parseAnnotationLine(line: string): Array<Annotation> {
   const annotations: Array<Annotation> = [];
   const tokens = line.split(" ");
   for (const annotation of tokens) {
     // Check for highlight annotations
     if (annotation.startsWith("H")) {
-      const color = resolveColor(annotation, colors, HIGHLIGHT_DEFAULT);
+      const color = resolveColorName(annotation, HIGHLIGHT_DEFAULT);
       annotations.push({
         type: "highlight",
         square: annotation.substring(1, 3),
@@ -156,7 +142,7 @@ export function parseAnnotationLine(
     }
     // Check for arrow annotations
     if (annotation.startsWith("A")) {
-      const color = resolveColor(annotation, colors, ARROW_DEFAULT);
+      const color = resolveColorName(annotation, ARROW_DEFAULT);
       const [start, end] = annotation.substring(1, 6).split("-");
       annotations.push({ type: "arrow", start, end, color });
       continue;
@@ -175,7 +161,7 @@ export function parseAnnotationLine(
     // Check for shape annotations
     const shapeType = SHAPE_PREFIX_MAP[annotation[0]];
     if (shapeType) {
-      const color = resolveColor(annotation, colors, SHAPE_DEFAULT);
+      const color = resolveColorName(annotation, SHAPE_DEFAULT);
       annotations.push({
         type: "shape",
         square: annotation.substring(1, 3),
@@ -192,16 +178,13 @@ export function parseAnnotationLine(
  * Parses a code block containing the FEN board position and the annotations
  * and returns an object with the parsed data.
  *
+ * Annotation colors are left as symbolic slot names (see {@link Annotation});
+ * the renderer resolves them against the active color configuration.
+ *
  * @param input The input string of the FEN code block.
- * @param colors The annotation color configuration. Defaults to
- * {@link DEFAULT_ANNOTATION_COLORS} when not provided (e.g. before the
- * settings UI supplies a user-chosen palette).
  * @returns An object with the parsed data.
  */
-export function parseCodeBlock(
-  input: string,
-  colors: AnnotationColorConfig = DEFAULT_ANNOTATION_COLORS,
-): ParsedChessCode {
+export function parseCodeBlock(input: string): ParsedChessCode {
   const lines = input.split(/\r?\n/);
   const fen = lines[0].startsWith("fen: ")
     ? lines[0].slice("fen: ".length)
@@ -226,7 +209,7 @@ export function parseCodeBlock(
     }
     if (line.startsWith("annotations: ")) {
       const tokenLine = line.replace("annotations: ", "");
-      annotations.push(...parseAnnotationLine(tokenLine, colors));
+      annotations.push(...parseAnnotationLine(tokenLine));
     }
   }
   return { fen, annotations, orientation, strict };
