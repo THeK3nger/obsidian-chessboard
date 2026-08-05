@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## v0.23.0
+
+### New
+
+- ⭐ New settings for customizing the annotation colors! Some of you told me that the default colors were hard to see with particular chessboard colors. Now, you can change the colors of the annotations to match whatever you like.
+
 ## v0.22.0
 
 ### New
