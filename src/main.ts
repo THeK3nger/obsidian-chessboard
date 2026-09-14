@@ -52,7 +52,7 @@ export default class ObsidianChess extends Plugin {
     this.addSettingTab(new ObsidianChessSettingsTab(this.app, this));
     this.registerMarkdownCodeBlockProcessor(
       "chessboard",
-      this.getDrawChessboardFENFuncion(),
+      this.getDrawChessboardFENFunction(),
     );
     this.registerMarkdownCodeBlockProcessor(
       "chessboard-pgn",
@@ -136,7 +136,7 @@ export default class ObsidianChess extends Plugin {
     };
   }
 
-  private getDrawChessboardFENFuncion() {
+  private getDrawChessboardFENFunction() {
     return (
       source: string,
       el: HTMLElement,
