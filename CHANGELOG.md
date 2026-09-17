@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## v0.23.2
+
+### Fixes
+
+- Automatically refresh chessboards when plugin settings change.
+
 ## v0.23.0
 
 ### New
