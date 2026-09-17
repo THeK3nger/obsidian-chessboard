@@ -401,10 +401,14 @@ export function createInteractivePGNBoard(
   showMoveList = false,
   annotations: Annotation[] = [],
   annotationColors: AnnotationColorConfig = DEFAULT_ANNOTATION_COLORS,
+  restoredPly?: number,
+  onPlyChange?: (ply: number) => void,
 ): HTMLElement {
   // Create game state
-  const gameState = new PGNGameState(pgnString, initialPly, showMove);
-  const targetPly = initialPly !== undefined ? gameState.getCurrentPly() : gameState.getTotalPlies();
+  const gameState = new PGNGameState(pgnString, restoredPly ?? initialPly, showMove);
+  const targetPly = initialPly !== undefined
+    ? Math.min(initialPly, gameState.getTotalPlies())
+    : gameState.getTotalPlies();
 
   const container = createDiv("chess-pgn-container");
   container.setCssProps({ "--chess-board-max-width": `${boardWidthPx}px` });
@@ -440,6 +444,7 @@ export function createInteractivePGNBoard(
     if (moveListPanel) {
       syncMoveListHighlight(moveListPanel, gameState.getCurrentPly());
     }
+    onPlyChange?.(gameState.getCurrentPly());
   };
 
   // Keyboard navigation

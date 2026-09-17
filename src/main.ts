@@ -1,7 +1,8 @@
 import {
   App,
+  Events,
   MarkdownPostProcessorContext,
-  MarkdownView,
+  MarkdownRenderChild,
   Plugin,
   PluginSettingTab,
   Setting,
@@ -36,6 +37,7 @@ type ChessSettingsKeys = Array<ChessSettingsKey>;
 export default class ObsidianChess extends Plugin {
   // This field stores your plugin settings.
   setting!: ObsidianChessSettings;
+  private readonly settingsEvents = new Events();
 
   onInit() {}
 
@@ -70,13 +72,20 @@ export default class ObsidianChess extends Plugin {
   }
 
   refreshChessboardBlocks() {
-    // TODO: This only works in preview mode. I still don't know how to refresh
-    // the ones in edit mode.
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!view) {
-      return;
-    }
-    view.previewMode.rerender(true);
+    this.settingsEvents.trigger("changed");
+  }
+
+  private refreshOnSettingsChange(
+    el: HTMLElement,
+    ctx: MarkdownPostProcessorContext,
+    render: () => void,
+  ): void {
+    ctx.addChild(
+      new SettingsRefreshChild(el, this.settingsEvents, () => {
+        el.empty();
+        render();
+      }),
+    );
   }
 
   private drawChessboard(
@@ -108,31 +117,42 @@ export default class ObsidianChess extends Plugin {
       el: HTMLElement,
       ctx: MarkdownPostProcessorContext,
     ) => {
-      try {
-        const { pgnSource, ply, showMove, interactive, moveList, orientation, annotations } =
-          parsePGNBlock(source);
-        const boardOptions = { ...this.setting, orientation };
+      let currentPly: number | undefined;
+      const render = () => {
+        try {
+          const { pgnSource, ply, showMove, interactive, moveList, orientation, annotations } =
+            parsePGNBlock(source);
+          const boardOptions = { ...this.setting, orientation };
 
-        if (interactive) {
-          const interactiveBoard = createInteractivePGNBoard(
-            pgnSource,
-            boardOptions,
-            ply,
-            showMove,
-            this.setting.boardWidthPx,
-            moveList,
-            annotations,
-            this.getAnnotationColors(),
-          );
-          el.appendChild(interactiveBoard);
-        } else {
-          const chessboard = SVGChessboard.fromPGN(pgnSource, boardOptions, ply, showMove);
-          chessboard.addAnnotations(annotations, this.getAnnotationColors());
-          this.drawChessboard(chessboard, el, ctx);
+          if (interactive) {
+            const interactiveBoard = createInteractivePGNBoard(
+              pgnSource,
+              boardOptions,
+              ply,
+              showMove,
+              this.setting.boardWidthPx,
+              moveList,
+              annotations,
+              this.getAnnotationColors(),
+              currentPly,
+              // Update currentPly when the board is interactively moved
+              (ply) => {
+                currentPly = ply;
+              },
+            );
+            el.appendChild(interactiveBoard);
+          } else {
+            const chessboard = SVGChessboard.fromPGN(pgnSource, boardOptions, ply, showMove);
+            chessboard.addAnnotations(annotations, this.getAnnotationColors());
+            this.drawChessboard(chessboard, el, ctx);
+          }
+        } catch (e) {
+          this.drawErrorMessage(e, el);
         }
-      } catch (e) {
-        this.drawErrorMessage(e, el);
-      }
+      };
+
+      render();
+      this.refreshOnSettingsChange(el, ctx, render);
     };
   }
 
@@ -142,26 +162,42 @@ export default class ObsidianChess extends Plugin {
       el: HTMLElement,
       ctx: MarkdownPostProcessorContext,
     ) => {
-      try {
-        const parsedCode = parseCodeBlock(source);
-        const boardOptions = {
-          ...this.setting,
-          orientation: parsedCode.orientation,
-        };
-        const chessboard = SVGChessboard.fromFEN(
-          parsedCode.fen,
-          boardOptions,
-          !parsedCode.strict,
-        );
-        chessboard.addAnnotations(
-          parsedCode.annotations,
-          this.getAnnotationColors(),
-        );
-        this.drawChessboard(chessboard, el, ctx);
-      } catch (e) {
-        this.drawErrorMessage(e, el);
-      }
+      const render = () => {
+        try {
+          const parsedCode = parseCodeBlock(source);
+          const boardOptions = {
+            ...this.setting,
+            orientation: parsedCode.orientation,
+          };
+          const chessboard = SVGChessboard.fromFEN(
+            parsedCode.fen,
+            boardOptions,
+            !parsedCode.strict,
+          );
+          chessboard.addAnnotations(
+            parsedCode.annotations,
+            this.getAnnotationColors(),
+          );
+          this.drawChessboard(chessboard, el, ctx);
+        } catch (e) {
+          this.drawErrorMessage(e, el);
+        }
+      };
+
+      render();
+      this.refreshOnSettingsChange(el, ctx, render);
     };
+  }
+}
+
+class SettingsRefreshChild extends MarkdownRenderChild {
+  constructor(
+    containerEl: HTMLElement,
+    events: Events,
+    refresh: () => void,
+  ) {
+    super(containerEl);
+    this.registerEvent(events.on("changed", refresh));
   }
 }
 
