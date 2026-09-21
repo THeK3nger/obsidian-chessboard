@@ -65,33 +65,7 @@ export class Chessboard {
       fenString += " w";
     }
 
-    if (skipValidation) {
-      // Parse FEN manually without chess.js validation.
-      // This allows non-standard positions (chess variants, puzzles, etc.)
-      chessboard.chessboard.clear();
-      const piecePlacement = fenString.split(" ")[0];
-      let r = 0;
-      for (const row of piecePlacement.split("/")) {
-        let c = 0;
-        for (const char of row) {
-          const numToken = parseInt(char, 10);
-          if (!isNaN(numToken)) {
-            c += numToken;
-            continue;
-          }
-          const color = char === char.toUpperCase() ? "w" : "b";
-          const type = char.toLowerCase() as "k" | "q" | "r" | "b" | "n" | "p";
-          chessboard.chessboard.put(
-            { type, color },
-            Chessboard.coordToAlgebraic([c, r]),
-          );
-          c++;
-        }
-        r++;
-      }
-    } else {
-      chessboard.chessboard.load(fenString);
-    }
+    chessboard.chessboard.load(fenString, { skipValidation });
 
     return chessboard;
   }
