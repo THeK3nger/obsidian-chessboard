@@ -5,6 +5,50 @@
   max-width: var(--chess-board-max-width, 320px);
 }
 
+.chess-board-wrapper {
+  position: relative;
+  width: min(100%, var(--chess-board-max-width, 320px));
+}
+
+.chess-turn-indicator {
+  position: absolute;
+  top: 10px;
+  left: calc(100% + 10px);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  box-sizing: border-box;
+  width: auto;
+  padding: 5px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--background-primary) 75%, transparent);
+}
+
+.chess-turn-dot {
+  display: block;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: 50%;
+}
+
+.chess-turn-dot--white {
+  background-color: #fff;
+}
+
+.chess-turn-dot--black {
+  background-color: #222;
+}
+
+.chess-turn-dot--active {
+  outline: 3px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
 .chess-pgn-container {
   display: flex;
   flex-direction: column;
@@ -22,6 +66,7 @@
 }
 
 .chess-pgn-board {
+  position: relative;
   width: 100%;
 }
 

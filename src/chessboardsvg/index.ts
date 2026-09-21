@@ -155,6 +155,10 @@ export class SVGChessboard {
     return g;
   }
 
+  getTurn(): "w" | "b" {
+    return this.chessboard.getTurn();
+  }
+
   highlight(cell: string, color = this.defaultHighlightColor) {
     const [c, r] = Chessboard.algebraicToCoord(cell);
     this.highlightCoord(c, r, color);

@@ -17,6 +17,7 @@ import {
 } from "./chessboardsvg/index";
 import { parseCodeBlock } from "./Annotations";
 import { createInteractivePGNBoard } from "./chessboardsvg/InteractivePGN";
+import { createTurnIndicator } from "./chessboardsvg/HTMLElements";
 import { parsePGNBlock } from "./PGNOptions";
 
 const DEFAULT_CHESS_SETTINGS = {
@@ -25,6 +26,7 @@ const DEFAULT_CHESS_SETTINGS = {
   whitePieceColor: "#ffffff",
   blackPieceColor: "#000000",
   boardWidthPx: 320,
+  showTurnIndicator: true,
   annotationColorRed: DEFAULT_ANNOTATION_COLORS.red,
   annotationColorYellow: DEFAULT_ANNOTATION_COLORS.yellow,
   annotationColorGreen: DEFAULT_ANNOTATION_COLORS.green,
@@ -101,7 +103,16 @@ export default class ObsidianChess extends Plugin {
     block.setCssProps({
       "--chess-board-max-width": `${this.setting.boardWidthPx}px`,
     });
-    el.appendChild(block);
+
+    const wrapper = createDiv("chess-board-wrapper");
+    wrapper.setCssProps({
+      "--chess-board-max-width": `${this.setting.boardWidthPx}px`,
+    });
+    if (this.setting.showTurnIndicator) {
+      wrapper.appendChild(createTurnIndicator(chessboard.getTurn()));
+    }
+    wrapper.appendChild(block);
+    el.appendChild(wrapper);
   }
 
   private drawErrorMessage(error: unknown, el: HTMLElement) {
@@ -131,6 +142,7 @@ export default class ObsidianChess extends Plugin {
               ply,
               showMove,
               this.setting.boardWidthPx,
+              this.setting.showTurnIndicator,
               moveList,
               annotations,
               this.getAnnotationColors(),
@@ -213,6 +225,7 @@ interface ObsidianChessSettings extends SVGChessboardOptions {
   whitePieceColor: string;
   blackPieceColor: string;
   boardWidthPx: number;
+  showTurnIndicator: boolean;
   annotationColorRed: string;
   annotationColorYellow: string;
   annotationColorGreen: string;
@@ -258,6 +271,11 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
             "Chessboard max width (px)",
             "Sets the maximum width of the chess board in pixels. On narrow screens, the board will scale down to fit the viewport.",
             1,
+          ),
+          this.toggleSetting(
+            "showTurnIndicator",
+            "Show color to play",
+            "Show an indicator beside each chessboard for the side whose turn it is.",
           ),
         ],
       },
@@ -362,6 +380,26 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
               Number.isFinite(parsed) ? parsed : DEFAULT_CHESS_SETTINGS[key],
             );
           });
+        });
+      },
+    };
+  }
+
+  private toggleSetting(
+    key: ChessSettingsKey,
+    name: string,
+    desc: string,
+  ): SettingGroupItem<string> {
+    return {
+      name,
+      desc,
+      render: (setting) => {
+        setting.setName(name).setDesc(desc);
+        this.addResetButton(setting, key);
+        setting.addToggle((toggle) => {
+          toggle
+            .setValue(this.plugin.setting[key] as boolean)
+            .onChange((value) => this.setControlValue(key, value));
         });
       },
     };

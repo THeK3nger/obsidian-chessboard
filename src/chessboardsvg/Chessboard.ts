@@ -38,6 +38,10 @@ export class Chessboard {
     return this.lastMovePlayed;
   }
 
+  getTurn(): "w" | "b" {
+    return this.chessboard.turn();
+  }
+
   static algebraicToCoord(algebraic: string): BoardCoordinate {
     algebraic = algebraic.toLowerCase();
     if (algebraic.length !== 2) {

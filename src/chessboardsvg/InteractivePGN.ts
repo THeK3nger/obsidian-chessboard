@@ -7,6 +7,7 @@ import {
   ShowMoveOption,
 } from "./index";
 import { Annotation } from "../Annotations";
+import { createTurnIndicator } from "./HTMLElements";
 
 /**
  * Manages the state of a PGN game for interactive navigation.
@@ -140,6 +141,10 @@ class PGNGameState {
     return this.chess.fen();
   }
 
+  getTurn(): "w" | "b" {
+    return this.chess.turn();
+  }
+
   getShowMove(): ShowMoveOption {
     return this.showMove;
   }
@@ -247,6 +252,7 @@ function renderBoard(
   gameState: PGNGameState,
   options: Partial<SVGChessboardOptions>,
   svgContainer: HTMLElement,
+  showTurnIndicator: boolean,
   annotations: Annotation[],
   annotationColors: AnnotationColorConfig,
   targetPly: number,
@@ -286,6 +292,9 @@ function renderBoard(
   block.appendChild(svgBoard.draw());
   block.addClass("chess-board-svg");
 
+  if (showTurnIndicator) {
+    svgContainer.appendChild(createTurnIndicator(gameState.getTurn()));
+  }
   svgContainer.appendChild(block);
 }
 
@@ -398,6 +407,7 @@ export function createInteractivePGNBoard(
   initialPly: number | undefined,
   showMove: ShowMoveOption,
   boardWidthPx: number,
+  showTurnIndicator: boolean,
   showMoveList = false,
   annotations: Annotation[] = [],
   annotationColors: AnnotationColorConfig = DEFAULT_ANNOTATION_COLORS,
@@ -430,6 +440,7 @@ export function createInteractivePGNBoard(
       gameState,
       options,
       boardContainer,
+      showTurnIndicator && !showMoveList,
       annotations,
       annotationColors,
       targetPly,
