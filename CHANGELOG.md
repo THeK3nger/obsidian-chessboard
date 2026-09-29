@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## v0.24.0
+
+### New
+
+- Show which color moves next beside each chessboard. The indicator can be hidden in the plugin settings.
+
+### Fixes
+
+- Remove the handcrafted FEN parser. Now I use chess.js "non-validating" FEN parsing whenever FEN validation is disabled with `strict: false`.
+
 ## v0.23.2
 
 ### Fixes
