@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## v0.24.1
+
+### Fixes
+
+- PGN games with custom FEN positions now honor the FEN move indicator.
+
 ## v0.24.0
 
 ### New
