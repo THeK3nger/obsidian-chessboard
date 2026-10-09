@@ -177,27 +177,25 @@ class PGNGameState {
     }
     return undefined;
   }
+}
 
-  /** Whether the starting position has Black to move (affects move-list row layout). */
-  blackStartsFirst(): boolean {
-    if (this.startingFEN) {
-      const sideToMove = this.startingFEN.split(/\s+/)[1];
-      return sideToMove === "b";
-    }
-    return this.moveHistory.length > 0 && this.moveHistory[0].color === "b";
-  }
+/**
+ * The FEN before a move carries its actual full-move number, including for PGNs
+ * that start from a custom position or with Black to move.
+ */
+function getMoveNumber(move: Move): number {
+  return Number(move.before.split(/\s+/)[5]);
 }
 
 /**
  * Formats move display text.
  */
-function formatMoveDisplay(move: Move | undefined, ply: number): string {
+function formatMoveDisplay(move: Move | undefined): string {
   if (!move) {
     return "Starting position";
   }
 
-  // Calculate move number (1-indexed, 2 plies per move)
-  const moveNumber = Math.floor((ply - 1) / 2) + 1;
+  const moveNumber = getMoveNumber(move);
   const isWhiteMove = move.color === "w";
 
   // Format: "Move 12: Nf3" or "Move 12: ...Nc6"
@@ -219,7 +217,7 @@ function updateMoveDisplay(
   const currentPly = gameState.getCurrentPly();
   const totalPlies = gameState.getTotalPlies();
 
-  const moveText = formatMoveDisplay(currentMove, currentPly);
+  const moveText = formatMoveDisplay(currentMove);
   const plyText = `(${currentPly}/${totalPlies})`;
 
   moveInfoElement.textContent = `${moveText} ${plyText}`;
@@ -345,30 +343,20 @@ function createMoveListPanel(
   root.setCssProps({ "--chess-board-max-width": `${boardWidthPx}px` });
 
   const history = gameState.getMoveHistory();
-  const blackStartsFirst = gameState.blackStartsFirst();
-
   type MoveCell = { move: Move; ply: number };
   type RowData = { white?: MoveCell; black?: MoveCell };
   const rows = new Map<number, RowData>();
 
-  // PGN row numbers: Black's nth move is always row n;
-  // White's nth move is row n, except when Black moved first (then row n+1).
-  let whiteCount = 0;
-  let blackCount = 0;
   history.forEach((move, index) => {
     const ply = index + 1;
+    const rowNum = getMoveNumber(move);
+    const row = rows.get(rowNum) ?? {};
     if (move.color === "w") {
-      whiteCount++;
-      const rowNum = blackStartsFirst ? whiteCount + 1 : whiteCount;
-      const row = rows.get(rowNum) ?? {};
       row.white = { move, ply };
-      rows.set(rowNum, row);
     } else {
-      blackCount++;
-      const row = rows.get(blackCount) ?? {};
       row.black = { move, ply };
-      rows.set(blackCount, row);
     }
+    rows.set(rowNum, row);
   });
 
   for (const rowNum of Array.from(rows.keys()).sort((a, b) => a - b)) {
