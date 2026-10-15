@@ -247,8 +247,11 @@ export class SVGChessboard {
         let end = annotation.end;
         let [x0, y0] = this.getBoardSVGCord(Chessboard.algebraicToCoord(start));
         let [x1, y1] = this.getBoardSVGCord(Chessboard.algebraicToCoord(end));
+        const dx = Math.abs(x1 - x0) / this.squareSize;
+        const dy = Math.abs(y1 - y0) / this.squareSize;
+        const isKnightMove = (dx === 2 && dy === 1) || (dx === 1 && dy === 2);
         g_foreground.appendChild(
-          Arrow.drawArrow(
+          (isKnightMove ? Arrow.drawKnightArrow : Arrow.drawArrow).call(Arrow,
             x0 + this.squareSizeHalf,
             y0 + this.squareSizeHalf,
             x1 + this.squareSizeHalf,
