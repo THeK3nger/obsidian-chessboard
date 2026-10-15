@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## v0.25.0
+
+### New
+
+- Add the advanced technology of showing L-shaped arrows for knight moves. This happens automatically when an arrow describes a knight jump.
+
+### Improvements
+
+- Make arrows easier to read with shorter, wider arrowheads and reduced opacity.
+
 ## v0.24.1
 
 ### Fixes
