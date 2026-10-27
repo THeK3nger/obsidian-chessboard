@@ -251,13 +251,21 @@ export class SVGChessboard {
         const dy = Math.abs(y1 - y0) / this.squareSize;
         const isKnightMove = (dx === 2 && dy === 1) || (dx === 1 && dy === 2);
         g_foreground.appendChild(
-          (isKnightMove ? Arrow.drawKnightArrow : Arrow.drawArrow).call(Arrow,
-            x0 + this.squareSizeHalf,
-            y0 + this.squareSizeHalf,
-            x1 + this.squareSizeHalf,
-            y1 + this.squareSizeHalf,
-            annotation.color,
-          ),
+          isKnightMove
+            ? Arrow.drawKnightArrow(
+                x0 + this.squareSizeHalf,
+                y0 + this.squareSizeHalf,
+                x1 + this.squareSizeHalf,
+                y1 + this.squareSizeHalf,
+                annotation.color,
+              )
+            : Arrow.drawArrow(
+                x0 + this.squareSizeHalf,
+                y0 + this.squareSizeHalf,
+                x1 + this.squareSizeHalf,
+                y1 + this.squareSizeHalf,
+                annotation.color,
+              ),
         );
       } else if (annotation.type === "icon") {
         let pos = Chessboard.algebraicToCoord(annotation.square);
