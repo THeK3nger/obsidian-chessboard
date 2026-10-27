@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## v0.25.1
+
+### Behind the Scenes
+
+- Bump dependencies.
+
 ## v0.25.0
 
 ### New
