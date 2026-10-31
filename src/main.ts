@@ -41,8 +41,6 @@ export default class ObsidianChess extends Plugin {
   setting!: ObsidianChessSettings;
   private readonly settingsEvents = new Events();
 
-  onInit() {}
-
   async onload() {
     this.setting = ((await this.loadData()) ?? {
       ...DEFAULT_CHESS_SETTINGS,
