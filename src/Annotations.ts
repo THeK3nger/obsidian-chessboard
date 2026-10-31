@@ -126,16 +126,30 @@ function resolveColorName(
   return defaultColor;
 }
 
+const SQUARE_PATTERN = /^[a-h][1-8]$/i;
+
+/**
+ * Returns `square` if it is a valid algebraic square (e.g. `e4`), otherwise
+ * throws an error naming the offending annotation token.
+ */
+function requireSquare(square: string, token: string): string {
+  if (!SQUARE_PATTERN.test(square)) {
+    throw Error(`Invalid square "${square}" in annotation "${token}".`);
+  }
+  return square;
+}
+
 export function parseAnnotationLine(line: string): Array<Annotation> {
   const annotations: Array<Annotation> = [];
-  const tokens = line.split(" ");
+  // Split on any run of whitespace so repeated spaces don't produce empty tokens.
+  const tokens = line.split(/\s+/).filter((t) => t !== "");
   for (const annotation of tokens) {
     // Check for highlight annotations
     if (annotation.startsWith("H")) {
       const color = resolveColorName(annotation, HIGHLIGHT_DEFAULT);
       annotations.push({
         type: "highlight",
-        square: annotation.substring(1, 3),
+        square: requireSquare(annotation.substring(1, 3), annotation),
         color,
       });
       continue;
@@ -143,8 +157,13 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
     // Check for arrow annotations
     if (annotation.startsWith("A")) {
       const color = resolveColorName(annotation, ARROW_DEFAULT);
-      const [start, end] = annotation.substring(1, 6).split("-");
-      annotations.push({ type: "arrow", start, end, color });
+      const [start = "", end = ""] = annotation.substring(1, 6).split("-");
+      annotations.push({
+        type: "arrow",
+        start: requireSquare(start, annotation),
+        end: requireSquare(end, annotation),
+        color,
+      });
       continue;
     }
     // Check for icon annotations
@@ -153,7 +172,7 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
       const start = iconPrefix.length;
       annotations.push({
         type: "icon",
-        square: annotation.substring(start, start + 2),
+        square: requireSquare(annotation.substring(start, start + 2), annotation),
         icon: ICON_MAPPING[iconPrefix],
       });
       continue;
@@ -164,7 +183,7 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
       const color = resolveColorName(annotation, SHAPE_DEFAULT);
       annotations.push({
         type: "shape",
-        square: annotation.substring(1, 3),
+        square: requireSquare(annotation.substring(1, 3), annotation),
         shape: shapeType,
         color,
       });
