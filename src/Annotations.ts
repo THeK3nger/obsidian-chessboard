@@ -192,7 +192,7 @@ export function parseCodeBlock(input: string): ParsedChessCode {
   const annotations: Array<Annotation> = [];
   let orientation: "white" | "black" = "white";
   let strict = true;
-  for (let line of lines.splice(1)) {
+  for (const line of lines.splice(1)) {
     if (line.trim() === "") {
       continue;
     }

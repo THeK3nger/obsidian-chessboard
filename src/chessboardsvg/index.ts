@@ -143,8 +143,8 @@ export class SVGChessboard {
   }
 
   draw(): SVGElement {
-    let g = activeDocument.createElementNS(this.xmlns, "g");
-    let [annotations, annotations_foreground] = this.drawAnnotations();
+    const g = activeDocument.createElementNS(this.xmlns, "g");
+    const [annotations, annotations_foreground] = this.drawAnnotations();
     g.appendChild(this.drawBoard());
     if (this.options.drawCoordinates) {
       g.appendChild(this.drawCoordinateSystem());
@@ -217,7 +217,7 @@ export class SVGChessboard {
 
   removeHighlightCoord(c: number, r: number) {
     this.highlights = this.highlights.filter(
-      ([coord, _]) => coord[0] !== c || coord[1] !== r,
+      ([coord]) => coord[0] !== c || coord[1] !== r,
     );
   }
 
@@ -233,20 +233,20 @@ export class SVGChessboard {
    * need to be rendered above the pieces (e.g., the icons).
    */
   private drawAnnotations(): [SVGElement, SVGElement] {
-    let g = activeDocument.createElementNS(this.xmlns, "g");
-    for (let [coord, highlightColor] of this.highlights) {
+    const g = activeDocument.createElementNS(this.xmlns, "g");
+    for (const [coord, highlightColor] of this.highlights) {
       const square = this.drawSquare(coord);
       square.setAttributeNS(null, "fill", highlightColor);
       square.setAttributeNS(null, "opacity", "0.8");
       g.appendChild(square);
     }
-    let g_foreground = activeDocument.createElementNS(this.xmlns, "g");
-    for (let annotation of this.annotations) {
+    const g_foreground = activeDocument.createElementNS(this.xmlns, "g");
+    for (const annotation of this.annotations) {
       if (annotation.type === "arrow") {
-        let start = annotation.start;
-        let end = annotation.end;
-        let [x0, y0] = this.getBoardSVGCord(Chessboard.algebraicToCoord(start));
-        let [x1, y1] = this.getBoardSVGCord(Chessboard.algebraicToCoord(end));
+        const start = annotation.start;
+        const end = annotation.end;
+        const [x0, y0] = this.getBoardSVGCord(Chessboard.algebraicToCoord(start));
+        const [x1, y1] = this.getBoardSVGCord(Chessboard.algebraicToCoord(end));
         const dx = Math.abs(x1 - x0) / this.squareSize;
         const dy = Math.abs(y1 - y0) / this.squareSize;
         const isKnightMove = (dx === 2 && dy === 1) || (dx === 1 && dy === 2);
@@ -268,7 +268,7 @@ export class SVGChessboard {
               ),
         );
       } else if (annotation.type === "icon") {
-        let pos = Chessboard.algebraicToCoord(annotation.square);
+        const pos = Chessboard.algebraicToCoord(annotation.square);
         switch (annotation.icon) {
           case "best":
             g_foreground.appendChild(this.drawIcon(pos, Icons.best));
@@ -305,8 +305,8 @@ export class SVGChessboard {
             break;
         }
       } else if (annotation.type === "shape") {
-        let pos = Chessboard.algebraicToCoord(annotation.square);
-        let [x, y] = this.getBoardSVGCord(pos);
+        const pos = Chessboard.algebraicToCoord(annotation.square);
+        const [x, y] = this.getBoardSVGCord(pos);
 
         // Append to foreground group to render above pieces
         switch (annotation.shape) {
@@ -334,7 +334,7 @@ export class SVGChessboard {
   }
 
   private drawBoard(): SVGElement {
-    let g = activeDocument.createElementNS(this.xmlns, "g");
+    const g = activeDocument.createElementNS(this.xmlns, "g");
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         g.appendChild(this.drawSquare([c, r]));
@@ -344,7 +344,7 @@ export class SVGChessboard {
   }
 
   private drawPieces(): SVGElement {
-    let g = activeDocument.createElementNS(this.xmlns, "g");
+    const g = activeDocument.createElementNS(this.xmlns, "g");
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         const piece = this.chessboard.get(c, r);
@@ -370,8 +370,8 @@ export class SVGChessboard {
   }
 
   private drawIcon(coord: BoardCoordinate, icon: HTMLElement): SVGElement {
-    let [x, y] = this.getBoardSVGCord(coord);
-    let g = activeDocument.createElementNS(this.xmlns, "g");
+    const [x, y] = this.getBoardSVGCord(coord);
+    const g = activeDocument.createElementNS(this.xmlns, "g");
 
     g.setAttributeNS(null, "transform", `translate(${x},${y}) scale(${0.85})`);
     Array.from(icon.childNodes).forEach((node) => {
@@ -381,7 +381,7 @@ export class SVGChessboard {
   }
 
   private drawPiece(coord: BoardCoordinate, piece: string): SVGElement {
-    let [x, y] = this.getBoardSVGCord(coord);
+    const [x, y] = this.getBoardSVGCord(coord);
     const scale = 0.85;
     // Pieces are designed in a ~45x45 coordinate space
     // After scaling: 45 * 0.85 = 38.25
@@ -389,7 +389,7 @@ export class SVGChessboard {
     const pieceCoordSpace = 45;
     const scaledSize = pieceCoordSpace * scale;
     const offset = (this.squareSize - scaledSize) / 2;
-    let g = activeDocument.createElementNS(this.xmlns, "g");
+    const g = activeDocument.createElementNS(this.xmlns, "g");
     g.setAttributeNS(null, "transform", `translate(${x + offset},${y + offset}) scale(${scale})`);
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(
@@ -403,8 +403,8 @@ export class SVGChessboard {
   }
 
   private drawSquare(coord: BoardCoordinate): SVGRectElement {
-    let [x, y] = this.getBoardSVGCord(coord);
-    let rect = activeDocument.createElementNS(this.xmlns, "rect");
+    const [x, y] = this.getBoardSVGCord(coord);
+    const rect = activeDocument.createElementNS(this.xmlns, "rect");
     rect.setAttributeNS(null, "x", String(x));
     rect.setAttributeNS(null, "y", String(y));
     rect.setAttributeNS(null, "width", String(this.squareSize));
@@ -418,7 +418,7 @@ export class SVGChessboard {
   }
 
   drawCoordinateSystem(): SVGElement {
-    let g = activeDocument.createElementNS(this.xmlns, "g");
+    const g = activeDocument.createElementNS(this.xmlns, "g");
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
         if (
@@ -445,8 +445,8 @@ export class SVGChessboard {
     text: string,
     position: "row" | "column",
   ): SVGElement {
-    let [x, y] = this.getBoardSVGCord([c, r]);
-    let txt = activeDocument.createElementNS(this.xmlns, "text");
+    const [x, y] = this.getBoardSVGCord([c, r]);
+    const txt = activeDocument.createElementNS(this.xmlns, "text");
     if (position === "row") {
       txt.setAttributeNS(null, "x", String(x + 1));
       txt.setAttributeNS(null, "y", String(y + 10));
