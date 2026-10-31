@@ -255,7 +255,7 @@ function renderBoard(
   annotationColors: AnnotationColorConfig,
   targetPly: number,
 ): void {
-  svgContainer.innerHTML = "";
+  svgContainer.empty();
 
   const svgBoard = SVGChessboard.fromFEN(gameState.getCurrentFEN(), options);
 
