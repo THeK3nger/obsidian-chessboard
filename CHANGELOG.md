@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+## v0.26.0
+
+### New
+
+- Add a "Show coordinates" setting to show or hide the coordinates on the board. If you want.
+
+### Fixes
+
+- Annotations with an invalid square (e.g. `Hz9`) now report a clear error, and repeated whitespace in annotation lines is tolerated.
+
+### Behind the Scenes
+
+- Small internal refactors.
+- Update the TypeScript `lib` setting to ES2022.
+
 ## v0.25.1
 
 ### Behind the Scenes
