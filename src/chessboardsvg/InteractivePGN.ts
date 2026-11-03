@@ -7,7 +7,7 @@ import {
   ShowMoveOption,
 } from "./index";
 import { Annotation } from "../Annotations";
-import { createTurnIndicator } from "./HTMLElements";
+import { createBoardSvg, createTurnIndicator } from "./HTMLElements";
 
 /**
  * Manages the state of a PGN game for interactive navigation.
@@ -284,11 +284,7 @@ function renderBoard(
     svgBoard.addAnnotations(annotations, annotationColors);
   }
 
-  const xmlns = "http://www.w3.org/2000/svg";
-  const block = activeDocument.createElementNS(xmlns, "svg");
-  block.setAttributeNS(null, "viewBox", "0 0 320 320");
-  block.appendChild(svgBoard.draw());
-  block.addClass("chess-board-svg");
+  const block = createBoardSvg(svgBoard);
 
   if (showTurnIndicator) {
     svgContainer.appendChild(createTurnIndicator(gameState.getTurn()));

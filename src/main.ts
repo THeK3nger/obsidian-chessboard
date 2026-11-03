@@ -17,7 +17,7 @@ import {
 } from "./chessboardsvg/index";
 import { parseCodeBlock } from "./Annotations";
 import { createInteractivePGNBoard } from "./chessboardsvg/InteractivePGN";
-import { createTurnIndicator } from "./chessboardsvg/HTMLElements";
+import { createBoardSvg, createTurnIndicator } from "./chessboardsvg/HTMLElements";
 import { parsePGNBlock } from "./PGNOptions";
 
 const DEFAULT_CHESS_SETTINGS = {
@@ -93,11 +93,7 @@ export default class ObsidianChess extends Plugin {
     el: HTMLElement,
     _ctx: MarkdownPostProcessorContext,
   ) {
-    const xmlns = "http://www.w3.org/2000/svg";
-    const block = activeDocument.createElementNS(xmlns, "svg");
-    block.setAttributeNS(null, "viewBox", `0 0 320 320`);
-    block.appendChild(chessboard.draw());
-    block.addClass("chess-board-svg");
+    const block = createBoardSvg(chessboard);
     block.setCssProps({
       "--chess-board-max-width": `${this.setting.boardWidthPx}px`,
     });

@@ -1,3 +1,14 @@
+import type { SVGChessboard } from "./index";
+
+/** Wraps the drawn board in the standard `<svg>` element used by all board renderers. */
+export function createBoardSvg(chessboard: SVGChessboard): SVGElement {
+  const svg = activeDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttributeNS(null, "viewBox", "0 0 320 320");
+  svg.appendChild(chessboard.draw());
+  svg.addClass("chess-board-svg");
+  return svg;
+}
+
 /** Creates the paired-dot indicator used to show which color moves next. */
 export function createTurnIndicator(turn: "w" | "b"): HTMLElement {
   const colorName = turn === "w" ? "White" : "Black";
