@@ -269,40 +269,9 @@ export class SVGChessboard {
         );
       } else if (annotation.type === "icon") {
         const pos = Chessboard.algebraicToCoord(annotation.square);
-        switch (annotation.icon) {
-          case "best":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.best));
-            break;
-          case "blunder":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.blunder));
-            break;
-          case "mistake":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.mistake));
-            break;
-          case "inaccuracy":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.inaccuracy));
-            break;
-          case "incorrect":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.incorrect));
-            break;
-          case "good":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.good));
-            break;
-          case "brilliant":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.brilliant));
-            break;
-          case "excellent":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.excellent));
-            break;
-          case "forced":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.forced));
-            break;
-          case "checkmate_black":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.checkmate_black));
-            break;
-          case "checkmate_white":
-            g_foreground.appendChild(this.drawIcon(pos, Icons.checkmate_white));
-            break;
+        const icon = Icons.byName(annotation.icon);
+        if (icon) {
+          g_foreground.appendChild(this.drawIcon(pos, icon));
         }
       } else if (annotation.type === "shape") {
         const pos = Chessboard.algebraicToCoord(annotation.square);
