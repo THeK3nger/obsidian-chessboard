@@ -442,46 +442,44 @@ export function createInteractivePGNBoard(
     onPlyChange?.(gameState.getCurrentPly());
   };
 
+  // Runs a state change, then refreshes the UI.
+  const navigate = (fn: () => void) => () => {
+    fn();
+    updateUI();
+  };
+
   // Keyboard navigation
+  const keyActions: Record<string, () => void> = {
+    ArrowLeft: navigate(() => gameState.goToPrevious()),
+    ArrowRight: navigate(() => gameState.goToNext()),
+  };
   container.setAttribute("tabindex", "0");
   container.setAttribute("aria-label", "Chess board. Use arrow keys to navigate moves.");
   container.addEventListener("keydown", (e: KeyboardEvent) => {
-    switch (e.key) {
-      case "ArrowLeft":
-        gameState.goToPrevious();
-        updateUI();
-        e.preventDefault();
-        e.stopPropagation();
-        break;
-      case "ArrowRight":
-        gameState.goToNext();
-        updateUI();
-        e.preventDefault();
-        e.stopPropagation();
-        break;
-    }
+    const action = Object.hasOwn(keyActions, e.key) ? keyActions[e.key] : undefined;
+    if (!action) return;
+    action();
+    e.preventDefault();
+    e.stopPropagation();
   });
 
   // Event handlers
-  firstButton.addEventListener("click", () => {
-    gameState.goToStart();
-    updateUI();
-  });
-
-  prevButton.addEventListener("click", () => {
-    gameState.goToPrevious();
-    updateUI();
-  });
-
-  nextButton.addEventListener("click", () => {
-    gameState.goToNext();
-    updateUI();
-  });
-
-  lastButton.addEventListener("click", () => {
-    gameState.goToEnd();
-    updateUI();
-  });
+  firstButton.addEventListener(
+    "click",
+    navigate(() => gameState.goToStart()),
+  );
+  prevButton.addEventListener(
+    "click",
+    navigate(() => gameState.goToPrevious()),
+  );
+  nextButton.addEventListener(
+    "click",
+    navigate(() => gameState.goToNext()),
+  );
+  lastButton.addEventListener(
+    "click",
+    navigate(() => gameState.goToEnd()),
+  );
 
   // Append buttons to controls
   controls.appendChild(firstButton);
@@ -502,10 +500,7 @@ export function createInteractivePGNBoard(
     moveListPanel = createMoveListPanel(
       gameState,
       boardWidthPx,
-      (ply) => {
-        gameState.goToPly(ply);
-        updateUI();
-      },
+      (ply) => navigate(() => gameState.goToPly(ply))(),
     );
     outer.appendChild(container);
     outer.appendChild(moveListPanel);
