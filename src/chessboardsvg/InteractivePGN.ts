@@ -81,7 +81,8 @@ class PGNGameState {
     // If we need to go forward
     else if (targetPly > this.chessPly) {
       for (let i = this.chessPly; i < targetPly; i++) {
-        this.chess.move(this.moveHistory[i].san);
+        const { from, to, promotion } = this.moveHistory[i];
+        this.chess.move({ from, to, promotion });
       }
       this.chessPly = targetPly;
     }
