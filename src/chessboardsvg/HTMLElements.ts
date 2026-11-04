@@ -2,10 +2,8 @@ import type { SVGChessboard } from "./index";
 
 /** Wraps the drawn board in the standard `<svg>` element used by all board renderers. */
 export function createBoardSvg(chessboard: SVGChessboard): SVGElement {
-  const svg = activeDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttributeNS(null, "viewBox", "0 0 320 320");
+  const svg = createSvg("svg", { attr: { viewBox: "0 0 320 320" }, cls: "chess-board-svg" });
   svg.appendChild(chessboard.draw());
-  svg.addClass("chess-board-svg");
   return svg;
 }
 
