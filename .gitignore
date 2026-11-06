@@ -13,3 +13,4 @@ npm-lock.yaml
 
 .DS_Store
 .polytoken/permissions.local.yaml
+.bench
