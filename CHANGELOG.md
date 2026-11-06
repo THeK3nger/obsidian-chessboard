@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v0.27.0
+
 ### New
 
 - Good news, everyone! You can now right-click a board to open its position on Lichess. On interactive PGN boards you can also open the whole game, at the move you are viewing.
