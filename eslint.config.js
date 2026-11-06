@@ -13,6 +13,12 @@ export default defineConfig([
     },
 
     // You can add your own configuration to override or add rules
-    rules: {},
+    rules: {
+      // `brands` replaces the plugin's default list, so list only the brands used in our UI text.
+      "obsidianmd/ui/sentence-case": [
+        "warn",
+        { enforceCamelCaseLower: true, brands: ["Lichess"] },
+      ],
+    },
   },
 ]);

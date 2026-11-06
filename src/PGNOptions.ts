@@ -1,5 +1,5 @@
 import { Annotation, parseAnnotationLine } from "./Annotations";
-import { ShowMoveOption } from "./chessboardsvg/index";
+import { Orientation, ShowMoveOption } from "./chessboardsvg/index";
 
 export interface ParsedPGNBlock {
   pgnSource: string;
@@ -7,7 +7,7 @@ export interface ParsedPGNBlock {
   showMove: ShowMoveOption;
   interactive: boolean;
   moveList: boolean;
-  orientation: "white" | "black";
+  orientation: Orientation;
   annotations: Annotation[];
 }
 
@@ -35,7 +35,7 @@ export function parsePGNBlock(source: string): ParsedPGNBlock {
   let showMove: ShowMoveOption = "none";
   let interactive = false;
   let moveList = false;
-  let orientation: "white" | "black" = "white";
+  let orientation: Orientation = "white";
   const annotations: Annotation[] = [];
 
   const lines = source.split(/\r?\n/);
@@ -66,7 +66,7 @@ export function parsePGNBlock(source: string): ParsedPGNBlock {
       continue;
     }
     if (lower.startsWith("orientation:")) {
-      const value = parseOption<"white" | "black">(trimmed, "orientation", ["white", "black"]);
+      const value = parseOption<Orientation>(trimmed, "orientation", ["white", "black"]);
       if (value) orientation = value;
       continue;
     }

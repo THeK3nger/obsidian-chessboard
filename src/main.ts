@@ -17,6 +17,7 @@ import {
 } from "./chessboardsvg/index";
 import { parseCodeBlock } from "./Annotations";
 import { createInteractivePGNBoard } from "./chessboardsvg/InteractivePGN";
+import { attachBoardMenu } from "./chessboardsvg/BoardMenu";
 import { createBoardSvg, createTurnIndicator } from "./chessboardsvg/HTMLElements";
 import { parsePGNBlock } from "./PGNOptions";
 
@@ -95,6 +96,7 @@ export default class ObsidianChess extends Plugin {
     _ctx: MarkdownPostProcessorContext,
   ) {
     const block = createBoardSvg(chessboard);
+    attachBoardMenu(block, chessboard);
     block.setCssProps({
       "--chess-board-max-width": `${this.setting.boardWidthPx}px`,
     });

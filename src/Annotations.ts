@@ -1,3 +1,4 @@
+import type { Orientation } from "./chessboardsvg/index";
 /**
  * The four annotation colors that can be referenced by name (via the `/r`,
  * `/g`, `/b`, `/y` suffixes) or used as the default for an annotation type.
@@ -70,7 +71,7 @@ export type Annotation =
 export interface ParsedChessCode {
   fen: string;
   annotations: Array<Annotation>;
-  orientation: "white" | "black";
+  orientation: Orientation;
   strict: boolean;
 }
 
@@ -209,7 +210,7 @@ export function parseCodeBlock(input: string): ParsedChessCode {
     ? lines[0].slice("fen: ".length)
     : lines[0];
   const annotations: Array<Annotation> = [];
-  let orientation: "white" | "black" = "white";
+  let orientation: Orientation = "white";
   let strict = true;
   for (const line of lines.splice(1)) {
     if (line.trim() === "") {

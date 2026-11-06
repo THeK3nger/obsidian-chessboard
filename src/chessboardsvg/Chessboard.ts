@@ -42,6 +42,10 @@ export class Chessboard {
     return this.chessboard.turn();
   }
 
+  getFEN(): string {
+    return this.chessboard.fen();
+  }
+
   static algebraicToCoord(algebraic: string): BoardCoordinate {
     algebraic = algebraic.toLowerCase();
     if (algebraic.length !== 2) {

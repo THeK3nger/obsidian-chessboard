@@ -7,6 +7,7 @@ import {
   ShowMoveOption,
 } from "./index";
 import { Annotation } from "../Annotations";
+import { attachBoardMenu } from "./BoardMenu";
 import { createBoardSvg, createTurnIndicator } from "./HTMLElements";
 
 /**
@@ -255,6 +256,7 @@ function renderBoard(
   annotations: Annotation[],
   annotationColors: AnnotationColorConfig,
   targetPly: number,
+  pgnString: string,
 ): void {
   svgContainer.empty();
 
@@ -286,6 +288,10 @@ function renderBoard(
   }
 
   const block = createBoardSvg(svgBoard);
+  attachBoardMenu(block, svgBoard, {
+    pgn: pgnString,
+    ply: gameState.getCurrentPly(),
+  });
 
   if (showTurnIndicator) {
     svgContainer.appendChild(createTurnIndicator(gameState.getTurn()));
@@ -429,6 +435,7 @@ export function createInteractivePGNBoard(
       annotations,
       annotationColors,
       targetPly,
+      pgnString,
     );
     updateMoveDisplay(gameState, moveInfo);
     updateButtonStates(gameState, {

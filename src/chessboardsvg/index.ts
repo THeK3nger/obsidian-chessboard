@@ -24,6 +24,8 @@ import {
   IconAnnotation,
 } from "../Annotations";
 
+export type Orientation = "white" | "black";
+
 export type ShowMoveOption = "none" | "squares" | "arrow";
 
 export type AnnotationColorConfig = Record<AnnotationColorName, string>;
@@ -46,7 +48,7 @@ type DrawableAnnotation =
     };
 
 export interface SVGChessboardOptions {
-  orientation: "white" | "black";
+  orientation: Orientation;
   drawCoordinates: boolean;
   blackSquareColor: string;
   whiteSquareColor: string;
@@ -159,6 +161,14 @@ export class SVGChessboard {
     return this.chessboard.getTurn();
   }
 
+  getFEN(): string {
+    return this.chessboard.getFEN();
+  }
+
+  getOrientation(): Orientation {
+    return this.options.orientation;
+  }
+
   highlight(cell: string, color = this.defaultHighlightColor) {
     const [c, r] = Chessboard.algebraicToCoord(cell);
     this.highlightCoord(c, r, color);
@@ -221,7 +231,7 @@ export class SVGChessboard {
     );
   }
 
-  setOrientation(orientation: "white" | "black") {
+  setOrientation(orientation: Orientation) {
     this.options.orientation = orientation;
   }
 
