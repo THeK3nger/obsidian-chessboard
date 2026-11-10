@@ -5,6 +5,7 @@
 ### Behind the Scenes
 
 - Render pieces using their SVG viewBox, supporting different coordinate systems and aspect ratios while preserving the current artwork's size and placement.
+- Replace regex-based piece recoloring with semantic SVG colors, preserving fixed-color artwork and allowing exact black and white palettes without color substitutions.
 
 ## v0.27.1
 

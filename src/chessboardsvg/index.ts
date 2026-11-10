@@ -1,3 +1,4 @@
+import type { PieceSymbol } from "chess.js";
 import { Arrow } from "./Arrow";
 import { Shapes } from "./Shapes";
 import { Icons } from "./Icons";
@@ -15,14 +16,30 @@ import {
   BLACK_ROOK,
   BLACK_BISHOP,
   BLACK_PAWN,
-  recolorWhite,
-  recolorBlack,
 } from "./Pieces";
 import {
   Annotation,
   AnnotationColorName,
   IconAnnotation,
 } from "../Annotations";
+
+const WHITE_PIECES: Record<PieceSymbol, string> = {
+  k: WHITE_KING,
+  q: WHITE_QUEEN,
+  n: WHITE_KNIGHT,
+  r: WHITE_ROOK,
+  b: WHITE_BISHOP,
+  p: WHITE_PAWN,
+};
+
+const BLACK_PIECES: Record<PieceSymbol, string> = {
+  k: BLACK_KING,
+  q: BLACK_QUEEN,
+  n: BLACK_KNIGHT,
+  r: BLACK_ROOK,
+  b: BLACK_BISHOP,
+  p: BLACK_PAWN,
+};
 
 export type Orientation = "white" | "black";
 
@@ -73,16 +90,11 @@ export class SVGChessboard {
   private blackColor = "#b58862";
   private whitePieceColor = "#ffffff";
   private blackPieceColor = "#000000";
-  private whitePieceLineColor = "#000000";
-  private blackPieceLineColor = "#ffffff";
   private defaultHighlightColor = "#b0ffb0";
   private defaultArrowColor = "#ff6060";
 
   private highlights: Array<[BoardCoordinate, string]> = [];
   private annotations: DrawableAnnotation[] = [];
-
-  private COLORED_WHITE_PIECES: Record<string, string>;
-  private COLORED_BLACK_PIECES: Record<string, string>;
 
   private constructor(
     chessboard: Chessboard,
@@ -104,33 +116,8 @@ export class SVGChessboard {
     this.blackColor = blackSquareColor;
     this.whitePieceColor = whitePieceColor;
     this.blackPieceColor = blackPieceColor;
-    this.whitePieceLineColor = blackPieceColor;
-    this.blackPieceLineColor = whitePieceColor;
     this.defaultHighlightColor = defaultHighlightColor;
     this.defaultArrowColor = defaultArrowColor;
-
-    const whiteRecolor = (piece: string) =>
-      recolorWhite(piece, this.whitePieceColor, this.whitePieceLineColor);
-    const blackRecolor = (piece: string) =>
-      recolorBlack(piece, this.blackPieceColor, this.blackPieceLineColor);
-
-    this.COLORED_WHITE_PIECES = {
-      k: whiteRecolor(WHITE_KING),
-      q: whiteRecolor(WHITE_QUEEN),
-      n: whiteRecolor(WHITE_KNIGHT),
-      r: whiteRecolor(WHITE_ROOK),
-      b: whiteRecolor(WHITE_BISHOP),
-      p: whiteRecolor(WHITE_PAWN),
-    };
-
-    this.COLORED_BLACK_PIECES = {
-      k: blackRecolor(BLACK_KING),
-      q: blackRecolor(BLACK_QUEEN),
-      n: blackRecolor(BLACK_KNIGHT),
-      r: blackRecolor(BLACK_ROOK),
-      b: blackRecolor(BLACK_BISHOP),
-      p: blackRecolor(BLACK_PAWN),
-    };
 
     this.options = {
       orientation,
@@ -334,11 +321,17 @@ export class SVGChessboard {
 
         if (piece.color === "w") {
           g.appendChild(
-            this.drawPiece([c, r], this.COLORED_WHITE_PIECES[piece.type]),
+            this.drawPiece(
+              [c, r], WHITE_PIECES[piece.type],
+              this.whitePieceColor, this.blackPieceColor,
+            ),
           );
         } else if (piece.color === "b") {
           g.appendChild(
-            this.drawPiece([c, r], this.COLORED_BLACK_PIECES[piece.type]),
+            this.drawPiece(
+              [c, r], BLACK_PIECES[piece.type],
+              this.blackPieceColor, this.whitePieceColor,
+            ),
           );
         } else {
           continue;
@@ -359,7 +352,12 @@ export class SVGChessboard {
     return g;
   }
 
-  private drawPiece(coord: BoardCoordinate, piece: string): SVGElement {
+  private drawPiece(
+    coord: BoardCoordinate,
+    piece: string,
+    fillColor: string,
+    detailColor: string,
+  ): SVGElement {
     const [x, y] = this.getBoardSVGCord(coord);
     // Preserve the original 0.875px padding in a 40px square.
     const padding = (this.squareSize / this.baseSquareSize) * 0.875;
@@ -367,6 +365,8 @@ export class SVGChessboard {
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(piece, "image/svg+xml");
     const svg = activeDocument.importNode(svgDoc.getElementsByTagName("svg")[0], true);
+    svg.style.setProperty("--piece-fill", fillColor);
+    svg.style.setProperty("--piece-detail", detailColor);
     svg.setAttribute("x", String(x + padding));
     svg.setAttribute("y", String(y + padding));
     svg.setAttribute("width", String(size));
