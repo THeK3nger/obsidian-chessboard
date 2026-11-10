@@ -1,11 +1,10 @@
 /**
- * In this file there are the SVG images for the board pieces. This is a trick to avoid the complications
- * of having to bundle SVG files into the library.
- *
- * The strings comes from assets/Chess_Piece_Sprite.svg file (that I saved there as a reference)
+ * SVG documents for the board pieces, originally from assets/Chess_Piece_Sprite.svg.
+ * Each piece declares its own viewBox so the renderer does not assume a coordinate space.
  */
 
 export const WHITE_KING = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
 <g style="fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
         <path
         d="M 22.5,11.63 L 22.5,6"
@@ -28,9 +27,10 @@ export const WHITE_KING = `
         <path
         d="M 11.5,37 C 17,34 27,34 32.5,37"
         style="fill:none; stroke:#000000;" />
-    </g>`;
+    </g></svg>`;
 
-export const WHITE_QUEEN = `<g style="opacity:1; fill:#ffffff; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
+export const WHITE_QUEEN = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g style="opacity:1; fill:#ffffff; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
     <path
     d="M 9 13 A 2 2 0 1 1  5,13 A 2 2 0 1 1  9 13 z"
     transform="translate(-1,-1)" />
@@ -58,9 +58,10 @@ export const WHITE_QUEEN = `<g style="opacity:1; fill:#ffffff; fill-opacity:1; f
     <path
     d="M 12,33.5 C 18,32.5 27,32.5 33,33.5"
     style="fill:none;" />
-</g>`;
+</g></svg>`;
 
-export const WHITE_BISHOP = `<g style="opacity:1; fill:none; fill-rule:evenodd; fill-opacity:1; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
+export const WHITE_BISHOP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g style="opacity:1; fill:none; fill-rule:evenodd; fill-opacity:1; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
 <g style="fill:#ffffff; stroke:#000000; stroke-linecap:butt;"> 
     <path
     d="M 9,36 C 12.39,35.03 19.11,36.43 22.5,34 C 25.89,36.43 32.61,35.03 36,36 C 36,36 37.65,36.54 39,38 C 38.32,38.97 37.35,38.99 36,38.5 C 32.61,37.53 25.89,38.96 22.5,37.5 C 19.11,38.96 12.39,37.53 9,38.5 C 7.646,38.99 6.677,38.97 6,38 C 7.354,36.06 9,36 9,36 z" />
@@ -72,9 +73,10 @@ export const WHITE_BISHOP = `<g style="opacity:1; fill:none; fill-rule:evenodd; 
 <path
 d="M 17.5,26 L 27.5,26 M 15,30 L 30,30 M 22.5,15.5 L 22.5,20.5 M 20,18 L 25,18"
 style="fill:none; stroke:#000000; stroke-linejoin:miter;" />
-</g>`;
+</g></svg>`;
 
-export const WHITE_KNIGHT = `<g style="opacity:1; fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
+export const WHITE_KNIGHT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g style="opacity:1; fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
 <path
 d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18"
 style="fill:#ffffff; stroke:#000000;" />
@@ -88,9 +90,10 @@ style="fill:#000000; stroke:#000000;" />
 d="M 15 15.5 A 0.5 1.5 0 1 1  14,15.5 A 0.5 1.5 0 1 1  15 15.5 z"
 transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)"
 style="fill:#000000; stroke:#000000;" />
-</g>`;
+</g></svg>`;
 
-export const WHITE_ROOK = `<g style="opacity:1; fill:#ffffff; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
+export const WHITE_ROOK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g style="opacity:1; fill:#ffffff; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
 <path
 d="M 9,39 L 36,39 L 36,36 L 9,36 L 9,39 z "
 style="stroke-linecap:butt;" />
@@ -110,15 +113,17 @@ d="M 31,29.5 L 32.5,32 L 12.5,32 L 14,29.5" />
 <path
 d="M 11,14 L 34,14"
 style="fill:none; stroke:#000000; stroke-linejoin:miter;" />
-</g>`;
+</g></svg>`;
 
-export const WHITE_PAWN = `<g>
+export const WHITE_PAWN = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g>
 <path
 d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 10.5,31.58 10.5,39.5 L 33.5,39.5 C 33.5,31.58 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 z "
 style="opacity:1; fill:#ffffff; fill-opacity:1; fill-rule:nonzero; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:miter; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;" />
-</g>`;
+</g></svg>`;
 
-export const BLACK_KING = `<g style="fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
+export const BLACK_KING = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g style="fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
 <path 
     d="M 22.5,11.63 L 22.5,6"
     style="fill:none; stroke:#000000; stroke-linejoin:miter;" />
@@ -137,9 +142,10 @@ export const BLACK_KING = `<g style="fill:none; fill-opacity:1; fill-rule:evenod
 <path
    d="M 11.5,30 C 17,27 27,27 32.5,30 M 11.5,33.5 C 17,30.5 27,30.5 32.5,33.5 M 11.5,37 C 17,34 27,34 32.5,37"
    style="fill:none; stroke:#ffffff;" />
-</g>`;
+</g></svg>`;
 
-export const BLACK_QUEEN = `<g style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
+export const BLACK_QUEEN = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
 <g style="fill:#000000; stroke:none;">
     <circle cx="6"    cy="12" r="2.75" />
     <circle cx="14"   cy="9"  r="2.75" />
@@ -168,9 +174,10 @@ style="fill:none; stroke:#ffffff;" />
 <path
 d="M 10.5,37.5 A 35,35 1 0 0 34.5,37.5"
 style="fill:none; stroke:#ffffff;" />
-</g>`;
+</g></svg>`;
 
-export const BLACK_BISHOP = `<g style="opacity:1; fill:none; fill-rule:evenodd; fill-opacity:1; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
+export const BLACK_BISHOP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g style="opacity:1; fill:none; fill-rule:evenodd; fill-opacity:1; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
 <g style="fill:#000000; stroke:#000000; stroke-linecap:butt;"> 
     <path
         d="M 9,36 C 12.39,35.03 19.11,36.43 22.5,34 C 25.89,36.43 32.61,35.03 36,36 C 36,36 37.65,36.54 39,38 C 38.32,38.97 37.35,38.99 36,38.5 C 32.61,37.53 25.89,38.96 22.5,37.5 C 19.11,38.96 12.39,37.53 9,38.5 C 7.646,38.99 6.677,38.97 6,38 C 7.354,36.06 9,36 9,36 z" />
@@ -182,9 +189,10 @@ export const BLACK_BISHOP = `<g style="opacity:1; fill:none; fill-rule:evenodd; 
 <path
    d="M 17.5,26 L 27.5,26 M 15,30 L 30,30 M 22.5,15.5 L 22.5,20.5 M 20,18 L 25,18"
    style="fill:none; stroke:#ffffff; stroke-linejoin:miter;" />
-</g>`;
+</g></svg>`;
 
-export const BLACK_KNIGHT = `<g style="opacity:1; fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
+export const BLACK_KNIGHT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g style="opacity:1; fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
 <path
    d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18"
    style="fill:#000000; stroke:#000000;" />
@@ -201,9 +209,10 @@ export const BLACK_KNIGHT = `<g style="opacity:1; fill:none; fill-opacity:1; fil
 <path
    d="M 24.55,10.4 L 24.1,11.85 L 24.6,12 C 27.75,13 30.25,14.49 32.5,18.75 C 34.75,23.01 35.75,29.06 35.25,39 L 35.2,39.5 L 37.45,39.5 L 37.5,39 C 38,28.94 36.62,22.15 34.25,17.66 C 31.88,13.17 28.46,11.02 25.06,10.5 L 24.55,10.4 z "
    style="fill:#ffffff; stroke:none;" />
-</g>`;
+</g></svg>`;
 
-export const BLACK_ROOK = `<g style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
+export const BLACK_ROOK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
 <path
 d="M 9,39 L 36,39 L 36,36 L 9,36 L 9,39 z "
 style="stroke-linecap:butt;" />
@@ -237,13 +246,14 @@ style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;" />
 <path
 d="M 11,14 L 34,14"
 style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;" />
-</g>`;
+</g></svg>`;
 
-export const BLACK_PAWN = `<g>
+export const BLACK_PAWN = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45">
+<g>
 <path
 d="M 22,9 C 19.79,9 18,10.79 18,13 C 18,13.89 18.29,14.71 18.78,15.38 C 16.83,16.5 15.5,18.59 15.5,21 C 15.5,23.03 16.44,24.84 17.91,26.03 C 14.91,27.09 10.5,31.58 10.5,39.5 L 33.5,39.5 C 33.5,31.58 29.09,27.09 26.09,26.03 C 27.56,24.84 28.5,23.03 28.5,21 C 28.5,18.59 27.17,16.5 25.22,15.38 C 25.71,14.71 26,13.89 26,13 C 26,10.79 24.21,9 22,9 z "
 style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:nonzero; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:miter; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;" />
-</g>`;
+</g></svg>`;
 
 /**
  * A disgusting hack to recolor the pieces. I'm sorry.

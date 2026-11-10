@@ -361,24 +361,18 @@ export class SVGChessboard {
 
   private drawPiece(coord: BoardCoordinate, piece: string): SVGElement {
     const [x, y] = this.getBoardSVGCord(coord);
-    const scale = 0.85;
-    // Pieces are designed in a ~45x45 coordinate space
-    // After scaling: 45 * 0.85 = 38.25
-    // Offset to center in 40px square: (40 - 38.25) / 2 = 0.875
-    const pieceCoordSpace = 45;
-    const scaledSize = pieceCoordSpace * scale;
-    const offset = (this.squareSize - scaledSize) / 2;
-    const g = activeDocument.createElementNS(this.xmlns, "g");
-    g.setAttributeNS(null, "transform", `translate(${x + offset},${y + offset}) scale(${scale})`);
+    // Preserve the original 0.875px padding in a 40px square.
+    const padding = (this.squareSize / this.baseSquareSize) * 0.875;
+    const size = this.squareSize - 2 * padding;
     const parser = new DOMParser();
-    const svgDoc = parser.parseFromString(
-      `<svg xmlns="http://www.w3.org/2000/svg">${piece}</svg>`,
-      "image/svg+xml",
-    );
-    Array.from(svgDoc.documentElement.childNodes).forEach((node) => {
-      g.appendChild(activeDocument.importNode(node, true));
-    });
-    return g;
+    const svgDoc = parser.parseFromString(piece, "image/svg+xml");
+    const svg = activeDocument.importNode(svgDoc.getElementsByTagName("svg")[0], true);
+    svg.setAttribute("x", String(x + padding));
+    svg.setAttribute("y", String(y + padding));
+    svg.setAttribute("width", String(size));
+    svg.setAttribute("height", String(size));
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    return svg;
   }
 
   private drawSquare(coord: BoardCoordinate): SVGRectElement {
