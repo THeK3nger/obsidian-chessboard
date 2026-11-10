@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v0.27.1
+
 ### Behind the Scenes
 
 - Update third party dependencies to patch security issues.
