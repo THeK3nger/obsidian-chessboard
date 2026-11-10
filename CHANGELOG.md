@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Behind the Scenes
+
+- Update third party dependencies to patch security issues.
+
 ## v0.27.0
 
 ### New
