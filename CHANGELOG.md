@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v0.27.2
+
 ### Behind the Scenes
 
 - Render pieces using their SVG viewBox, supporting different coordinate systems and aspect ratios while preserving the current artwork's size and placement.
