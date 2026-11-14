@@ -5,6 +5,7 @@
   "description": "Render chess positions diagrams in a note.",
   "author": "Davide Aversa",
   "authorUrl": "https://www.davideaversa.it",
+  "fundingUrl": "https://ko-fi.com/thek3nger",
   "minAppVersion": "1.13.0",
   "isDesktopOnly": false
 }
