@@ -12,7 +12,7 @@ export interface ParsedPGNBlock {
 }
 
 function parseOption<T extends string>(line: string, key: string, allowedValues: readonly T[]): T | undefined {
-  const match = line.match(new RegExp(`${key}:\\s*(${allowedValues.join("|")})`, "i"));
+  const match = line.match(new RegExp(`^${key}:\\s*(${allowedValues.join("|")})\\s*$`, "i"));
   return match?.[1].toLowerCase() as T | undefined;
 }
 
@@ -46,7 +46,7 @@ export function parsePGNBlock(source: string): ParsedPGNBlock {
     const lower = trimmed.toLowerCase();
 
     if (lower.startsWith("ply:")) {
-      const m = trimmed.match(/ply:\s*(\d+)/i);
+      const m = trimmed.match(/^ply:\s*(\d+)\s*$/i);
       if (m) ply = parseInt(m[1], 10);
       continue;
     }
