@@ -165,19 +165,7 @@ class PGNGameState {
 
   getCheckmatedKingSquare(): string | undefined {
     if (!this.chess.isCheckmate()) return undefined;
-    const color = this.chess.turn();
-    const board = this.chess.board();
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        const piece = board[r][c];
-        if (piece && piece.type === "k" && piece.color === color) {
-          const file = String.fromCharCode("a".charCodeAt(0) + c);
-          const rank = 8 - r;
-          return `${file}${rank}`;
-        }
-      }
-    }
-    return undefined;
+    return this.chess.findPiece({ type: "k", color: this.chess.turn() })[0];
   }
 }
 
