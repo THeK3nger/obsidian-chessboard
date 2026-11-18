@@ -7,6 +7,7 @@ import {
   ShowMoveOption,
 } from "./index";
 import { Annotation } from "../Annotations";
+import { loadPgnOrThrow } from "./Chessboard";
 import { attachBoardMenu } from "./BoardMenu";
 import { createBoardSvg, createTurnIndicator } from "./HTMLElements";
 
@@ -30,7 +31,7 @@ class PGNGameState {
     this.chess = new Chess();
 
     // Load and parse PGN
-    this.chess.loadPgn(pgnString);
+    loadPgnOrThrow(this.chess, pgnString);
 
     // Capture starting FEN from headers (must do this before any position changes)
     const headers = this.chess.getHeaders();

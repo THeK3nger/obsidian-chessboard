@@ -8,6 +8,19 @@ import { Chess, Square, Piece, Move } from "chess.js";
 export type BoardCoordinate = [number, number];
 
 /**
+ * Loads a PGN into a chess.js instance, rewording any parser failure as
+ * "Invalid PGN: ..." so users get a consistent message.
+ */
+export function loadPgnOrThrow(chess: Chess, pgnString: string): void {
+  try {
+    chess.loadPgn(pgnString);
+  } catch (e) {
+    const reason = e instanceof Error ? e.message : String(e);
+    throw new Error(`Invalid PGN: ${reason}`, { cause: e });
+  }
+}
+
+/**
  * The Chessboard class is a thin façade around the chess.js library. This is
  * too keep most of the compatibility with the old Chessboard class, but to take
  * advance of a more solid Chessboard library that include built-in FEN
@@ -80,7 +93,7 @@ export class Chessboard {
 
   static fromPGN(pgnString: string, ply?: number): Chessboard {
     const chessboard = new Chessboard();
-    chessboard.chessboard.loadPgn(pgnString);
+    loadPgnOrThrow(chessboard.chessboard, pgnString);
 
     // If ply is specified, replay moves up to that ply
     if (ply !== undefined) {
