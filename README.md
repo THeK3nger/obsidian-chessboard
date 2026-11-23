@@ -67,7 +67,7 @@ orientation: white
 The annotations are written in the `annotations` field, and you can use the following syntax: 
 
 - `A<square>-<square>`, draws an arrow from the first square to the second square. E.g., `Af8-b4`.
-- `H<square>`, highlight a specific square. E.g., `Hf8`. If you add `/g` or `/r` or `/b` you can highlight the square in green, red or blue.
+- `H<square>`, highlight a specific square. E.g., `Hf8`. If you add `/g`, `/r`, `/b`, or `/y` you can highlight the square in green, red, blue or yellow.
 - `S<square>`, draws a box around a square.
 - `C<square>`, draws a circle around a square.
 - `Q<square>`, draws a _squircle_ around a square.
@@ -79,6 +79,9 @@ The annotations are written in the `annotations` field, and you can use the foll
 - `F<square>`, adds a "forced move" icon to the specified square. E.g., `Fe5`.
 - `#B<square>`, adds a black "checkmated" icon to the specified square. E.g., `#Be5`.
 - `#W<square>`, adds a white "checkmated" icon to the specified square. E.g., `#We5`.
+
+> [!NOTE]
+> The colors used by highlights can be changed in the plugin settings.
 
 Note that the annotation syntax is beta and may change in the future. If you have suggestions, don't hesitate to open an issue.
 
@@ -168,6 +171,10 @@ If I find a viable syntax, I'd also like to implement annotations for multiple m
 ### Current Limitations
 
 This supports the full PGN specification but, for now, the feature is experimental. The syntax in PGN games is still unstable and may change in new versions.
+
+## Open on Lichess
+
+Right-click any board to open its position in the Lichess analysis board. On interactive PGN diagrams, the menu also includes an entry to open the whole game on Lichess, at the move you are currently viewing.
 
 ## How to compile the plugin
 
