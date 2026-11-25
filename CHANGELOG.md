@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## v0.27.3
+
+### Fixes
+
+- Only recognize `ply` options when the whole line is valid, preventing partial option values from being parsed.
+
+### Behind the Scenes
+
+- A bunch of refactoring to improve and clean up the codebase. *cheff kiss*
+
 ## v0.27.2
 
 ### Behind the Scenes
