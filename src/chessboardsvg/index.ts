@@ -78,7 +78,6 @@ export interface SVGChessboardOptions {
 export class SVGChessboard {
   private chessboard: Chessboard;
   private squareSize: number;
-  // Half value of the squareSize. To avoid doing a lot of /2.
   private squareSizeHalf: number;
 
   private options: SVGChessboardOptions;
@@ -223,11 +222,8 @@ export class SVGChessboard {
   }
 
   /**
-   * Creates SVG group containing the chessboard annotations.
-   *
-   * This returns 2 groups: a background and a foreground one. We need this
-   * because some annotations need to be drawn below the pieces while others
-   * need to be rendered above the pieces (e.g., the icons).
+   * Returns `[background, foreground]` SVG groups so square highlights render
+   * beneath pieces while arrows, shapes, and icons render above them.
    */
   private drawAnnotations(): [SVGElement, SVGElement] {
     const g = activeDocument.createElementNS(this.xmlns, "g");
@@ -274,7 +270,6 @@ export class SVGChessboard {
         const pos = Chessboard.algebraicToCoord(annotation.square);
         const [x, y] = this.getBoardSVGCord(pos);
 
-        // Append to foreground group to render above pieces
         switch (annotation.shape) {
           case "circle":
             g_foreground.appendChild(Shapes.drawCircle(x, y, this.squareSize, annotation.color));
@@ -466,15 +461,11 @@ export class SVGChessboard {
     const chessboard = Chessboard.fromPGN(pgnString, ply);
     const svgChessboard = new SVGChessboard(chessboard, options);
 
-    // Apply move highlighting if requested
     if (showMove !== "none") {
       const lastMove = chessboard.getLastMove();
       if (lastMove) {
-        // Highlight the from and to squares
         svgChessboard.highlight(lastMove.from);
         svgChessboard.highlight(lastMove.to);
-
-        // Add arrow if requested
         if (showMove === "arrow") {
           svgChessboard.addArrow(lastMove.from, lastMove.to);
         }

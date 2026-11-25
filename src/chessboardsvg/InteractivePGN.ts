@@ -11,16 +11,13 @@ import { loadPgnOrThrow } from "./Chessboard";
 import { attachBoardMenu } from "./BoardMenu";
 import { createBoardSvg, createTurnIndicator } from "./HTMLElements";
 
-/**
- * Manages the state of a PGN game for interactive navigation.
- */
 class PGNGameState {
   private chess: Chess;
   private moveHistory: Move[];
   private currentPly: number;
   private showMove: ShowMoveOption;
   private startingFEN: string | undefined;
-  private chessPly: number; // Track where the chess instance currently is
+  private chessPly: number; // Ply currently loaded in this.chess
 
   constructor(
     pgnString: string,
@@ -30,31 +27,25 @@ class PGNGameState {
     this.showMove = showMove;
     this.chess = new Chess();
 
-    // Load and parse PGN
     loadPgnOrThrow(this.chess, pgnString);
 
-    // Capture starting FEN from headers (must do this before any position changes)
+    // Read headers before reset() clears them.
     const headers = this.chess.getHeaders();
     this.startingFEN =
       headers.SetUp === "1" && headers.FEN ? headers.FEN : undefined;
 
     this.moveHistory = this.chess.history({ verbose: true });
 
-    // Start at initial ply or beginning
     this.currentPly =
       initialPly !== undefined
         ? Math.min(initialPly, this.moveHistory.length)
         : 0;
 
-    // Reset to starting position and replay moves to initial ply
     this._resetToStart();
     this.chessPly = 0;
     this._ensurePosition(this.currentPly);
   }
 
-  /**
-   * Resets the chess instance to the starting position.
-   */
   private _resetToStart(): void {
     if (this.startingFEN) {
       this.chess.load(this.startingFEN);
@@ -63,25 +54,19 @@ class PGNGameState {
     }
   }
 
-  /**
-   * Efficiently moves the chess instance to the target ply.
-   * Uses undo/move to minimize work instead of replaying from scratch.
-   */
+  // Step incrementally with undo/move instead of replaying from the start.
   private _ensurePosition(targetPly: number): void {
     if (this.chessPly === targetPly) {
-      return; // Already at the right position
+      return;
     }
 
-    // If we need to go back
     if (targetPly < this.chessPly) {
       const stepsBack = this.chessPly - targetPly;
       for (let i = 0; i < stepsBack; i++) {
         this.chess.undo();
       }
       this.chessPly = targetPly;
-    }
-    // If we need to go forward
-    else if (targetPly > this.chessPly) {
+    } else if (targetPly > this.chessPly) {
       for (let i = this.chessPly; i < targetPly; i++) {
         const { from, to, promotion } = this.moveHistory[i];
         this.chess.move({ from, to, promotion });
@@ -170,17 +155,11 @@ class PGNGameState {
   }
 }
 
-/**
- * The FEN before a move carries its actual full-move number, including for PGNs
- * that start from a custom position or with Black to move.
- */
+/** Full-move number from the pre-move FEN (handles custom start positions and Black-to-move PGNs). */
 function getMoveNumber(move: Move): number {
   return Number(move.before.split(/\s+/)[5]);
 }
 
-/**
- * Formats move display text.
- */
 function formatMoveDisplay(move: Move | undefined): string {
   if (!move) {
     return "Starting position";
@@ -189,7 +168,6 @@ function formatMoveDisplay(move: Move | undefined): string {
   const moveNumber = getMoveNumber(move);
   const isWhiteMove = move.color === "w";
 
-  // Format: "Move 12: Nf3" or "Move 12: ...Nc6"
   if (isWhiteMove) {
     return `Move ${moveNumber}: ${move.san}`;
   } else {
@@ -197,9 +175,6 @@ function formatMoveDisplay(move: Move | undefined): string {
   }
 }
 
-/**
- * Updates the move display element.
- */
 function updateMoveDisplay(
   gameState: PGNGameState,
   moveInfoElement: HTMLElement,
@@ -214,9 +189,6 @@ function updateMoveDisplay(
   moveInfoElement.textContent = `${moveText} ${plyText}`;
 }
 
-/**
- * Updates button states based on current position.
- */
 function updateButtonStates(
   gameState: PGNGameState,
   buttons: {
@@ -234,9 +206,6 @@ function updateButtonStates(
   buttons.last.disabled = !canGoForward;
 }
 
-/**
- * Renders the chess board at the current position.
- */
 function renderBoard(
   gameState: PGNGameState,
   options: Partial<SVGChessboardOptions>,
@@ -379,7 +348,8 @@ function createMoveListPanel(
 }
 
 /**
- * Creates an interactive PGN board with navigation controls.
+ * Renders an interactive PGN board. `initialPly` sets the default ply (and the
+ * ply where `annotations` appear); `restoredPly` preserves navigation across re-renders.
  */
 export function createInteractivePGNBoard(
   pgnString: string,
@@ -394,7 +364,6 @@ export function createInteractivePGNBoard(
   restoredPly?: number,
   onPlyChange?: (ply: number) => void,
 ): HTMLElement {
-  // Create game state
   const gameState = new PGNGameState(pgnString, restoredPly ?? initialPly, showMove);
   const targetPly = initialPly !== undefined
     ? Math.min(initialPly, gameState.getTotalPlies())
@@ -414,7 +383,6 @@ export function createInteractivePGNBoard(
 
   let moveListPanel: HTMLElement | undefined;
 
-  // Update UI function
   const updateUI = () => {
     renderBoard(
       gameState,
@@ -439,13 +407,11 @@ export function createInteractivePGNBoard(
     onPlyChange?.(gameState.getCurrentPly());
   };
 
-  // Runs a state change, then refreshes the UI.
   const navigate = (fn: () => void) => () => {
     fn();
     updateUI();
   };
 
-  // Keyboard navigation
   const keyActions: Record<string, () => void> = {
     ArrowLeft: navigate(() => gameState.goToPrevious()),
     ArrowRight: navigate(() => gameState.goToNext()),
@@ -460,7 +426,6 @@ export function createInteractivePGNBoard(
     e.stopPropagation();
   });
 
-  // Event handlers
   firstButton.addEventListener(
     "click",
     navigate(() => gameState.goToStart()),
@@ -478,7 +443,6 @@ export function createInteractivePGNBoard(
     navigate(() => gameState.goToEnd()),
   );
 
-  // Append buttons to controls
   controls.appendChild(firstButton);
   controls.appendChild(prevButton);
   controls.appendChild(nextButton);

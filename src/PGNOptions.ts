@@ -21,15 +21,7 @@ function parseBooleanOption(line: string, key: string): boolean | undefined {
   return value === undefined ? undefined : value === "true";
 }
 
-/**
- * Parses a PGN block into a structured format.
- *
- * Annotation colors are left as symbolic slot names (see {@link Annotation});
- * the renderer resolves them against the active color configuration.
- *
- * @param source The string of the PGN block
- * @returns A parsed PGN block
- */
+/** Strips option lines from a `chessboard-pgn` block and returns the remaining PGN with parsed options. */
 export function parsePGNBlock(source: string): ParsedPGNBlock {
   let ply: number | undefined = undefined;
   let showMove: ShowMoveOption = "none";

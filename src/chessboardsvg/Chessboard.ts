@@ -1,16 +1,9 @@
 import { Chess, Square, Piece, Move } from "chess.js";
 
-/**
- * Chessboard coordinate in (column, row) format.
- *
- * The 0,0 coordinate is the topmost left square.
- */
+/** Zero-based `[col, row]` board index where `[0, 0]` is `a8`. */
 export type BoardCoordinate = [number, number];
 
-/**
- * Loads a PGN into a chess.js instance, rewording any parser failure as
- * "Invalid PGN: ..." so users get a consistent message.
- */
+/** Loads a PGN into `chess`, normalizing parser failures to `"Invalid PGN: ..."` for UI display. */
 export function loadPgnOrThrow(chess: Chess, pgnString: string): void {
   try {
     chess.loadPgn(pgnString);
@@ -20,13 +13,7 @@ export function loadPgnOrThrow(chess: Chess, pgnString: string): void {
   }
 }
 
-/**
- * The Chessboard class is a thin façade around the chess.js library. This is
- * too keep most of the compatibility with the old Chessboard class, but to take
- * advance of a more solid Chessboard library that include built-in FEN
- * validation, PGN support, history and cooler features that we can use in the
- * visualization.
- */
+/** Thin wrapper around `chess.js` with `[col, row]` lookup and ply-sliced PGN loading. */
 export class Chessboard {
   private chessboard: Chess;
   private lastMovePlayed?: Move;
@@ -80,8 +67,7 @@ export class Chessboard {
   static fromFEN(fenString: string, skipValidation = false): Chessboard {
     const chessboard = new Chessboard();
 
-    // Check if FEN includes at least the moving color. If not, append ' w' to the string.
-    // This is to ensure compatibility with our less-strict format.
+    // Default to White to move when given piece placement only.
     if (!fenString.trim().includes(" ")) {
       fenString += " w";
     }
@@ -95,9 +81,8 @@ export class Chessboard {
     const chessboard = new Chessboard();
     loadPgnOrThrow(chessboard.chessboard, pgnString);
 
-    // If ply is specified, replay moves up to that ply
+    // loadPgn leaves the board at the end of the game; reset and replay up to ply.
     if (ply !== undefined) {
-      // Get detailed move history with verbose: true
       const history = chessboard.chessboard.history({ verbose: true });
       const headers = chessboard.chessboard.getHeaders();
       if (headers.SetUp === "1" && headers.FEN) {
@@ -106,16 +91,13 @@ export class Chessboard {
         chessboard.chessboard.reset();
       }
 
-      // If ply is 0, show starting position (already reset)
       if (ply === 0) {
         return chessboard;
       }
 
-      // Replay moves up to the specified ply (or all moves if ply exceeds history length)
       const movesToReplay = Math.min(ply, history.length);
       for (let i = 0; i < movesToReplay; i++) {
         chessboard.chessboard.move(history[i].san);
-        // Store the last move that was played
         if (i === movesToReplay - 1) {
           chessboard.lastMovePlayed = history[i];
         }

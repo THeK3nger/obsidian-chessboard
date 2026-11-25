@@ -39,7 +39,6 @@ type ChessSettingsKey = keyof typeof DEFAULT_CHESS_SETTINGS;
 type ChessSettingsKeys = Array<ChessSettingsKey>;
 
 export default class ObsidianChess extends Plugin {
-  // This field stores your plugin settings.
   setting!: ObsidianChessSettings;
   private readonly settingsEvents = new Events();
 
@@ -47,7 +46,7 @@ export default class ObsidianChess extends Plugin {
     this.setting = ((await this.loadData()) ?? {
       ...DEFAULT_CHESS_SETTINGS,
     }) as ObsidianChessSettings;
-    // In case the setting exists but is missing a field due to an update
+    // Backfill defaults for newly added settings.
     for (const key of Object.keys(DEFAULT_CHESS_SETTINGS) as ChessSettingsKeys) {
       if (this.setting[key] === undefined) {
         (this.setting[key] as unknown) = DEFAULT_CHESS_SETTINGS[key];
@@ -144,7 +143,6 @@ export default class ObsidianChess extends Plugin {
               annotations,
               this.getAnnotationColors(),
               currentPly,
-              // Update currentPly when the board is interactively moved
               (ply) => {
                 currentPly = ply;
               },
@@ -210,12 +208,8 @@ class SettingsRefreshChild extends MarkdownRenderChild {
   }
 }
 
-/**
- * This is a data class that contains your plugin configurations. You can edit it
- * as you wish by adding fields and all the data you need.
- */
 interface ObsidianChessSettings extends SVGChessboardOptions {
-  // Required so getControlValue/setControlValue can access properties by the string key Obsidian passes in.
+  // Needed for string-keyed access in getControlValue/setControlValue.
   [key: string]: unknown;
   whiteSquareColor: string;
   blackSquareColor: string;
@@ -320,11 +314,6 @@ class ObsidianChessSettingsTab extends PluginSettingTab {
     this.plugin.refreshChessboardBlocks();
   }
 
-  /**
-   * Adds the small circular-arrow button that restores a single setting to
-   * its default value, matching the per-row reset affordance used by themes
-   * like Minimal.
-   */
   private addResetButton(
     setting: Setting,
     key: ChessSettingsKey,

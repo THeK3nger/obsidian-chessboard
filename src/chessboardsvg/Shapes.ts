@@ -1,18 +1,7 @@
-/**
- * Utility class for creating SVG shape elements for board annotations.
- */
+/** SVG shape annotations centered within a board square at `(x, y)` of width `size`. */
 export class Shapes {
   private static readonly xmlns = "http://www.w3.org/2000/svg";
 
-  /**
-   * Draws a circle at the specified coordinates.
-   * @param x - The top-left x-coordinate of the square.
-   * @param y - The top-left y-coordinate of the square.
-   * @param size - The size of the square containing the shape.
-   * @param color - The stroke color.
-   * @param opacity - Optional opacity value (0-1). Defaults to 0.8.
-   * @returns An SVGElement representing the circle.
-   */
   static drawCircle(
     x: number,
     y: number,
@@ -21,7 +10,7 @@ export class Shapes {
     opacity: number = 0.8,
   ): SVGElement {
     const circle = activeDocument.createElementNS(this.xmlns, "circle");
-    const radius = size * 0.35; // Circle takes ~70% of square
+    const radius = size * 0.35;
     const centerX = x + size / 2;
     const centerY = y + size / 2;
 
@@ -36,15 +25,6 @@ export class Shapes {
     return circle;
   }
 
-  /**
-   * Draws a square at the specified coordinates.
-   * @param x - The top-left x-coordinate of the square.
-   * @param y - The top-left y-coordinate of the square.
-   * @param size - The size of the square containing the shape.
-   * @param color - The stroke color.
-   * @param opacity - Optional opacity value (0-1). Defaults to 0.8.
-   * @returns An SVGElement representing the square.
-   */
   static drawSquare(
     x: number,
     y: number,
@@ -53,8 +33,8 @@ export class Shapes {
     opacity: number = 0.8,
   ): SVGElement {
     const rect = activeDocument.createElementNS(this.xmlns, "rect");
-    const padding = size * 0.15; // 15% padding on each side
-    const shapeSize = size * 0.7; // Square takes ~70% of cell
+    const padding = size * 0.15;
+    const shapeSize = size * 0.7;
 
     rect.setAttribute("x", (x + padding).toString());
     rect.setAttribute("y", (y + padding).toString());
@@ -68,16 +48,6 @@ export class Shapes {
     return rect;
   }
 
-  /**
-   * Draws a squircle (superellipse) at the specified coordinates.
-   * A squircle is a shape between a square and a circle, with rounded corners.
-   * @param x - The top-left x-coordinate of the square.
-   * @param y - The top-left y-coordinate of the square.
-   * @param size - The size of the square containing the shape.
-   * @param color - The stroke color.
-   * @param opacity - Optional opacity value (0-1). Defaults to 0.8.
-   * @returns An SVGElement representing the squircle.
-   */
   static drawSquircle(
     x: number,
     y: number,
@@ -88,15 +58,13 @@ export class Shapes {
     const path = activeDocument.createElementNS(this.xmlns, "path");
     const padding = size * 0.15;
     const shapeSize = size * 0.7;
-    const cornerRadius = shapeSize * 0.25; // 25% corner radius for smooth squircle
+    const cornerRadius = shapeSize * 0.25;
 
     const left = x + padding;
     const top = y + padding;
     const right = left + shapeSize;
     const bottom = top + shapeSize;
 
-    // SVG path for rounded rectangle (squircle approximation)
-    // M = move to, L = line to, Q = quadratic bezier curve
     const pathData = `
       M ${left + cornerRadius} ${top}
       L ${right - cornerRadius} ${top}

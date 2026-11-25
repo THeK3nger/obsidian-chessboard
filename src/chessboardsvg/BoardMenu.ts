@@ -7,20 +7,15 @@ export interface BoardGame {
   ply: number;
 }
 
-/** Builds the Lichess analysis URL for a position. */
 function lichessPositionUrl(fen: string, orientation: Orientation): string {
   return `https://lichess.org/analysis/${fen.trim().replace(/\s+/g, "_")}?color=${orientation}`;
 }
 
-/** Builds the Lichess analysis URL for a whole game, opened at the given ply. */
 function lichessGameUrl(pgn: string, orientation: Orientation, ply: number): string {
   return `https://lichess.org/analysis/pgn/${encodeURIComponent(pgn.trim())}?color=${orientation}#${ply}`;
 }
 
-/**
- * Attaches the right-click menu to a rendered board. Add new menu entries
- * (e.g. other chess sites) here.
- */
+/** Attaches the context menu to a rendered board. */
 export function attachBoardMenu(
   svg: SVGElement,
   chessboard: SVGChessboard,

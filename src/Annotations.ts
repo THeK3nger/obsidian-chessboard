@@ -1,29 +1,14 @@
 import type { Orientation } from "./chessboardsvg/index";
-/**
- * The four annotation colors that can be referenced by name (via the `/r`,
- * `/g`, `/b`, `/y` suffixes) or used as the default for an annotation type.
- */
+
+/** Symbolic color slot (`/r`, `/y`, `/g`, `/b`), resolved to a CSS color at render time. */
 export type AnnotationColorName = "red" | "yellow" | "green" | "blue";
 
-/**
- * Represents a highlight annotation on the board.
- *
- * It is defined by the square to highlight (in algebraic notation) and a
- * symbolic color slot (e.g. `"red"`). The renderer decides which actual
- * color value that slot represents.
- */
 export interface Highlight {
   type: "highlight";
   square: string;
   color: AnnotationColorName;
 }
 
-/**
- * Represents an arrow annotation on the board.
- *
- * It is defined by the start and end squares of the arrow (in algebraic
- * notation) and a symbolic color slot. See {@link Highlight}.
- */
 export interface ArrowAnnotation {
   type: "arrow";
   start: string;
@@ -31,24 +16,12 @@ export interface ArrowAnnotation {
   color: AnnotationColorName;
 }
 
-/**
- * Represents an icon annotation on the board.
- *
- * It is defined by the square to place the icon (in algebraic notation) and the icon to use.
- */
 export interface IconAnnotation {
   type: "icon";
   square: string;
   icon: string;
 }
 
-/**
- * Represents a shape annotation on the board.
- *
- * It is defined by the square to draw the shape (in algebraic notation),
- * the shape type (circle, square, squircle), and a symbolic color slot. See
- * {@link Highlight}.
- */
 export interface ShapeAnnotation {
   type: "shape";
   square: string;
@@ -56,12 +29,6 @@ export interface ShapeAnnotation {
   color: AnnotationColorName;
 }
 
-/**
- * An annotation as produced by parsing: colors are symbolic slot names
- * (`AnnotationColorName`), not rendering values. Parsing a code block only
- * needs to recognize the `/r`, `/g`, `/b`, `/y` tokens — it doesn't need to
- * know what "red" actually looks like.
- */
 export type Annotation =
   | Highlight
   | ArrowAnnotation
@@ -75,18 +42,10 @@ export interface ParsedChessCode {
   strict: boolean;
 }
 
-/**
- * The color applied to each annotation type when its token omits a color
- * suffix.
- */
 const HIGHLIGHT_DEFAULT: AnnotationColorName = "red";
 const ARROW_DEFAULT: AnnotationColorName = "yellow";
 const SHAPE_DEFAULT: AnnotationColorName = "yellow";
 
-/**
- * Maps the icon token prefixes (e.g. `!!`, `F`, `#W`) recognized in an
- * annotation line to the icon name used to render them.
- */
 const ICON_MAPPING: Record<string, string> = {
   "!!": "brilliant",
   "!?": "good",
@@ -98,11 +57,7 @@ const ICON_MAPPING: Record<string, string> = {
   "#B": "checkmate_black",
 };
 
-/**
- * Icon prefixes in the order they must be matched. Two-character prefixes
- * (`!!`, `!?`, `??`) are listed before their one-character counterparts (`!`,
- * `?`) so that the longer match wins.
- */
+// Two-character prefixes must precede "!" and "?" so the longer token matches first.
 const ICON_PREFIXES = ["#W", "#B", "!?", "!!", "??", "F", "!", "?"];
 
 const SHAPE_PREFIX_MAP: Record<string, "circle" | "square" | "squircle"> = {
@@ -111,11 +66,6 @@ const SHAPE_PREFIX_MAP: Record<string, "circle" | "square" | "squircle"> = {
   Q: "squircle",
 };
 
-/**
- * Resolves the color slot for an annotation token, honoring an explicit
- * `/r`, `/g`, `/b`, or `/y` suffix and falling back to `defaultColor` when
- * none is present.
- */
 function resolveColorName(
   token: string,
   defaultColor: AnnotationColorName,
@@ -129,10 +79,6 @@ function resolveColorName(
 
 const SQUARE_PATTERN = /^[a-h][1-8]$/i;
 
-/**
- * Returns `square` if it is a valid algebraic square (e.g. `e4`), otherwise
- * throws an error naming the offending annotation token.
- */
 function requireSquare(square: string, token: string): string {
   if (!SQUARE_PATTERN.test(square)) {
     throw Error(`Invalid square "${square}" in annotation "${token}".`);
@@ -140,12 +86,12 @@ function requireSquare(square: string, token: string): string {
   return square;
 }
 
+/** Parses space-separated annotation tokens (`Hd4`, `Ae2-e4/g`, `!!e4`, `Cd4`). */
 export function parseAnnotationLine(line: string): Array<Annotation> {
   const annotations: Array<Annotation> = [];
-  // Split on any run of whitespace so repeated spaces don't produce empty tokens.
   const tokens = line.split(/\s+/).filter((t) => t !== "");
   for (const annotation of tokens) {
-    // Check for highlight annotations
+    // Hd4, Hd4/r
     if (annotation.startsWith("H")) {
       const color = resolveColorName(annotation, HIGHLIGHT_DEFAULT);
       annotations.push({
@@ -155,7 +101,7 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
       });
       continue;
     }
-    // Check for arrow annotations
+    // Ae2-e4, Ae2-e4/r
     if (annotation.startsWith("A")) {
       const color = resolveColorName(annotation, ARROW_DEFAULT);
       const [start = "", end = ""] = annotation.substring(1, 6).split("-");
@@ -167,7 +113,7 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
       });
       continue;
     }
-    // Check for icon annotations
+    // !!e4, #We1
     const iconPrefix = ICON_PREFIXES.find((p) => annotation.startsWith(p));
     if (iconPrefix) {
       const start = iconPrefix.length;
@@ -178,7 +124,7 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
       });
       continue;
     }
-    // Check for shape annotations
+    // Cd4, Sd4, Qd4
     const shapeType = SHAPE_PREFIX_MAP[annotation[0]];
     if (shapeType) {
       const color = resolveColorName(annotation, SHAPE_DEFAULT);
@@ -194,16 +140,7 @@ export function parseAnnotationLine(line: string): Array<Annotation> {
   return annotations;
 }
 
-/**
- * Parses a code block containing the FEN board position and the annotations
- * and returns an object with the parsed data.
- *
- * Annotation colors are left as symbolic slot names (see {@link Annotation});
- * the renderer resolves them against the active color configuration.
- *
- * @param input The input string of the FEN code block.
- * @returns An object with the parsed data.
- */
+/** Parses a `chessboard` code block (FEN plus optional settings and annotations). */
 export function parseCodeBlock(input: string): ParsedChessCode {
   const lines = input.split(/\r?\n/);
   const fen = lines[0].startsWith("fen: ")

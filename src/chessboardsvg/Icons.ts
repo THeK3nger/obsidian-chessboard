@@ -23,7 +23,6 @@ export class Icons {
   static checkmate_black = Icons.loadIcon(checkmate_black);
   static checkmate_white = Icons.loadIcon(checkmate_white);
 
-  /** Returns the icon with the given name, or undefined if there is none. */
   static byName(name: string): HTMLElement | undefined {
     return Icons.byNameMap[name];
   }
